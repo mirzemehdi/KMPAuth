@@ -24,7 +24,7 @@ allprojects {
     val gpgKeySecret = gradleLocalProperties(rootDir).getProperty("gpgKeySecret")
     val gpgKeyPassword = gradleLocalProperties(rootDir).getProperty("gpgKeyPassword")
 
-    val excludedModules = listOf(":sampleApp:composeApp")
+    val excludedModules = listOf(":sampleApp:composeApp",":sampleApp")
     if (project.path in excludedModules) return@allprojects
 
     apply(plugin = "org.jetbrains.dokka")
