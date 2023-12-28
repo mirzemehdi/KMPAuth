@@ -3,19 +3,23 @@ package com.mmk.kmpauth.core.di
 
 import org.koin.core.Koin
 import org.koin.core.KoinApplication
+import org.koin.core.module.Module
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 
 
-internal object LibDependencyInitializer {
-    var koinApp: KoinApplication? = null
+public object LibDependencyInitializer {
+    public var koinApp: KoinApplication? = null
         private set
 
+    public fun initialize(module: Module) {
+        initialize(listOf(module))
+    }
 
-    fun initialize() {
+    public fun initialize(modules: List<Module> = emptyList()) {
         if (isInitialized()) return
         val configModule = module {
-
+            includes(modules)
         }
         koinApp = koinApplication {
             modules(configModule + platformModule)

@@ -19,6 +19,10 @@ junit = "4.13.2"
 koin = "3.5.0"
 kotlinx-binary-validator = "0.13.2"
 dokka = "1.9.10"
+androidxCredential = "1.3.0-alpha01"
+googleIdIdentity="1.1.0"
+koinCompose = "1.1.0"
+
 
 
 [libraries]
@@ -41,7 +45,13 @@ androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "androidx-startup-runtime" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinCompose" }
 
+#Google Sign In
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidxCredential" }
+androidx-credentials-playServicesAuth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidxCredential" }
+googleIdIdentity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleIdIdentity" }
 
 
 [plugins]

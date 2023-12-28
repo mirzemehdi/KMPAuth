@@ -38,6 +38,7 @@ kotlin {
             implementation(compose.material)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+            implementation(project(":kmpauth-google"))
         }
     }
 }

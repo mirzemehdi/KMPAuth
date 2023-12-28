@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinNativeCocoaPods)
+    alias(libs.plugins.jetbrainsCompose)
 }
 
 kotlin {
@@ -24,9 +25,10 @@ kotlin {
     cocoapods {
         ios.deploymentTarget = "11.0"
         framework {
-            baseName = "KMPAuthCore"
+            baseName = "KMPAuthGoogle"
             isStatic = true
         }
+        pod("GoogleSignIn")
         noPodspec()
     }
 
@@ -35,20 +37,22 @@ kotlin {
     sourceSets {
 
         androidMain.dependencies {
-            implementation(libs.androidx.startup.runtime)
-            implementation(libs.androidx.core.ktx)
-            implementation(libs.androidx.activity.ktx)
-            api(libs.koin.android)
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.playServicesAuth)
+            implementation(libs.googleIdIdentity)
 
         }
         commonMain.dependencies {
-            api(libs.koin.core)
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(libs.koin.compose)
+            implementation(project(":kmpauth-core"))
         }
     }
 }
 
 android {
-    namespace = "com.mmk.kmpauth.core"
+    namespace = "com.mmk.kmpauth.google"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
