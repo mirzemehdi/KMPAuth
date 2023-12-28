@@ -18,13 +18,13 @@ plugins {
 
 allprojects {
     group = "io.github.mirzemehdi"
-    version = "0.0.1"
+    version = project.properties["kmpAuthVersion"] as String
     val sonatypeUsername = gradleLocalProperties(rootDir).getProperty("sonatypeUsername")
     val sonatypePassword = gradleLocalProperties(rootDir).getProperty("sonatypePassword")
     val gpgKeySecret = gradleLocalProperties(rootDir).getProperty("gpgKeySecret")
     val gpgKeyPassword = gradleLocalProperties(rootDir).getProperty("gpgKeyPassword")
 
-    val excludedModules = listOf(":sample")
+    val excludedModules = listOf(":sampleApp:composeApp")
     if (project.path in excludedModules) return@allprojects
 
     apply(plugin = "org.jetbrains.dokka")
@@ -58,7 +58,7 @@ allprojects {
             withType<MavenPublication> {
                 artifact(javadocJar)
                 pom {
-                    groupId="io.github.mirzemehdi"
+                    groupId = "io.github.mirzemehdi"
                     name.set("KMPAuth")
                     description.set(" Kotlin Multiplatform Authentication Library targeting ios and android")
                     licenses {
