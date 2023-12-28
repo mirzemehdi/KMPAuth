@@ -2,7 +2,7 @@ name: Publish
 
 on:
   release:
-    types: [ created ]
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
@@ -44,6 +44,7 @@ jobs:
           echo gpgKeyPassword="${GPG_KEY_PASSWORD}" >> "local.properties"
           echo gpgKeySecret="${GPG_KEY_SECRET}" >> "local.properties"
         env:
+          SONATYPE_REPOSITORY_ID: ${{ needs.create-staging-repository.outputs.repository_id }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           GPG_KEY_PASSWORD: ${{ secrets.GPG_KEY_PASSWORD }}
@@ -56,9 +57,10 @@ jobs:
     name: Close staging repository
     runs-on: ubuntu-latest
     needs: [ create-staging-repository, publish ]
+    if: ${{ always() && needs.create_staging_repository.result == 'success' }}
     steps:
       - name: Close staging repository
-        uses: nexus-actions/release-nexus-staging-repo@v1.1
+        uses: nexus-actions/release-nexus-staging-repo@6632a81bfab63557b2717e8423b0a620ae5aa414
         with:
           username: ${{ secrets.SONATYPE_USERNAME }}
           password: ${{ secrets.SONATYPE_PASSWORD }}
