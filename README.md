@@ -1,4 +1,4 @@
-# KMPNotifier - Kotlin Multiplatform Authentication Library
+# KMPAuth - Kotlin Multiplatform Authentication Library
 [![Build](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build.yml/badge.svg)](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build.yml)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.21-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.mirzemehdi/kmpauth-google?color=blue)](https://search.maven.org/search?q=g:io.github.mirzemehdi+kmpauth)
@@ -8,7 +8,7 @@
 
 Simple and easy to use Kotlin Multiplatform Authentication library targeting ios and android. 
 This library is developed based on this [blog post](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891) 
-and for Now Only Google Sign-In feature is implemented, but it is planned to add more authentication integrations.
+and for now Only Google Sign-In feature is implemented, but it is planned to add more authentication integrations.
 You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full library api information.
 
 ## Features
@@ -36,7 +36,7 @@ Then in your shared module you add dependency in `commonMain`. Latest version: [
 ```kotlin
 sourceSets {
   commonMain.dependencies {
-    api("io.github.mirzemehdi:kmpauth-google:<version>")
+    implementation("io.github.mirzemehdi:kmpauth-google:<version>")
   }
 }
 ```
