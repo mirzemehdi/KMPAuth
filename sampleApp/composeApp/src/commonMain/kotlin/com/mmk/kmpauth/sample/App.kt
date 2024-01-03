@@ -26,27 +26,32 @@ fun App() {
         Column(
             Modifier.fillMaxSize().padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
         ) {
 
-            var signedInUser:GoogleUser? by remember { mutableStateOf(null) }
-            GoogleButtonUiContainer(onGoogleSignInResult = { googleUser ->
-                val idToken=googleUser?.idToken // Send this idToken to your backend to verify
-                signedInUser=googleUser
-            }) {
-                Button(
-                    onClick = { this.onClick() }
-                ) {
-                    Text("Sign-In with Google")
-                }
-            }
-
+            var signedInUserName: String by remember { mutableStateOf("NOT_SIGNED_IN_USER") }
             Text(
-                modifier = Modifier.padding(20.dp),
-                text = "Hello World, ${signedInUser?.displayName?:""}",
+                text = "Hello World, $signedInUserName",
                 style = MaterialTheme.typography.body1,
                 textAlign = TextAlign.Start,
             )
+            GoogleSignInWithoutFirebase { googleUser ->
+                signedInUserName = googleUser?.displayName ?: ""
+            }
+        }
+    }
+}
+
+@Composable
+fun GoogleSignInWithoutFirebase(onSignedInGoogleUser: (GoogleUser?) -> Unit) {
+    GoogleButtonUiContainer(onGoogleSignInResult = { googleUser ->
+        val idToken = googleUser?.idToken // Send this idToken to your backend to verify
+        onSignedInGoogleUser(googleUser)
+    }) {
+        Button(
+            onClick = { this.onClick() }
+        ) {
+            Text("Sign-In with Google (without Firebase)")
         }
     }
 }
