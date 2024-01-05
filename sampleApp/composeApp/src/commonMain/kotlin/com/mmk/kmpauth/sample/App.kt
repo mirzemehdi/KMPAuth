@@ -11,13 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.mmk.kmpauth.firebase.core.OAuthContainer
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.google.GoogleUser
+import dev.gitlive.firebase.auth.FirebaseUser
+import dev.gitlive.firebase.auth.OAuthProvider
 
 @Composable
 fun App() {
@@ -29,15 +33,22 @@ fun App() {
             verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
         ) {
 
-            var signedInUserName: String by remember { mutableStateOf("NOT_SIGNED_IN_USER") }
+            var signedInUserName: String by remember { mutableStateOf("") }
+            println("App recomposition")
             Text(
-                text = "Hello World, $signedInUserName",
+                text = signedInUserName,
                 style = MaterialTheme.typography.body1,
                 textAlign = TextAlign.Start,
             )
             GoogleSignInWithoutFirebase { googleUser ->
                 signedInUserName = googleUser?.displayName ?: ""
             }
+
+            GithubSignInWithFirebase { firebaseUser ->
+                println("Firebase:${firebaseUser?.displayName}")
+                signedInUserName = firebaseUser?.displayName ?: ""
+            }
+
         }
     }
 }
@@ -54,4 +65,30 @@ fun GoogleSignInWithoutFirebase(onSignedInGoogleUser: (GoogleUser?) -> Unit) {
             Text("Sign-In with Google (without Firebase)")
         }
     }
+}
+
+@Composable
+fun GithubSignInWithFirebase(onSignedInFirebaseUser: (FirebaseUser?) -> Unit) {
+    val oAuthProvider =
+        OAuthProvider(
+            "github.com",
+            listOf("user:email"),
+            mapOf("login" to "mirzemehdi@gmail.com")
+        )
+
+    OAuthContainer(
+        oAuthProvider = oAuthProvider,
+        onResult = { result ->
+            if (result.isSuccess) onSignedInFirebaseUser(result.getOrNull())
+            else println(result.exceptionOrNull()?.message)
+        }
+    ) {
+        Button(
+            onClick = { this.onClick() }
+        ) {
+            Text("Sign-In with Github (Firebase)")
+        }
+    }
+
+
 }

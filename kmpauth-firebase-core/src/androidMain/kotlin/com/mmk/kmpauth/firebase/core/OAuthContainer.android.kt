@@ -1,6 +1,10 @@
 package com.mmk.kmpauth.firebase.core
 
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.tasks.Task
 import com.mmk.kmpauth.core.getActivity
@@ -10,11 +14,28 @@ import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
 
 @Composable
-internal actual fun OAuthContainer(
+public actual fun OAuthContainer(
+    modifier: Modifier,
+    oAuthProvider: OAuthProvider,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+    val activity = LocalContext.current.getActivity()
+    val uiContainerScope = remember {
+        object : UiContainerScope {
+            override fun onClick() {
+                onClickSignIn(activity, oAuthProvider, onResult)
+            }
+        }
+    }
+    Box(modifier = modifier) { uiContainerScope.content() }
+}
+
+private fun onClickSignIn(
+    activity: ComponentActivity?,
     oAuthProvider: OAuthProvider,
     onResult: (Result<FirebaseUser?>) -> Unit,
 ) {
-    val activity = LocalContext.current.getActivity()
     val auth = Firebase.auth.android
     val pendingAuthResult = auth.pendingAuthResult
     if (pendingAuthResult != null) {
