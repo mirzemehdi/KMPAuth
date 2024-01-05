@@ -20,4 +20,5 @@ dependencyResolutionManagement {
 
 include(":kmpauth-core")
 include(":kmpauth-google")
+include(":kmpauth-firebase-core")
 include(":sampleApp:composeApp")
