@@ -3,7 +3,6 @@ package com.mmk.kmpauth.firebase.core
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import cocoapods.FirebaseAuth.FIRAuthCredential
 import dev.gitlive.firebase.Firebase
@@ -11,9 +10,14 @@ import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+
+//On iOS this is needed for some reason, app is recomposed again when navigate to OAuth Screen.
+// rememberUpdatedState doesn't solve the problem
+private var mOnResult: ((Result<FirebaseUser?>) -> Unit)? = null
 
 @Composable
 public actual fun OAuthContainer(
@@ -22,13 +26,15 @@ public actual fun OAuthContainer(
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    mOnResult = onResult
+    val coroutineScope = MainScope()
     val uiContainerScope = remember {
         object : UiContainerScope {
             override fun onClick() {
                 coroutineScope.launch {
                     val result = onClickSignIn(oAuthProvider)
-                    onResult(result)
+                    mOnResult?.invoke(result)
+                    mOnResult = null
                 }
             }
 

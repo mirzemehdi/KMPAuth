@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +33,6 @@ fun App() {
         ) {
 
             var signedInUserName: String by remember { mutableStateOf("") }
-            println("App recomposition")
             Text(
                 text = signedInUserName,
                 style = MaterialTheme.typography.body1,
@@ -69,13 +67,7 @@ fun GoogleSignInWithoutFirebase(onSignedInGoogleUser: (GoogleUser?) -> Unit) {
 
 @Composable
 fun GithubSignInWithFirebase(onSignedInFirebaseUser: (FirebaseUser?) -> Unit) {
-    val oAuthProvider =
-        OAuthProvider(
-            "github.com",
-            listOf("user:email"),
-            mapOf("login" to "mirzemehdi@gmail.com")
-        )
-
+    val oAuthProvider = OAuthProvider(provider = "github.com", scopes = listOf("user:email"))
     OAuthContainer(
         oAuthProvider = oAuthProvider,
         onResult = { result ->
