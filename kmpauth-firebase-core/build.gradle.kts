@@ -42,6 +42,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
+            implementation(compose.material)
             implementation(libs.koin.compose)
             api(libs.firebase.gitlive.auth)
             implementation(project(":kmpauth-core"))

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.mmk.kmpauth.firebase.core.OAuthContainer
+import com.mmk.kmpauth.firebase.core.SignInWithAppleButton
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.google.GoogleUser
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -45,6 +46,12 @@ fun App() {
             GithubSignInWithFirebase { firebaseUser ->
                 println("Firebase:${firebaseUser?.displayName}")
                 signedInUserName = firebaseUser?.displayName ?: ""
+            }
+
+            SignInWithAppleButton { result ->
+                val firebaseUser = result.getOrNull()
+                println("Firebase:${firebaseUser?.email}")
+                signedInUserName = firebaseUser?.email ?: ""
             }
 
         }

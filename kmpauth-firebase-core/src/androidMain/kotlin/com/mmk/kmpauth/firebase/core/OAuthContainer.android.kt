@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.tasks.Task
 import com.mmk.kmpauth.core.getActivity
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.AuthResult
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
