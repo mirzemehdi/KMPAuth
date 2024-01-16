@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
     spec.summary                  = 'KmpAuth Google Module'
     spec.vendored_frameworks      = 'build/cocoapods/framework/KMPAuthGoogle.framework'
     spec.libraries                = 'c++'
-    spec.ios.deployment_target = '11.0'
+    spec.ios.deployment_target = '13.0'
     spec.dependency 'GoogleSignIn'
                 
     if !Dir.exist?('build/cocoapods/framework/KMPAuthGoogle.framework') || Dir.empty?('build/cocoapods/framework/KMPAuthGoogle.framework')

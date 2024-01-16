@@ -25,10 +25,9 @@ kotlin {
     cocoapods {
         ios.deploymentTarget = "13.0"
         framework {
-            baseName = "KMPAuthGoogle"
+            baseName = "KMPAuthFirebaseCore"
             isStatic = true
         }
-        pod("GoogleSignIn")
         noPodspec()
     }
 
@@ -37,22 +36,22 @@ kotlin {
     sourceSets {
 
         androidMain.dependencies {
-            implementation(libs.androidx.credentials)
-            implementation(libs.androidx.credentials.playServicesAuth)
-            implementation(libs.googleIdIdentity)
+
 
         }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
+            implementation(compose.material)
             implementation(libs.koin.compose)
-            api(project(":kmpauth-core"))
+            api(libs.firebase.gitlive.auth)
+            implementation(project(":kmpauth-google"))
         }
     }
 }
 
 android {
-    namespace = "com.mmk.kmpauth.google"
+    namespace = "com.mmk.kmpauth.firebase.core"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")

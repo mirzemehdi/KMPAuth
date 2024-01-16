@@ -7,7 +7,6 @@ import org.koin.core.module.Module
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 
-
 public object LibDependencyInitializer {
     public var koinApp: KoinApplication? = null
         private set

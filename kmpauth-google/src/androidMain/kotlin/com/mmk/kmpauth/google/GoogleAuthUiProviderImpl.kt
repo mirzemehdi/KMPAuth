@@ -9,6 +9,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+
 internal class GoogleAuthUiProviderImpl(
     private val activityContext: Context,
     private val credentialManager: CredentialManager,
@@ -38,6 +39,7 @@ internal class GoogleAuthUiProviderImpl(
                         GoogleIdTokenCredential.createFrom(credential.data)
                     GoogleUser(
                         idToken = googleIdTokenCredential.idToken,
+                        accessToken = null,
                         displayName = googleIdTokenCredential.displayName ?: "",
                         profilePicUrl = googleIdTokenCredential.profilePictureUri?.toString()
                     )

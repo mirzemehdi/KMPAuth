@@ -40,7 +40,7 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(project(":kmpauth-google"))
-            implementation(project(":kmpauth-firebase-core"))
+            implementation(project(":kmpauth-firebase"))
         }
     }
 }

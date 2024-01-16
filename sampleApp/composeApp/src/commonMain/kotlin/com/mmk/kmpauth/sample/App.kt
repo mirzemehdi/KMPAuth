@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,8 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mmk.kmpauth.firebase.core.OAuthContainer
-import com.mmk.kmpauth.firebase.core.SignInWithAppleButton
+import com.mmk.kmpauth.firebase.apple.AppleButtonUiContainer
+import com.mmk.kmpauth.firebase.oauth.OAuthContainer
+import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
+import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.google.GoogleUser
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -34,60 +37,40 @@ fun App() {
         ) {
 
             var signedInUserName: String by remember { mutableStateOf("") }
+            val onFirebaseResult: (Result<FirebaseUser?>) -> Unit = { result ->
+                if (result.isSuccess) {
+                    val firebaseUser = result.getOrNull()
+                    signedInUserName =
+                        firebaseUser?.displayName ?: firebaseUser?.email ?: "Null User"
+                } else {
+                    signedInUserName = "Null User"
+                    println("Error Result: ${result.exceptionOrNull()?.message}")
+                }
+
+            }
             Text(
                 text = signedInUserName,
                 style = MaterialTheme.typography.body1,
                 textAlign = TextAlign.Start,
             )
-            GoogleSignInWithoutFirebase { googleUser ->
-                signedInUserName = googleUser?.displayName ?: ""
+            GoogleButtonUiContainer(onGoogleSignInResult = { googleUser ->
+                val idToken = googleUser?.idToken // Send this idToken to your backend to verify
+                signedInUserName=googleUser?.displayName?:"Null User"
+            }) {
+                Button(onClick = { this.onClick() }) { Text("Google Sign-In") }
             }
 
-            GithubSignInWithFirebase { firebaseUser ->
-                println("Firebase:${firebaseUser?.displayName}")
-                signedInUserName = firebaseUser?.displayName ?: ""
+            GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+                Button(onClick = { this.onClick() }) { Text("Google Sign-In(Firebase)") }
             }
 
-            SignInWithAppleButton { result ->
-                val firebaseUser = result.getOrNull()
-                println("Firebase:${firebaseUser?.email}")
-                signedInUserName = firebaseUser?.email ?: ""
+            GithubButtonUiContainer(onResult = onFirebaseResult) {
+                Button(onClick = { this.onClick() }) { Text("Github Sign-In") }
+            }
+            AppleButtonUiContainer(onResult = onFirebaseResult){
+                Button(onClick = { this.onClick() }) { Text("Apple Sign-In") }
             }
 
         }
     }
-}
-
-@Composable
-fun GoogleSignInWithoutFirebase(onSignedInGoogleUser: (GoogleUser?) -> Unit) {
-    GoogleButtonUiContainer(onGoogleSignInResult = { googleUser ->
-        val idToken = googleUser?.idToken // Send this idToken to your backend to verify
-        onSignedInGoogleUser(googleUser)
-    }) {
-        Button(
-            onClick = { this.onClick() }
-        ) {
-            Text("Sign-In with Google (without Firebase)")
-        }
-    }
-}
-
-@Composable
-fun GithubSignInWithFirebase(onSignedInFirebaseUser: (FirebaseUser?) -> Unit) {
-    val oAuthProvider = OAuthProvider(provider = "github.com", scopes = listOf("user:email"))
-    OAuthContainer(
-        oAuthProvider = oAuthProvider,
-        onResult = { result ->
-            if (result.isSuccess) onSignedInFirebaseUser(result.getOrNull())
-            else println(result.exceptionOrNull()?.message)
-        }
-    ) {
-        Button(
-            onClick = { this.onClick() }
-        ) {
-            Text("Sign-In with Github (Firebase)")
-        }
-    }
-
-
 }
