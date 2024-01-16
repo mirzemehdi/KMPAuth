@@ -23,6 +23,8 @@ import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.google.GoogleUser
+import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
+import com.mmk.kmpauth.uihelper.google.GoogleSignInButtonIconOnly
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 
@@ -57,7 +59,7 @@ fun App() {
                 val idToken = googleUser?.idToken // Send this idToken to your backend to verify
                 signedInUserName=googleUser?.displayName?:"Null User"
             }) {
-                Button(onClick = { this.onClick() }) { Text("Google Sign-In") }
+                GoogleSignInButton { this.onClick() }
             }
 
             GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
@@ -70,7 +72,6 @@ fun App() {
             AppleButtonUiContainer(onResult = onFirebaseResult){
                 Button(onClick = { this.onClick() }) { Text("Apple Sign-In") }
             }
-
         }
     }
 }

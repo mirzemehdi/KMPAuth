@@ -18,7 +18,7 @@ internal class ContextInitializer : Initializer<Unit> {
 }
 
 
-internal actual fun isAndroidPlatform(): Boolean = true
+public actual fun isAndroidPlatform(): Boolean = true
 internal actual val platformModule = module {
     single { applicationContext }
 }
