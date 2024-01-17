@@ -2,7 +2,9 @@ package com.mmk.kmpauth.sample
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -23,6 +25,8 @@ import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.google.GoogleUser
+import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
+import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButtonIconOnly
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -59,7 +63,7 @@ fun App() {
                 val idToken = googleUser?.idToken // Send this idToken to your backend to verify
                 signedInUserName=googleUser?.displayName?:"Null User"
             }) {
-                GoogleSignInButton { this.onClick() }
+                GoogleSignInButton(modifier = Modifier) { this.onClick() }
             }
 
             GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
@@ -71,6 +75,14 @@ fun App() {
             }
             AppleButtonUiContainer(onResult = onFirebaseResult){
                 Button(onClick = { this.onClick() }) { Text("Apple Sign-In") }
+            }
+            AppleButtonUiContainer(onResult = onFirebaseResult){
+                AppleSignInButton {this.onClick()}
+            }
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp,Alignment.CenterHorizontally)) {
+                GoogleSignInButtonIconOnly {  }
+                AppleSignInButtonIconOnly {  }
             }
         }
     }

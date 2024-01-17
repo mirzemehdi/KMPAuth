@@ -2,10 +2,11 @@ package com.mmk.kmpauth.uihelper.google
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.mmk.kmpauth.core.di.isAndroidPlatform
 import com.mmk.kmpauth.uihelper.theme.Fonts
@@ -24,10 +26,9 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 public fun GoogleSignInButtonIconOnly(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.size(44.dp),
     mode: GoogleButtonMode = GoogleButtonMode.Light,
     shape: Shape = ButtonDefaults.shape,
     onClick: () -> Unit,
@@ -48,9 +49,13 @@ public fun GoogleSignInButtonIconOnly(
 }
 
 
+/**
+ * As per guideline
+ * call-to-action should be "Sign in with Google", "Sign up with Google", or "Continue with Google".
+ */
 @Composable
 public fun GoogleSignInButton(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.height(44.dp),
     mode: GoogleButtonMode = GoogleButtonMode.Light,
     text: String = "Sign in with Google",
     shape: Shape = ButtonDefaults.shape,
