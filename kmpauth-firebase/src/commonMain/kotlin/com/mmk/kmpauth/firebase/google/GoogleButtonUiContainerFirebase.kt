@@ -6,12 +6,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
-import com.mmk.kmpauth.firebase.oauth.OAuthContainer
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.GoogleAuthProvider
-import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.launch
 
@@ -27,6 +25,10 @@ public fun GoogleButtonUiContainerFirebase(
     GoogleButtonUiContainer(modifier = modifier, onGoogleSignInResult = { googleUser ->
         val idToken = googleUser?.idToken
         val accessToken = googleUser?.accessToken
+        if (idToken == null) {
+            updatedOnResult(Result.failure(IllegalStateException("Idtoken is null")))
+            return@GoogleButtonUiContainer
+        }
         val authCredential = GoogleAuthProvider.credential(idToken, accessToken)
         coroutineScope.launch {
             val result = Firebase.auth.signInWithCredential(authCredential)
