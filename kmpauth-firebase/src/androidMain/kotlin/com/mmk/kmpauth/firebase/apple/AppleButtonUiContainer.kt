@@ -21,5 +21,10 @@ public actual fun AppleButtonUiContainer(
         }
     }
     val oAuthProvider = OAuthProvider(provider = "apple.com", scopes = oathProviderRequestScopes)
-    OAuthContainer(oAuthProvider = oAuthProvider, onResult =  onResult, content = content)
+    OAuthContainer(
+        modifier = modifier,
+        oAuthProvider = oAuthProvider,
+        onResult = onResult,
+        content = content
+    )
 }
