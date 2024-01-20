@@ -23,13 +23,12 @@ kotlin {
 
 
     cocoapods {
-        ios.deploymentTarget = "13.0"
+        ios.deploymentTarget = "11.0"
         framework {
             baseName = "KMPAuthGoogle"
             isStatic = true
         }
         pod("GoogleSignIn")
-        noPodspec()
     }
 
 

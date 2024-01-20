@@ -1,6 +1,7 @@
 package com.mmk.kmpauth.google
 
 /**
- * android clientId is the same as serverId
+ * Google Auth Credentials holder class.
+ * @param serverId - This should be Web Client Id that you created in Google OAuth page
  */
 public data class GoogleAuthCredentials(val serverId: String)
