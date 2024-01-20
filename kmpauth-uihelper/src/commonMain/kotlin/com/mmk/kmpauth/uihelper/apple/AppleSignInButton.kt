@@ -29,12 +29,20 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mmk.kmpauth.uihelper.google.GoogleButtonMode
 import com.mmk.kmpauth.uihelper.theme.Fonts
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 
 
+
+/**
+ * AppleSignInButton [Composable] with icon only.
+ * This follows Apple's design guidelines and can be easily customized to fit into your project.
+ *
+ * @param mode [AppleButtonMode]
+ */
 @Composable
 public fun AppleSignInButtonIconOnly(
     modifier: Modifier = Modifier.size(44.dp),
@@ -65,9 +73,14 @@ public fun AppleSignInButtonIconOnly(
 }
 
 
+
 /**
- * As per guideline
- * call-to-action should be "Sign in with Apple", "Sign up with Apple", or "Continue with Apple".
+ * AppleSignInButton [Composable] with text that you can use in your #KMP project.
+ * This follows Apple's design guidelines and can be easily customized to fit into your project.
+ *
+ * @param mode [AppleButtonMode]
+ * @param text Button's text. As per guideline this text should be "Sign in with Apple",
+ * "Sign up with Apple", or "Continue with Apple".
  */
 @Composable
 public fun AppleSignInButton(

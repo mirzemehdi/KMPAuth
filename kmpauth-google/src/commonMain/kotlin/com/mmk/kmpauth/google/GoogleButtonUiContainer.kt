@@ -12,6 +12,9 @@ import kotlinx.coroutines.launch
 
 /**
  * GoogleButton Ui Container Composable that handles all sign-in functionality.
+ * Make sure you create [GoogleAuthUiProvider] instance using [GoogleAuthProvider.create]
+ * before invoking below composable function.
+ *
  * Child of this Composable can be any view or Composable function.
  * You need to call [UiContainerScope.onClick] function on your child view's click function.
  *

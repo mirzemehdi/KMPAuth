@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -18,15 +17,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.di.isAndroidPlatform
+import com.mmk.kmpauth.uihelper.apple.AppleButtonMode
 import com.mmk.kmpauth.uihelper.theme.Fonts
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 
+/**
+ * GoogleSignInButton [Composable] icon only.
+ * This follows Google's design guidelines and can be easily customized to fit into your project.
+ *
+ * @param mode [GoogleButtonMode]
+ */
 @OptIn(KMPAuthInternalApi::class)
 @Composable
 public fun GoogleSignInButtonIconOnly(
@@ -52,8 +57,12 @@ public fun GoogleSignInButtonIconOnly(
 
 
 /**
- * As per guideline
- * call-to-action should be "Sign in with Google", "Sign up with Google", or "Continue with Google".
+ * GoogleSignInButton [Composable] with text that you can use in your #KMP project.
+ * This follows Google's design guidelines and can be easily customized to fit into your project.
+ *
+ * @param mode [GoogleButtonMode]
+ * @param text Button's text. As per guideline this text should be "Sign in with Google",
+ * "Sign up with Google", or "Continue with Google".
  */
 @OptIn(KMPAuthInternalApi::class)
 @Composable

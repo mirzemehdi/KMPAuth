@@ -16,6 +16,7 @@ public interface GoogleAuthProvider {
     public companion object {
         /**
          * Creates new [GoogleAuthProvider] class instance
+         * @param credentials [GoogleAuthCredentials] instance.
          * @return returns [GoogleAuthProvider]
          */
         public fun create(credentials: GoogleAuthCredentials): GoogleAuthProvider {

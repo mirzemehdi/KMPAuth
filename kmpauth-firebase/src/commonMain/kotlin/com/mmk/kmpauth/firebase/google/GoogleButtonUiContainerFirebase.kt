@@ -13,6 +13,23 @@ import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.launch
 
+/**
+ * GoogleSignInButton Ui Container Composable that handles all sign-in functionality for Google.
+ * Child of this Composable can be any view or Composable function.
+ * You need to call [UiContainerScope.onClick] function on your child view's click function.
+ *
+ * [onResult] callback will return [Result] with [FirebaseUser] type.
+ *
+ * Example Usage:
+ * ```
+ * //Github Sign-In with Custom Button and authentication with Firebase
+ * GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+ *     Button(onClick = { this.onClick() }) { Text("Google Sign-In (Custom Design)") }
+ * }
+ *
+ * ```
+ *
+ */
 @Composable
 public fun GoogleButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
