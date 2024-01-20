@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.tasks.Task
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.UiContainerScope
 import com.mmk.kmpauth.core.getActivity
 import dev.gitlive.firebase.Firebase
@@ -14,6 +15,7 @@ import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
 
+@OptIn(KMPAuthInternalApi::class)
 @Composable
 public actual fun OAuthContainer(
     modifier: Modifier,

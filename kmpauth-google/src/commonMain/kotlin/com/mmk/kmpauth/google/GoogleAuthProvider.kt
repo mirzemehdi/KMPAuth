@@ -1,6 +1,7 @@
 package com.mmk.kmpauth.google
 
 import androidx.compose.runtime.Composable
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.di.KMPKoinComponent
 import com.mmk.kmpauth.core.di.LibDependencyInitializer
 import com.mmk.kmpauth.google.di.googleAuthModule
@@ -23,6 +24,7 @@ public interface GoogleAuthProvider {
 
     public suspend fun signOut()
 
+    @OptIn(KMPAuthInternalApi::class)
     private object GoogleAuthProviderImpl : KMPKoinComponent() {
         fun create(credentials: GoogleAuthCredentials): GoogleAuthProvider {
             LibDependencyInitializer.initialize(googleAuthModule(credentials = credentials))

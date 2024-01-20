@@ -40,12 +40,14 @@ kotlin {
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.playServicesAuth)
             implementation(libs.googleIdIdentity)
+            implementation(libs.koin.android)
 
         }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(libs.koin.compose)
+            implementation(libs.koin.core)
             api(project(":kmpauth-core"))
         }
     }

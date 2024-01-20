@@ -2,6 +2,7 @@ package com.mmk.kmpauth.core.di
 
 import android.content.Context
 import androidx.startup.Initializer
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import org.koin.dsl.module
 
 internal lateinit var applicationContext: Context
@@ -18,6 +19,7 @@ internal class ContextInitializer : Initializer<Unit> {
 }
 
 
+@KMPAuthInternalApi
 public actual fun isAndroidPlatform(): Boolean = true
 internal actual val platformModule = module {
     single { applicationContext }

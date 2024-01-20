@@ -20,12 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.di.isAndroidPlatform
 import com.mmk.kmpauth.uihelper.theme.Fonts
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 
+@OptIn(KMPAuthInternalApi::class)
 @Composable
 public fun GoogleSignInButtonIconOnly(
     modifier: Modifier = Modifier.size(44.dp),
@@ -53,6 +55,7 @@ public fun GoogleSignInButtonIconOnly(
  * As per guideline
  * call-to-action should be "Sign in with Google", "Sign up with Google", or "Continue with Google".
  */
+@OptIn(KMPAuthInternalApi::class)
 @Composable
 public fun GoogleSignInButton(
     modifier: Modifier = Modifier.height(44.dp),
