@@ -79,6 +79,10 @@ sourceSets {
 ```
 **_You will also need to include Google Sign-In and/or FirebaseAuth library to your ios app using Swift Package Manager or Cocoapods._**   
 
+**Note**: If in iOS you get `MissingResourceException`, I wrote solution in this [issue's comment section](https://github.com/mirzemehdi/KMPAuth/issues/2).
+
+-----
+
 ### Google Sign-In
 For Google Sign-In you can either use only one-tap sign in functionality, or also implementing firebase google authentication integration to that.
 You need to set up OAuth 2.0 in Google Cloud Platform Console. 
