@@ -189,7 +189,7 @@ GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
 ```
 
 ### Apple Sign-In
-After enabling and configuring Apple Sign-In in Firebase, you can use it as below in your @Composable function:
+After enabling and configuring Apple Sign-In in Firebase, make sure you added Sign-In with Apple capability in XCode. Then, you can use it as below in your @Composable function:
 ```kotlin
 //Apple Sign-In with Custom Button and authentication with Firebase
 AppleButtonUiContainer(onResult = onFirebaseResult) {
