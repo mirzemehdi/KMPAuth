@@ -39,9 +39,9 @@ You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob
 
 ## Features
 - ✅ Google One Tap Sign-In (without Firebase)
-- ✅ [Google Sign-In with Firebase](../blob/master/#google-sign-in)
-- ✅ [Apple Sign-In with Firebase](https://github.com/mirzemehdi/KMPAuth/tree/firebase_core#apple-sign-in)
-- ✅ [Github Sign-In with Firebase](https://github.com/mirzemehdi/KMPAuth/tree/firebase_core#github-sign-in)
+- ✅ [Google Sign-In with Firebase](../main/#google-sign-in)
+- ✅ [Apple Sign-In with Firebase](../main/#apple-sign-in)
+- ✅ [Github Sign-In with Firebase](../firebase_core#github-sign-in)
 - ✅ Apple and Google "Sign in with " UiHelper buttons (according to each brand's guideline)
 - 🚧 Facebook Sign-In (can be implemented in future)
 - 📱 Multiplatform (android and iOS)
