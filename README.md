@@ -11,7 +11,10 @@ Because I am using KMPAuth in [FindTravelNow](https://github.com/mirzemehdi/Find
 Related blog post: [Integrating Google Sign-In into Kotlin Multiplatform](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891)  
 You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full library api information.
 
-## Sample Code
+## Sample App and Code
+<p style="text-align: center;">
+  <img src="https://github.com/mirzemehdi/KMPAuth/assets/32781662/f5a3cd28-6ef2-46bf-9b07-a045ce217b34)" width="200" alt="SampleApp"/>  
+
 ```kotlin
 @Composable
 fun AuthUiHelperButtonsAndFirebaseAuth(
@@ -39,6 +42,9 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
 }
 
 ```
+
+  
+
 
 You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob/main/sampleApp/composeApp/src/commonMain/kotlin/com/mmk/kmpauth/sample/App.kt) here.
 
@@ -194,7 +200,7 @@ GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
 ```
 
 ### Apple Sign-In
-After enabling and configuring Apple Sign-In in Firebase, make sure you added Sign-In with Apple capability in XCode. Then, you can use it as below in your @Composable function:
+After enabling and configuring Apple Sign-In in Firebase, make sure you added "Sign In with Apple" capability in XCode. Then, you can use it as below in your @Composable function:
 ```kotlin
 //Apple Sign-In with Custom Button and authentication with Firebase
 AppleButtonUiContainer(onResult = onFirebaseResult) {
