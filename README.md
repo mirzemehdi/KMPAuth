@@ -30,6 +30,11 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
             AppleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
         }
 
+        //Github Sign-In with Custom Button and authentication with Firebase
+        GithubButtonUiContainer(onResult = onFirebaseResult) {
+            Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
+        }
+
     }
 }
 
