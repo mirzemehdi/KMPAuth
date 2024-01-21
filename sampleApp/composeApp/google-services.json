@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "180951249266",
+    "project_id": "kmpauthapp",
+    "storage_bucket": "kmpauthapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180951249266:android:1a83eb8eea4835070e2deb",
+        "android_client_info": {
+          "package_name": "com.mmk.kmpauth.sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "180951249266-muupgucll493urjl69649g1r2q5bu0il.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mmk.kmpauth.sample",
+            "certificate_hash": "eeb32fc9a3dfb66fec9842f79ebc0147cc370a7f"
+          }
+        },
+        {
+          "client_id": "180951249266-9cn8vatdnto1q3t3phfivvf0b5e453bf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU4EB8PdtZ0faNDJaLvn6r6aXgcOKGpxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "180951249266-9cn8vatdnto1q3t3phfivvf0b5e453bf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mmk.kmpauth"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

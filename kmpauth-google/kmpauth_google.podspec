@@ -1,11 +1,11 @@
 Pod::Spec.new do |spec|
-    spec.name                     = 'KMPAuthGoogle'
+    spec.name                     = 'kmpauth_google'
     spec.version                  = '1.0.0'
-    spec.homepage                 = 'https://github.com/mirzemehdi/KMPAuth/'
+    spec.homepage                 = ''
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
     spec.license                  = ''
-    spec.summary                  = 'KmpAuth Google Module'
+    spec.summary                  = ''
     spec.vendored_frameworks      = 'build/cocoapods/framework/KMPAuthGoogle.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target = '11.0'
@@ -14,7 +14,7 @@ Pod::Spec.new do |spec|
     if !Dir.exist?('build/cocoapods/framework/KMPAuthGoogle.framework') || Dir.empty?('build/cocoapods/framework/KMPAuthGoogle.framework')
         raise "
 
-        Kotlin framework 'shared' doesn't exist yet, so a proper Xcode project can't be generated.
+        Kotlin framework 'KMPAuthGoogle' doesn't exist yet, so a proper Xcode project can't be generated.
         'pod install' should be executed after running ':generateDummyFramework' Gradle task:
 
             ./gradlew :kmpauth-google:generateDummyFramework
@@ -23,13 +23,13 @@ Pod::Spec.new do |spec|
     end
                 
     spec.pod_target_xcconfig = {
-        'KOTLIN_PROJECT_PATH' => ':shared',
-        'PRODUCT_MODULE_NAME' => 'shared',
+        'KOTLIN_PROJECT_PATH' => ':kmpauth-google',
+        'PRODUCT_MODULE_NAME' => 'KMPAuthGoogle',
     }
                 
     spec.script_phases = [
         {
-            :name => 'Build shared',
+            :name => 'Build kmpauth_google',
             :execution_position => :before_compile,
             :shell_path => '/bin/sh',
             :script => <<-SCRIPT
@@ -46,5 +46,5 @@ Pod::Spec.new do |spec|
             SCRIPT
         }
     ]
-    spec.resources = ['build/compose/ios/shared/compose-resources']
+    spec.resources = ['build/compose/ios/KMPAuthGoogle/compose-resources']
 end

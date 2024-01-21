@@ -18,11 +18,15 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
             GIDSignIn.sharedInstance
                 .signInWithPresentingViewController(rootViewController) { gidSignInResult, nsError ->
                     nsError?.let { println("Error While signing: $nsError") }
-                    val idToken = gidSignInResult?.user?.idToken?.tokenString
+
+                    val user = gidSignInResult?.user
+                    val idToken = user?.idToken?.tokenString
+                    val accessToken = user?.accessToken?.tokenString
                     val profile = gidSignInResult?.user?.profile
-                    if (idToken != null) {
+                    if (idToken != null && accessToken != null) {
                         val googleUser = GoogleUser(
                             idToken = idToken,
+                            accessToken = accessToken,
                             displayName = profile?.name ?: "",
                             profilePicUrl = profile?.imageURLWithDimension(320u)?.absoluteString
                         )

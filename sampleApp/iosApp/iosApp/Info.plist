@@ -3,6 +3,20 @@
 <plist version="1.0">
 <dict>
 
+    <key>GIDServerClientID</key>
+        <string>180951249266-9cn8vatdnto1q3t3phfivvf0b5e453bf.apps.googleusercontent.com</string>
+
+        <key>GIDClientID</key>
+        <string>180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll.apps.googleusercontent.com</string>
+        <key>CFBundleURLTypes</key>
+        <array>
+          <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+              <string>com.googleusercontent.apps.180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll</string>
+            </array>
+          </dict>
+        </array>
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
@@ -18,6 +32,17 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
