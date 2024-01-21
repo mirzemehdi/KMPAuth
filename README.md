@@ -1,29 +1,52 @@
 # KMPAuth - Kotlin Multiplatform Authentication Library
-[![Build](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build.yml/badge.svg)](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build.yml)
+[![Build](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build_and_publish.yml/badge.svg)](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build_and_publish.yml)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.21-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.mirzemehdi/kmpauth-google?color=blue)](https://search.maven.org/search?q=g:io.github.mirzemehdi+kmpauth)
 
 ![badge-android](http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat)
 ![badge-ios](http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat)
 
-Simple and easy to use Kotlin Multiplatform Authentication library targeting ios and android. 
-This library is developed based on this [blog post](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891) 
-and for now Only Google Sign-In feature is implemented, but it is planned to add more authentication integrations.
+Simple and easy to use Kotlin Multiplatform Authentication library targeting iOS and Android. Supporting **Google**, **Apple**, **Github** authentication integrations using Firebase.   
+Because I am using KMPAuth in [FindTravelNow](https://github.com/mirzemehdi/FindTravelNow-KMM/) production KMP project, I'll support development of this library :).   
+Related blog post: [Integrating Google Sign-In into Kotlin Multiplatform](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891)  
 You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full library api information.
 
+## Sample Code
+```kotlin
+@Composable
+fun AuthUiHelperButtonsAndFirebaseAuth(
+    modifier: Modifier = Modifier,
+    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+) {
+    Column(modifier = modifier,verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+        //Google Sign-In Button and authentication with Firebase
+        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+            GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
+        }
+
+        //Apple Sign-In Button and authentication with Firebase
+        AppleButtonUiContainer(onResult = onFirebaseResult) {
+            AppleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
+        }
+
+    }
+}
+
+```
+
+You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob/main/sampleApp/composeApp/src/commonMain/kotlin/com/mmk/kmpauth/sample/App.kt) here.
+
 ## Features
-- ✅ Google One Tap Sign-In
-- 🚧 Apple Sign-In (Not implemented yet, In progress)
-- 🚧 Facebook Sign-In (Not implemented yet, In progress)
+- ✅ Google One Tap Sign-In (without Firebase)
+- ✅ Google Sign-In with Firebase
+- ✅ Apple Sign-In with Firebase
+- ✅ Github Sign-In with Firebase
+- ✅ Apple and Google "Sign in with " UiHelper buttons (according to each brand's guideline)
+- 🚧 Facebook Sign-In (can be implemented in future)
 - 📱 Multiplatform (android and iOS)
 
 ## Installation
-For Google Sign-In, you need to set up OAuth 2.0 in Google Cloud Platform Console. 
-For steps you can follow this [link](https://support.google.com/cloud/answer/6158849). **_Pro Easy Tip:_** If you use Firebase and enable Google Sign-In authentication in Firebase 
-it will automatically generate OAuth client IDs for each platform, 
-and one will be **_Web Client ID_** which will be needed for identifying signed-in users in backend server.
-
-### Gradle Setup
 KMPAuth is available on Maven Central. In your root project `build.gradle.kts` file (or `settings.gradle` file) add `mavenCentral()` to repositories.
 
 ```kotlin
@@ -32,21 +55,36 @@ repositories {
 }
 ```
 
-Then in your shared module you add dependency in `commonMain`. Latest version: [![Maven Central](https://img.shields.io/maven-central/v/io.github.mirzemehdi/kmpauth-google?color=blue)](https://search.maven.org/search?q=g:io.github.mirzemehdi+kmpauth).
+Then in your shared module add desired dependencies in `commonMain`. Latest version: [![Maven Central](https://img.shields.io/maven-central/v/io.github.mirzemehdi/kmpauth-google?color=blue)](https://search.maven.org/search?q=g:io.github.mirzemehdi+kmpauth).
 ```kotlin
 sourceSets {
   commonMain.dependencies {
-    implementation("io.github.mirzemehdi:kmpauth-google:<version>")
+    implementation("io.github.mirzemehdi:kmpauth-google:<version>") //Google One Tap Sign-In 
+    implementation("io.github.mirzemehdi:kmpauth-firebase:<version>") //Integrated Authentications with Firebase
+    implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") //UiHelper SignIn buttons (AppleSignIn, GoogleSignInButton)
+
   }
 }
 ```
+**_You will also need to include Google Sign-In and/or FirebaseAuth library to your ios app using Swift Package Manager or Cocoapods._**   
 
-### Platform Setup
+### Google Sign-In
+For Google Sign-In you can either use only one-tap sign in functionality, or also implementing firebase google authentication integration to that.
+You need to set up OAuth 2.0 in Google Cloud Platform Console. 
+For steps you can follow this [link](https://support.google.com/cloud/answer/6158849). **_Pro Easy Tip:_** If you use Firebase and enable Google Sign-In authentication in Firebase 
+it will automatically generate OAuth client IDs for each platform, 
+and one will be **_Web Client ID_** which will be needed for identifying signed-in users in backend server.
 
+#### Platform Setup
+Create GoogleAuthProvider instance by providing _**Web Client Id**_ as a serverID on Application start.
+```kotlin
+GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = WebClientId))
+
+```
 <details>
   <summary>Android</summary>
 
-### Android Setup
+##### Android Setup
 There is not any platform specific setup in Android side.
 
 </details>
@@ -54,9 +92,8 @@ There is not any platform specific setup in Android side.
 <details>
   <summary>iOS</summary>
 
-### iOS Setup
-First, you need to include Google Sign-In library to your ios app using Swift Package Manager or Cocoapods. 
-Then add clientID, and serverId to your `Info.plist` file as below:
+##### iOS Setup
+Add clientID, and serverId to your `Info.plist` file as below:
 
 ```
 <key>GIDServerClientID</key>
@@ -123,39 +160,70 @@ struct iOSApp: App {
 
 </details>
 
-## Usage
-Create GoogleAuthProvider instance.
-```kotlin
-val googleAuthProvider = GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = "WEB_CLIENT_ID"))
-```
-
-### Google Sign-In
-Google Sign-In is UI process. You can either use below function in your `@Composable` function, or 
-you can directly use `GoogleButtonUiContainer` which handles all complex stuff for you.
+#### Usage
+After configuring above steps this is how you can use:
 
 ```kotlin
-val googleAuthUiProvider = googleAuthProvider.getUiProvider()
-val googleUser = googleAuthUiProvider.signIn() //suspend function, needs to be called in CoroutineScope
-```
-
-or using `GoogleButtonUiContainer`. Make sure you create GoogleAuthProvider instance before invoking below composable function.
-```kotlin
+//Google Sign-In with Custom Button (only one tap sign-in functionality)
 GoogleButtonUiContainer(onGoogleSignInResult = { googleUser ->
-    val idToken=googleUser?.idToken // Send this idToken to your backend to verify
+  val idToken = googleUser?.idToken // Send this idToken to your backend to verify
 }) {
-    Button(
-        onClick = { this.onClick() } //Delegate button or any view click to GoogleButtonUiContainer click method
-    ) {
-        Text("Sign-In with Google")
-    }
+  Button(onClick = { this.onClick() }) { Text("Google Sign-In(Custom Design)") }
+}
+
+```
+
+Google Sign-In Button and authentication with Firebase. You need to implement `kmpauth-uihelper` dependency
+```kotlin
+GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+  GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
 }
 ```
-### Google Sign out
-Since it is not UI related function you can sign out user in any part of code.
+
+Google Sign-In IconOnly Button and authentication with Firebase. You need to implement `kmpauth-uihelper` dependency
 ```kotlin
-googleAuthProvider.signOut()
+GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+  GoogleSignInButtonIconOnly(onClick = { this.onClick() })
+}
+
 ```
 
+### Apple Sign-In
+After enabling and configuring Apple Sign-In in Firebase, you can use it as below in your @Composable function:
+```kotlin
+//Apple Sign-In with Custom Button and authentication with Firebase
+AppleButtonUiContainer(onResult = onFirebaseResult) {
+  //Any View, you just need to delegate child view's click to this UI Container's click method
+  Button(onClick = { this.onClick() }) { Text("Apple Sign-In (Custom Design)") }
+}
+
+```
+
+Apple Sign-In with AppleSignInButton. You need to implement `kmpauth-uihelper` dependency
+```kotlin
+AppleButtonUiContainer(onResult = onFirebaseResult) {
+  AppleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
+}
+```
+
+Apple Sign-In IconOnly Button. You need to implement `kmpauth-uihelper` dependency
+```kotlin
+AppleButtonUiContainer(onResult = onFirebaseResult) {
+  AppleSignInButtonIconOnly(onClick = { this.onClick() })
+}
+
+```
+
+### Github Sign-In
+After enabling and configuring Github Sign-In in Firebase, you can use it as below in your @Composable function:
+```kotlin
+//Github Sign-In with Custom Button and authentication with Firebase
+GithubButtonUiContainer(onResult = onFirebaseResult) {
+  //Any View, you just need to delegate child view's click to this UI Container's click method
+  Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
+}
+
+```
 
 
 
