@@ -17,10 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.di.isAndroidPlatform
-import com.mmk.kmpauth.uihelper.apple.AppleButtonMode
 import com.mmk.kmpauth.uihelper.theme.Fonts
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -71,6 +72,7 @@ public fun GoogleSignInButton(
     mode: GoogleButtonMode = GoogleButtonMode.Light,
     text: String = "Sign in with Google",
     shape: Shape = ButtonDefaults.shape,
+    fontSize: TextUnit = 14.sp,
     onClick: () -> Unit,
 ) {
 
@@ -94,6 +96,7 @@ public fun GoogleSignInButton(
             Text(
                 text = text,
                 maxLines = 1,
+                fontSize = fontSize,
                 fontFamily = Fonts.robotoFontFamily,
             )
         }

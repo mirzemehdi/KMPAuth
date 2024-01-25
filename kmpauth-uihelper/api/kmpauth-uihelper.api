@@ -65,7 +65,7 @@ public final class com/mmk/kmpauth/uihelper/google/GoogleButtonMode$Neutral : co
 }
 
 public final class com/mmk/kmpauth/uihelper/google/GoogleSignInButtonKt {
-	public static final fun GoogleSignInButton (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode;Ljava/lang/String;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun GoogleSignInButton-1-gIjbk (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode;Ljava/lang/String;Landroidx/compose/ui/graphics/Shape;JLkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 	public static final fun GoogleSignInButtonIconOnly (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 }
 

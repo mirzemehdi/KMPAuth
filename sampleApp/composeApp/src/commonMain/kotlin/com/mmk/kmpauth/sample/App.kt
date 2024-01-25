@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.firebase.apple.AppleButtonUiContainer
 import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
@@ -109,12 +110,12 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
 
         //Google Sign-In Button and authentication with Firebase
         GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
-            GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
+            GoogleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp), fontSize = 19.sp) { this.onClick() }
         }
 
         //Apple Sign-In Button and authentication with Firebase
         AppleButtonUiContainer(onResult = onFirebaseResult) {
-            AppleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
+            AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { this.onClick() }
         }
 
     }
