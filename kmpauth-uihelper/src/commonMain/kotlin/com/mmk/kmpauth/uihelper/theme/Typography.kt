@@ -4,15 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import com.mmk.kmpauth.uihelper.font
+import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.Res
+import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.roboto_medium
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.Font
 
 internal object Fonts {
+    @OptIn(ExperimentalResourceApi::class)
     val robotoFontFamily
         @Composable get() = FontFamily(
-            font(
-                "roboto_medium",
-                FontWeight.Medium,
-                FontStyle.Normal
-            )
+            Font(Res.font.roboto_medium, FontWeight.Medium, FontStyle.Normal),
         )
 }
