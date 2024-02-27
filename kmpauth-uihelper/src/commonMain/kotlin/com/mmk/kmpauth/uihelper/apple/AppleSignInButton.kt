@@ -31,6 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.uihelper.google.GoogleButtonMode
 import com.mmk.kmpauth.uihelper.theme.Fonts
+import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.Res
+import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.ic_apple_logo_black
+import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.ic_apple_logo_white
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
@@ -142,9 +145,9 @@ public fun AppleSignInButton(
 @Composable
 private fun AppleIcon(modifier: Modifier = Modifier, mode: AppleButtonMode) {
     val source = when (mode) {
-        AppleButtonMode.Black -> "drawable/ic_apple_logo_white.xml"
-        AppleButtonMode.White -> "drawable/ic_apple_logo_black.xml"
-        AppleButtonMode.WhiteWithOutline -> "drawable/ic_apple_logo_black.xml"
+        AppleButtonMode.Black -> Res.drawable.ic_apple_logo_white
+        AppleButtonMode.White -> Res.drawable.ic_apple_logo_black
+        AppleButtonMode.WhiteWithOutline -> Res.drawable.ic_apple_logo_black
     }
     Image(
         modifier = modifier,
