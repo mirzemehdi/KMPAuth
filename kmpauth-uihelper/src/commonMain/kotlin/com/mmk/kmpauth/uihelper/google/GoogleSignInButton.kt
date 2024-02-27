@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.di.isAndroidPlatform
 import com.mmk.kmpauth.uihelper.theme.Fonts
+import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.Res
+import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.ic_google
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -111,7 +114,7 @@ public fun GoogleSignInButton(
 private fun GoogleIcon() {
     Image(
         modifier = Modifier.size(20.dp),
-        painter = painterResource("drawable/ic_google.xml"),
+        painter = painterResource(Res.drawable.ic_google),
         contentDescription = "googleIcon"
     )
 }
