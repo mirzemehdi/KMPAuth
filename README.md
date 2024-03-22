@@ -13,7 +13,7 @@ You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full
 
 ## Sample App and Code
 <p style="text-align: center;">
-  <img src="https://github.com/mirzemehdi/KMPAuth/assets/32781662/f5a3cd28-6ef2-46bf-9b07-a045ce217b34)" width="200" alt="SampleApp"/>  
+  <img src="https://github.com/mirzemehdi/KMPAuth/assets/32781662/f5a3cd28-6ef2-46bf-9b07-a045ce217b34)" width="200" alt="SampleApp">  </img>
 </p>
 
 ```kotlin
