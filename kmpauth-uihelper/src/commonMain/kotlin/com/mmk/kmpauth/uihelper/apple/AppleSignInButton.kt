@@ -29,11 +29,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mmk.kmpauth.uihelper.google.GoogleButtonMode
 import com.mmk.kmpauth.uihelper.theme.Fonts
-import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.Res
-import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.ic_apple_logo_black
-import io.github.mirzemehdi.`kmpauth-uihelper`.generated.resources.ic_apple_logo_white
+import io.github.mirzemehdi.kmpauth_uihelper.generated.resources.Res
+import io.github.mirzemehdi.kmpauth_uihelper.generated.resources.ic_apple_logo_black
+import io.github.mirzemehdi.kmpauth_uihelper.generated.resources.ic_apple_logo_white
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
