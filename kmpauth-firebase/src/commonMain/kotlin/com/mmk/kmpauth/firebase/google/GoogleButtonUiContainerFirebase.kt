@@ -11,6 +11,7 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.auth
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 /**
@@ -48,9 +49,14 @@ public fun GoogleButtonUiContainerFirebase(
         }
         val authCredential = GoogleAuthProvider.credential(idToken, accessToken)
         coroutineScope.launch {
-            val result = Firebase.auth.signInWithCredential(authCredential)
-            if (result.user == null) updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
-            else updatedOnResult(Result.success(result.user))
+            try {
+                val result = Firebase.auth.signInWithCredential(authCredential)
+                if (result.user == null) updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
+                else updatedOnResult(Result.success(result.user))
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                updatedOnResult(Result.failure(e))
+            }
         }
 
     }, content = content)

@@ -99,46 +99,6 @@ public actual fun AppleButtonUiContainer(
 
 }
 
-
-@OptIn(ExperimentalForeignApi::class)
-@Composable
-internal fun SignInWithAppleButton2(
-    modifier: Modifier,
-    onResult: (Result<FirebaseUser?>) -> Unit,
-) {
-
-    val updatedOnResultFunc by rememberUpdatedState(onResult)
-
-    UIKitView(modifier = Modifier.sizeIn(maxHeight = 56.dp), factory = {
-        val presentationContextProvider = PresentationContextProvider()
-        val asAuthorizationControllerDelegate =
-            ASAuthorizationControllerDelegate(updatedOnResultFunc)
-        val uiStackView = object : UIStackView(CGRectMake(0.0, 0.0, 0.0, 0.0)) {
-            @ObjCAction
-            fun clicked() {
-//                signIn(
-//                    withPasswordProvider = false,
-//                    authorizationController = asAuthorizationControllerDelegate,
-//                    presentationContextProvider = presentationContextProvider
-//                )
-            }
-        }
-
-        val button = ASAuthorizationAppleIDButton()
-        button.addTarget(
-            uiStackView,
-            NSSelectorFromString(uiStackView::clicked.name),
-            UIControlEventTouchUpInside
-        )
-        uiStackView.addArrangedSubview(button)
-
-        uiStackView
-
-    })
-
-}
-
-
 private fun signIn(
     requestScopes: List<AppleSignInRequestScope>,
     authorizationController: ASAuthorizationControllerDelegate,
