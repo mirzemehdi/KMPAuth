@@ -6,14 +6,19 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.GetCredentialProviderConfigurationException
+import androidx.credentials.exceptions.GetCredentialUnsupportedException
+import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+
 
 internal class GoogleAuthUiProviderImpl(
     private val activityContext: Context,
     private val credentialManager: CredentialManager,
     private val credentials: GoogleAuthCredentials,
+    private val googleLegacyAuthentication: GoogleLegacyAuthentication,
 ) :
     GoogleAuthUiProvider {
     override suspend fun signIn(): GoogleUser? {
@@ -25,10 +30,22 @@ internal class GoogleAuthUiProviderImpl(
             getGoogleUserFromCredential(credential)
         } catch (e: GetCredentialException) {
             println("GoogleAuthUiProvider error: ${e.message}")
-            null
+            val shouldCheckLegacyAuthServices = when (e) {
+                is GetCredentialProviderConfigurationException -> true
+                is NoCredentialException -> true
+                is GetCredentialUnsupportedException -> true
+                else -> false
+            }
+            if (shouldCheckLegacyAuthServices) checkLegacyGoogleSignIn()
+            else null
         } catch (e: NullPointerException) {
             null
         }
+    }
+
+    private suspend fun checkLegacyGoogleSignIn(): GoogleUser? {
+        println("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
+        return googleLegacyAuthentication.signIn()
     }
 
     private fun getGoogleUserFromCredential(credential: Credential): GoogleUser? {

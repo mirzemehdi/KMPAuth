@@ -36,8 +36,10 @@ kotlin {
     sourceSets {
 
         androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.playServicesAuth)
+            implementation(libs.android.legacy.playServicesAuth)
             implementation(libs.googleIdIdentity)
             implementation(libs.koin.android)
 
