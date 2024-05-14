@@ -25,8 +25,7 @@ fun main() = application {
         title = "KMPAuth Desktop",
     ) {
         println("Desktop app is started")
-
-        //Google Sign-In Button and authentication with Firebase
+//        App()
         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             GoogleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp), fontSize = 19.sp) {  }
             AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { }
