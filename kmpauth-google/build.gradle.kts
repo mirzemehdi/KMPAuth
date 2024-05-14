@@ -15,7 +15,7 @@ kotlin {
             }
         }
     }
-
+    jvm()
 
     iosX64()
     iosArm64()

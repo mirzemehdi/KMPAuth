@@ -1,4 +1,5 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -16,6 +17,7 @@ kotlin {
             }
         }
     }
+    jvm("desktop")
     listOf(
         iosX64(),
         iosArm64(),
@@ -27,6 +29,7 @@ kotlin {
         }
     }
     sourceSets {
+        val desktopMain by getting
 
         androidMain.dependencies {
             implementation(libs.compose.ui)
@@ -42,6 +45,9 @@ kotlin {
             implementation(project(":kmpauth-google"))
             implementation(project(":kmpauth-firebase"))
             implementation(project(":kmpauth-uihelper"))
+        }
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 }
@@ -83,6 +89,18 @@ android {
     }
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
+    }
+}
+
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "com.mmk.kmpauthdesktop"
+            packageVersion = "1.0.0"
+        }
     }
 }
 
