@@ -1,30 +1,29 @@
 [versions]
-compose = "1.6.1"
-compose-plugin = "1.6.1"
-compose-compiler = "1.5.8"
-agp = "8.1.3"
+compose = "1.6.7"
+compose-plugin = "1.6.10"
+agp = "8.1.4"
 android-minSdk = "24"
 android-compileSdk = "34"
 android-targetSdk = "34"
-androidx-activityCompose = "1.8.0"
-androidx-core-ktx = "1.12.0"
+androidx-activityCompose = "1.9.0"
+androidx-core-ktx = "1.13.1"
 androidx-appcompat = "1.6.1"
-androidx-material = "1.10.0"
+androidx-material = "1.12.0"
 androidx-constraintlayout = "2.1.4"
 androidx-test-junit = "1.1.5"
 androidx-espresso-core = "3.5.1"
 androidx-startup-runtime = "1.1.1"
-kotlin = "1.9.23"
+kotlin = "2.0.0"
 junit = "4.13.2"
-koin = "3.5.4"
+koin = "3.5.6"
 kotlinx-binary-validator = "0.13.2"
 dokka = "1.9.10"
-androidxCredential = "1.3.0-alpha01"
-googleIdIdentity="1.1.0"
-koinCompose = "1.1.3-RC2"
-googleServices = "4.4.0"
-firebaseGitLiveAuth = "1.10.4"
-androidLegacyPlayServices = "21.1.1"
+androidxCredential = "1.3.0-alpha04"
+googleIdIdentity = "1.1.0"
+koinCompose = "1.1.5"
+googleServices = "4.4.1"
+firebaseGitLiveAuth = "1.12.0"
+androidLegacyPlayServices = "21.2.0"
 
 
 [libraries]
@@ -60,9 +59,9 @@ googleIdIdentity = { module = "com.google.android.libraries.identity.googleid:go
 firebase-gitlive-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveAuth" }
 
 
-
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
