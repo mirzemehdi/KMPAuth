@@ -13,6 +13,7 @@ import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
@@ -47,6 +48,7 @@ public actual fun OAuthContainer(
     Box(modifier = modifier) { uiContainerScope.content() }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private suspend fun onClickSignIn(
     oAuthProvider: OAuthProvider,
 ): Result<FirebaseUser?> = suspendCoroutine { continuation ->
@@ -65,4 +67,5 @@ private suspend fun onClickSignIn(
         })
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun FIRAuthCredential.asAuthCredential(): AuthCredential = object : AuthCredential(this) {}
