@@ -170,7 +170,7 @@ private class PresentationContextProvider :
 private class ASAuthorizationControllerDelegate(private val onResult: (Result<FirebaseUser?>) -> Unit) :
     ASAuthorizationControllerDelegateProtocol, NSObject() {
 
-    @OptIn(BetaInteropApi::class)
+    @OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
     override fun authorizationController(
         controller: ASAuthorizationController,
         didCompleteWithAuthorization: ASAuthorization,
