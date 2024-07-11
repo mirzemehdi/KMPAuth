@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import cocoapods.FirebaseAuth.FIRAuthCredential
+import cocoapods.FirebaseAuth.FIRAuthDataResult
 import com.mmk.kmpauth.core.UiContainerScope
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.AuthCredential
@@ -17,6 +18,7 @@ import dev.gitlive.firebase.auth.ios
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import platform.Foundation.NSError
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import dev.gitlive.firebase.auth.ios
@@ -30,6 +32,7 @@ public actual fun OAuthContainer(
     modifier: Modifier,
     oAuthProvider: OAuthProvider,
     onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
     val updatedOnResultFunc by rememberUpdatedState(onResult)
@@ -39,7 +42,7 @@ public actual fun OAuthContainer(
         object : UiContainerScope {
             override fun onClick() {
                 coroutineScope.launch {
-                    val result = onClickSignIn(oAuthProvider)
+                    val result = onClickSignIn(oAuthProvider, linkAccount)
                     mOnResult?.invoke(result)
                     mOnResult = null
                 }
@@ -53,15 +56,24 @@ public actual fun OAuthContainer(
 @OptIn(ExperimentalForeignApi::class)
 private suspend fun onClickSignIn(
     oAuthProvider: OAuthProvider,
+    linkAccount: Boolean,
 ): Result<FirebaseUser?> = suspendCoroutine { continuation ->
     oAuthProvider.ios.getCredentialWithUIDelegate(null,
         completion = { firAuthCredential, nsError ->
             if (firAuthCredential != null) {
                 val authCredential = firAuthCredential.asAuthCredential().ios
                 val auth = Firebase.auth.ios
-                auth.signInWithCredential(authCredential) { result, signInError ->
+                val currentUser = auth.currentUser
+
+                val handleResult: (FIRAuthDataResult?, NSError?) -> Unit = { result, linkError ->
                     if (result != null) continuation.resume(Result.success(Firebase.auth.currentUser))
-                    else continuation.resume(Result.failure(IllegalStateException(signInError?.localizedFailureReason)))
+                    else continuation.resume(Result.failure(IllegalStateException(linkError?.localizedFailureReason)))
+                }
+
+                if (linkAccount && currentUser != null) {
+                    currentUser.linkWithCredential(authCredential, handleResult)
+                } else {
+                    auth.signInWithCredential(authCredential, handleResult)
                 }
             } else
                 continuation.resume(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))

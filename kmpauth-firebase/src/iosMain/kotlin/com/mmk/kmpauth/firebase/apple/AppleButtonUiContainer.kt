@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
 import androidx.compose.ui.unit.dp
 import cocoapods.FirebaseAuth.FIRAuth
+import cocoapods.FirebaseAuth.FIRAuthDataResult
 import cocoapods.FirebaseAuth.FIROAuthProvider
 import com.mmk.kmpauth.core.UiContainerScope
 import dev.gitlive.firebase.Firebase
@@ -76,12 +77,13 @@ public actual fun AppleButtonUiContainer(
     modifier: Modifier,
     requestScopes: List<AppleSignInRequestScope>,
     onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
     val updatedOnResultFunc by rememberUpdatedState(onResult)
     val presentationContextProvider = PresentationContextProvider()
     val asAuthorizationControllerDelegate =
-        ASAuthorizationControllerDelegate(updatedOnResultFunc)
+        ASAuthorizationControllerDelegate(linkAccount, updatedOnResultFunc)
 
     val uiContainerScope = remember {
         object : UiContainerScope {
@@ -89,7 +91,8 @@ public actual fun AppleButtonUiContainer(
                 signIn(
                     requestScopes = requestScopes,
                     authorizationController = asAuthorizationControllerDelegate,
-                    presentationContextProvider = presentationContextProvider
+                    presentationContextProvider = presentationContextProvider,
+                    linkAccount = linkAccount
                 )
             }
 
@@ -103,6 +106,7 @@ private fun signIn(
     requestScopes: List<AppleSignInRequestScope>,
     authorizationController: ASAuthorizationControllerDelegate,
     presentationContextProvider: PresentationContextProvider,
+    linkAccount: Boolean,
 ) {
     val appleIdProviderRequest = ASAuthorizationAppleIDProvider().createRequest()
     appleIdProviderRequest.requestedScopes = requestScopes.map {
@@ -167,7 +171,10 @@ private class PresentationContextProvider :
     }
 }
 
-private class ASAuthorizationControllerDelegate(private val onResult: (Result<FirebaseUser?>) -> Unit) :
+private class ASAuthorizationControllerDelegate(
+    private val linkAccount: Boolean,
+    private val onResult: (Result<FirebaseUser?>) -> Unit
+) :
     ASAuthorizationControllerDelegateProtocol, NSObject() {
 
     @OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
@@ -200,26 +207,19 @@ private class ASAuthorizationControllerDelegate(private val onResult: (Result<Fi
         )
 
         val currentUser = FIRAuth.auth().currentUser
-        if (currentUser != null) {
-            currentUser.linkWithCredential(credential) { firAuthDataResult, nsError ->
-                if (nsError != null || firAuthDataResult == null) {
-                    onResult(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))
-                    return@linkWithCredential
-                } else {
-                    onResult(Result.success(Firebase.auth.currentUser))
-                    return@linkWithCredential
-                }
+
+        val handleResult: (FIRAuthDataResult?, NSError?) -> Unit = { firAuthDataResult, nsError ->
+            if (nsError != null || firAuthDataResult == null) {
+                onResult(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))
+            } else {
+                onResult(Result.success(Firebase.auth.currentUser))
             }
+        }
+
+        if (linkAccount && currentUser != null) {
+            currentUser.linkWithCredential(credential, handleResult)
         } else {
-            FIRAuth.auth().signInWithCredential(credential) { firAuthDataResult, nsError ->
-                if (nsError != null || firAuthDataResult == null) {
-                    onResult(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))
-                    return@signInWithCredential
-                } else {
-                    onResult(Result.success(Firebase.auth.currentUser))
-                    return@signInWithCredential
-                }
-            }
+            FIRAuth.auth().signInWithCredential(credential, handleResult)
         }
     }
 
