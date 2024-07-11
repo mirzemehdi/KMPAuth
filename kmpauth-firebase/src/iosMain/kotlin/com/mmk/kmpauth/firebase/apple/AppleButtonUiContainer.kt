@@ -92,7 +92,6 @@ public actual fun AppleButtonUiContainer(
                     requestScopes = requestScopes,
                     authorizationController = asAuthorizationControllerDelegate,
                     presentationContextProvider = presentationContextProvider,
-                    linkAccount = linkAccount
                 )
             }
 
@@ -106,7 +105,6 @@ private fun signIn(
     requestScopes: List<AppleSignInRequestScope>,
     authorizationController: ASAuthorizationControllerDelegate,
     presentationContextProvider: PresentationContextProvider,
-    linkAccount: Boolean,
 ) {
     val appleIdProviderRequest = ASAuthorizationAppleIDProvider().createRequest()
     appleIdProviderRequest.requestedScopes = requestScopes.map {
