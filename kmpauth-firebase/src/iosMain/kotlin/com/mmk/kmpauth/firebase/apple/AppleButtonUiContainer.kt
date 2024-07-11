@@ -199,16 +199,28 @@ private class ASAuthorizationControllerDelegate(private val onResult: (Result<Fi
             idTokenString, currentNonce, appleIDCredential.fullName
         )
 
-        FIRAuth.auth().signInWithCredential(credential) { firAuthDataResult, nsError ->
-            if (nsError != null || firAuthDataResult == null) {
-                onResult(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))
-                return@signInWithCredential
-            } else {
-                onResult(Result.success(Firebase.auth.currentUser))
-                return@signInWithCredential
+        val currentUser = FIRAuth.auth().currentUser
+        if (currentUser != null) {
+            currentUser.linkWithCredential(credential) { firAuthDataResult, nsError ->
+                if (nsError != null || firAuthDataResult == null) {
+                    onResult(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))
+                    return@linkWithCredential
+                } else {
+                    onResult(Result.success(Firebase.auth.currentUser))
+                    return@linkWithCredential
+                }
+            }
+        } else {
+            FIRAuth.auth().signInWithCredential(credential) { firAuthDataResult, nsError ->
+                if (nsError != null || firAuthDataResult == null) {
+                    onResult(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))
+                    return@signInWithCredential
+                } else {
+                    onResult(Result.success(Firebase.auth.currentUser))
+                    return@signInWithCredential
+                }
             }
         }
-
     }
 
     override fun authorizationController(

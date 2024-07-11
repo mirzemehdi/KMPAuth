@@ -47,9 +47,14 @@ private fun onClickSignIn(
     } else {
         if (activity == null)
             onResult(Result.failure(IllegalStateException("Activity is null")))
-        else
-            auth.startActivityForSignInWithProvider(activity, oAuthProvider.android)
-                .resultAsFirebaseUser(onResult)
+        else {
+            val currentUser = auth.currentUser
+            val result =
+                currentUser?.startActivityForLinkWithProvider(activity, oAuthProvider.android)
+                    ?: auth.startActivityForSignInWithProvider(activity, oAuthProvider.android)
+
+            result.resultAsFirebaseUser(onResult)
+        }
     }
 }
 
