@@ -36,8 +36,8 @@ public expect fun AppleButtonUiContainer(
 )
 
 @Deprecated(
-    "Use AppleButtonUiContainer with linkAccount parameter",
-    ReplaceWith("AppleButtonUiContainer(modifier, requestScopes, onResult, false, content)"),
+    "Use AppleButtonUiContainer with the linkAccount parameter, which defaults to false.",
+    ReplaceWith(""),
     DeprecationLevel.WARNING
 )
 @Composable

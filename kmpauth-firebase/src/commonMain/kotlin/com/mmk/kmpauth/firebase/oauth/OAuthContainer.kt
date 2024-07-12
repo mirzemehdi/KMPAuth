@@ -39,8 +39,8 @@ public expect fun OAuthContainer(
 )
 
 @Deprecated(
-    "Use OAuthContainer with linkAccount parameter",
-    ReplaceWith("OAuthContainer(modifier, oAuthProvider, onResult, false, content)"),
+    "Use OAuthContainer with linkAccount parameter, which defaults to false",
+    ReplaceWith(""),
     DeprecationLevel.WARNING
 )
 @Composable
