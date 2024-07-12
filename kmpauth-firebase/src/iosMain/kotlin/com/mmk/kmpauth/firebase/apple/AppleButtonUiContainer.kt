@@ -101,6 +101,21 @@ public actual fun AppleButtonUiContainer(
 
 }
 
+@Deprecated(
+    "Use AppleButtonUiContainer with linkAccount parameter",
+    ReplaceWith("AppleButtonUiContainer(modifier, requestScopes, onResult, false, content)"),
+    DeprecationLevel.WARNING
+)
+@Composable
+public actual fun AppleButtonUiContainer(
+    modifier: Modifier,
+    requestScopes: List<AppleSignInRequestScope>,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+    AppleButtonUiContainer(modifier, requestScopes, onResult, false, content)
+}
+
 private fun signIn(
     requestScopes: List<AppleSignInRequestScope>,
     authorizationController: ASAuthorizationControllerDelegate,

@@ -36,6 +36,22 @@ public actual fun OAuthContainer(
     Box(modifier = modifier) { uiContainerScope.content() }
 }
 
+@Deprecated(
+    "Use OAuthContainer with linkAccount parameter",
+    ReplaceWith("OAuthContainer(modifier, oAuthProvider, onResult, false, content)"),
+    DeprecationLevel.WARNING
+)
+@OptIn(KMPAuthInternalApi::class)
+@Composable
+public actual fun OAuthContainer(
+    modifier: Modifier,
+    oAuthProvider: OAuthProvider,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+    OAuthContainer(modifier, oAuthProvider, onResult, false, content)
+}
+
 private fun onClickSignIn(
     activity: ComponentActivity?,
     oAuthProvider: OAuthProvider,

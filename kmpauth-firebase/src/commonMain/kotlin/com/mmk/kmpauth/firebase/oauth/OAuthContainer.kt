@@ -37,3 +37,16 @@ public expect fun OAuthContainer(
     linkAccount: Boolean = false,
     content: @Composable UiContainerScope.() -> Unit,
 )
+
+@Deprecated(
+    "Use OAuthContainer with linkAccount parameter",
+    ReplaceWith("OAuthContainer(modifier, oAuthProvider, onResult, false, content)"),
+    DeprecationLevel.WARNING
+)
+@Composable
+public expect fun OAuthContainer(
+    modifier: Modifier = Modifier,
+    oAuthProvider: OAuthProvider,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+)

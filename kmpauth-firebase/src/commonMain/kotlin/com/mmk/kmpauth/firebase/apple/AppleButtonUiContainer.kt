@@ -34,3 +34,19 @@ public expect fun AppleButtonUiContainer(
     linkAccount: Boolean = false,
     content: @Composable UiContainerScope.() -> Unit,
 )
+
+@Deprecated(
+    "Use AppleButtonUiContainer with linkAccount parameter",
+    ReplaceWith("AppleButtonUiContainer(modifier, requestScopes, onResult, false, content)"),
+    DeprecationLevel.WARNING
+)
+@Composable
+public expect fun AppleButtonUiContainer(
+    modifier: Modifier = Modifier,
+    requestScopes: List<AppleSignInRequestScope> = listOf(
+        AppleSignInRequestScope.FullName,
+        AppleSignInRequestScope.Email
+    ),
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+)

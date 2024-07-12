@@ -1,5 +1,6 @@
 public final class com/mmk/kmpauth/firebase/apple/AppleButtonUiContainerKt {
 	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public abstract interface class com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope {
@@ -31,5 +32,6 @@ public final class com/mmk/kmpauth/firebase/google/GoogleButtonUiContainerFireba
 
 public final class com/mmk/kmpauth/firebase/oauth/OAuthContainer_androidKt {
 	public static final fun OAuthContainer (Landroidx/compose/ui/Modifier;Ldev/gitlive/firebase/auth/OAuthProvider;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun OAuthContainer (Landroidx/compose/ui/Modifier;Ldev/gitlive/firebase/auth/OAuthProvider;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
