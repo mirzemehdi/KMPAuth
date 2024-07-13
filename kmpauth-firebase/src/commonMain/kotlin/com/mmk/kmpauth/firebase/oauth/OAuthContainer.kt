@@ -13,7 +13,7 @@ import dev.gitlive.firebase.auth.OAuthProvider
  *
  * [onResult] callback will return [Result] with [FirebaseUser] type.
  * @param oAuthProvider [OAuthProvider] class object.
- * @param linkAccount [Boolean] flag to link account with existing user.
+ * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
  *
  * Example Usage:
  * ```
