@@ -15,6 +15,11 @@ kotlin {
         }
     }
 
+    js(IR) {
+        nodejs()
+        browser()
+        binaries.library()
+    }
     jvm()
     iosX64()
     iosArm64()
