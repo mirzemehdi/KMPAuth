@@ -1,0 +1,24 @@
+public abstract interface annotation class com/mmk/kmpauth/core/KMPAuthInternalApi : java/lang/annotation/Annotation {
+}
+
+public abstract interface class com/mmk/kmpauth/core/UiContainerScope {
+	public abstract fun onClick ()V
+}
+
+public abstract class com/mmk/kmpauth/core/di/KMPKoinComponent : org/koin/core/component/KoinComponent {
+	public fun <init> ()V
+	public fun getKoin ()Lorg/koin/core/Koin;
+}
+
+public final class com/mmk/kmpauth/core/di/LibDependencyInitializer {
+	public static final field INSTANCE Lcom/mmk/kmpauth/core/di/LibDependencyInitializer;
+	public final fun getKoinApp ()Lorg/koin/core/KoinApplication;
+	public final fun initialize (Ljava/util/List;)V
+	public final fun initialize (Lorg/koin/core/module/Module;)V
+	public static synthetic fun initialize$default (Lcom/mmk/kmpauth/core/di/LibDependencyInitializer;Ljava/util/List;ILjava/lang/Object;)V
+}
+
+public final class com/mmk/kmpauth/core/di/PlatformModule_jvmKt {
+	public static final fun isAndroidPlatform ()Z
+}
+

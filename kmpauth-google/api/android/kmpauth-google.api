@@ -1,0 +1,49 @@
+public final class com/mmk/kmpauth/google/GoogleAuthCredentials {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/mmk/kmpauth/google/GoogleAuthCredentials;
+	public static synthetic fun copy$default (Lcom/mmk/kmpauth/google/GoogleAuthCredentials;Ljava/lang/String;ILjava/lang/Object;)Lcom/mmk/kmpauth/google/GoogleAuthCredentials;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getServerId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/mmk/kmpauth/google/GoogleAuthProvider {
+	public static final field Companion Lcom/mmk/kmpauth/google/GoogleAuthProvider$Companion;
+	public abstract fun getUiProvider (Landroidx/compose/runtime/Composer;I)Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;
+	public abstract fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/google/GoogleAuthProvider$Companion {
+	public final fun create (Lcom/mmk/kmpauth/google/GoogleAuthCredentials;)Lcom/mmk/kmpauth/google/GoogleAuthProvider;
+}
+
+public abstract interface class com/mmk/kmpauth/google/GoogleAuthUiProvider {
+	public abstract fun signIn (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/google/GoogleButtonUiContainerKt {
+	public static final fun GoogleButtonUiContainer (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mmk/kmpauth/google/GoogleUser {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/mmk/kmpauth/google/GoogleUser;
+	public static synthetic fun copy$default (Lcom/mmk/kmpauth/google/GoogleUser;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mmk/kmpauth/google/GoogleUser;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAccessToken ()Ljava/lang/String;
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getIdToken ()Ljava/lang/String;
+	public final fun getProfilePicUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

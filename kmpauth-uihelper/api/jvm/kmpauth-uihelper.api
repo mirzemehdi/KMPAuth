@@ -1,0 +1,71 @@
+public abstract interface class com/mmk/kmpauth/uihelper/apple/AppleButtonMode {
+}
+
+public final class com/mmk/kmpauth/uihelper/apple/AppleButtonMode$Black : com/mmk/kmpauth/uihelper/apple/AppleButtonMode {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode$Black;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/uihelper/apple/AppleButtonMode$White : com/mmk/kmpauth/uihelper/apple/AppleButtonMode {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode$White;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/uihelper/apple/AppleButtonMode$WhiteWithOutline : com/mmk/kmpauth/uihelper/apple/AppleButtonMode {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode$WhiteWithOutline;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/uihelper/apple/AppleSignInButtonKt {
+	public static final fun AppleSignInButton (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun AppleSignInButtonIconOnly (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mmk/kmpauth/uihelper/google/ComposableSingletons$GoogleSignInButtonKt {
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/google/ComposableSingletons$GoogleSignInButtonKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function3;
+	public fun <init> ()V
+	public final fun getLambda-1$kmpauth_uihelper ()Lkotlin/jvm/functions/Function3;
+}
+
+public abstract interface class com/mmk/kmpauth/uihelper/google/GoogleButtonMode {
+}
+
+public final class com/mmk/kmpauth/uihelper/google/GoogleButtonMode$Dark : com/mmk/kmpauth/uihelper/google/GoogleButtonMode {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode$Dark;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/uihelper/google/GoogleButtonMode$Light : com/mmk/kmpauth/uihelper/google/GoogleButtonMode {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode$Light;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/uihelper/google/GoogleButtonMode$Neutral : com/mmk/kmpauth/uihelper/google/GoogleButtonMode {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode$Neutral;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/uihelper/google/GoogleSignInButtonKt {
+	public static final fun GoogleSignInButton-1-gIjbk (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode;Ljava/lang/String;Landroidx/compose/ui/graphics/Shape;JLkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun GoogleSignInButtonIconOnly (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+}
+
