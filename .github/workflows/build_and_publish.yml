@@ -34,7 +34,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup gradle
-        uses: gradle/actions/setup-gradle@ac2d340dc04d9e1113182899e983b5400c17cda1
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
 
       - name: Check api
         run: ./gradlew apiCheck
@@ -59,7 +59,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup gradle
-        uses: gradle/actions/setup-gradle@ac2d340dc04d9e1113182899e983b5400c17cda1
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
 
       - name: Test ${{ matrix.config.target }} targets
         continue-on-error: ${{ matrix.config.continueOnError }}
@@ -84,7 +84,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup gradle
-        uses: gradle/actions/setup-gradle@ac2d340dc04d9e1113182899e983b5400c17cda1
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
@@ -115,7 +115,7 @@ jobs:
 
 
       - name: Publish to sonatype
-        uses: gradle/actions/setup-gradle@ac2d340dc04d9e1113182899e983b5400c17cda1
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
         with:
          arguments: |
           publishToSonatype
