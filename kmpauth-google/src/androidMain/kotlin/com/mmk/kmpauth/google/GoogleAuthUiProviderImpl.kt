@@ -25,20 +25,39 @@ internal class GoogleAuthUiProviderImpl(
         return try {
             val credential = credentialManager.getCredential(
                 context = activityContext,
-                request = getCredentialRequest()
+                request = getCredentialRequest(checkPreviouslyUsedAccounts = true)
             ).credential
             getGoogleUserFromCredential(credential)
-        } catch (e: GetCredentialException) {
-            println("GoogleAuthUiProvider error: ${e.message}")
-            val shouldCheckLegacyAuthServices = when (e) {
-                is GetCredentialProviderConfigurationException -> true
-                is NoCredentialException -> true
-                is GetCredentialUnsupportedException -> true
-                else -> false
+        } catch (e: NoCredentialException) {
+            try {
+                val credential = credentialManager.getCredential(
+                    context = activityContext,
+                    request = getCredentialRequest(checkPreviouslyUsedAccounts = false)
+                ).credential
+                getGoogleUserFromCredential(credential)
+            } catch (e: GetCredentialException) {
+                handleCredentialException(e)
+            } catch (e: NullPointerException) {
+                null
             }
-            if (shouldCheckLegacyAuthServices) checkLegacyGoogleSignIn()
-            else null
+        } catch (e: GetCredentialException) {
+            handleCredentialException(e)
         } catch (e: NullPointerException) {
+            null
+        }
+    }
+
+    private suspend fun handleCredentialException(e: GetCredentialException): GoogleUser? {
+        println("GoogleAuthUiProvider error: ${e.message}")
+        val shouldCheckLegacyAuthServices = when (e) {
+            is GetCredentialProviderConfigurationException -> true
+            is NoCredentialException -> true
+            is GetCredentialUnsupportedException -> true
+            else -> false
+        }
+        return if (shouldCheckLegacyAuthServices) {
+            checkLegacyGoogleSignIn()
+        } else {
             null
         }
     }
@@ -70,15 +89,20 @@ internal class GoogleAuthUiProviderImpl(
         }
     }
 
-    private fun getCredentialRequest(): GetCredentialRequest {
+    private fun getCredentialRequest(checkPreviouslyUsedAccounts: Boolean): GetCredentialRequest {
         return GetCredentialRequest.Builder()
-            .addCredentialOption(getGoogleIdOption(serverClientId = credentials.serverId))
+            .addCredentialOption(
+                getGoogleIdOption(
+                    serverClientId = credentials.serverId,
+                    checkPreviouslyUsedAccounts = checkPreviouslyUsedAccounts
+                )
+            )
             .build()
     }
 
-    private fun getGoogleIdOption(serverClientId: String): GetGoogleIdOption {
+    private fun getGoogleIdOption(serverClientId: String, checkPreviouslyUsedAccounts: Boolean): GetGoogleIdOption {
         return GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
+            .setFilterByAuthorizedAccounts(checkPreviouslyUsedAccounts)
             .setAutoSelectEnabled(true)
             .setServerClientId(serverClientId)
             .build()
