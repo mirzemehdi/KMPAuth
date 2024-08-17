@@ -1,11 +1,16 @@
 package com.mmk.kmpauth.firebase.apple
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
 import com.mmk.kmpauth.firebase.oauth.OAuthContainer
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 /**
@@ -32,17 +37,26 @@ public actual fun AppleButtonUiContainer(
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
+    val oAuthProvider = remember { mutableStateOf<List<OAuthProvider>>(emptyList()) }
     val oathProviderRequestScopes = requestScopes.map {
         when (it) {
             AppleSignInRequestScope.Email -> "email"
             AppleSignInRequestScope.FullName -> "name"
         }
     }
-    val oAuthProvider = OAuthProvider(provider = "apple.com", scopes = oathProviderRequestScopes)
-    OAuthContainer(
-        modifier = modifier,
-        oAuthProvider = oAuthProvider,
-        onResult = onResult,
-        content = content
-    )
+    oAuthProvider.value.firstOrNull()?.let {
+        OAuthContainer(
+            modifier = modifier,
+            oAuthProvider = it,
+            onResult = onResult,
+            content = content
+        )
+    }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            oAuthProvider.value = listOf(
+                OAuthProvider(provider = "apple.com", scopes = oathProviderRequestScopes)
+            )
+        }
+    }
 }

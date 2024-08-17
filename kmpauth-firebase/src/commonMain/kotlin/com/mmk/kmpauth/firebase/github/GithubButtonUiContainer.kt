@@ -1,12 +1,17 @@
 package com.mmk.kmpauth.firebase.github
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
 import com.mmk.kmpauth.firebase.oauth.OAuthContainer
-import com.mmk.kmpauth.google.GoogleUser
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 
 /**
  * GithubButton Ui Container Composable that handles all sign-in functionality for Github.
@@ -35,16 +40,24 @@ public fun GithubButtonUiContainer(
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
-    val oAuthProvider = OAuthProvider(
-        provider = "github.com",
-        scopes = requestScopes,
-        customParameters = customParameters
-    )
-    OAuthContainer(
-        modifier = modifier,
-        oAuthProvider = oAuthProvider,
-        onResult = onResult,
-        content = content
-    )
-
+    val oAuthProvider = remember { mutableStateOf<List<OAuthProvider>>(emptyList()) }
+    oAuthProvider.value.firstOrNull()?.let {
+        OAuthContainer(
+            modifier = modifier,
+            oAuthProvider = it,
+            onResult = onResult,
+            content = content
+        )
+    }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            oAuthProvider.value = listOf(
+                OAuthProvider(
+                    provider = "github.com",
+                    scopes = requestScopes,
+                    customParameters = customParameters
+                )
+            )
+        }
+    }
 }
