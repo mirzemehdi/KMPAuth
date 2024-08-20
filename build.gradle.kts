@@ -21,10 +21,10 @@ plugins {
 allprojects {
     group = "io.github.mirzemehdi"
     version = project.properties["kmpAuthVersion"] as String
-    val sonatypeUsername = gradleLocalProperties(rootDir).getProperty("sonatypeUsername")
-    val sonatypePassword = gradleLocalProperties(rootDir).getProperty("sonatypePassword")
-    val gpgKeySecret = gradleLocalProperties(rootDir).getProperty("gpgKeySecret")
-    val gpgKeyPassword = gradleLocalProperties(rootDir).getProperty("gpgKeyPassword")
+    val sonatypeUsername = gradleLocalProperties(rootDir, providers).getProperty("sonatypeUsername")
+    val sonatypePassword = gradleLocalProperties(rootDir, providers).getProperty("sonatypePassword")
+    val gpgKeySecret = gradleLocalProperties(rootDir, providers).getProperty("gpgKeySecret")
+    val gpgKeyPassword = gradleLocalProperties(rootDir, providers).getProperty("gpgKeyPassword")
 
     val excludedModules = listOf(":sampleApp:composeApp",":sampleApp")
     if (project.path in excludedModules) return@allprojects
