@@ -23,18 +23,10 @@ internal class GoogleAuthUiProviderImpl(
     GoogleAuthUiProvider {
     override suspend fun signIn(): GoogleUser? {
         return try {
-            val credential = credentialManager.getCredential(
-                context = activityContext,
-                request = getCredentialRequest(checkPreviouslyUsedAccounts = true)
-            ).credential
-            getGoogleUserFromCredential(credential)
+            getGoogleUserFromCredential(filterByAuthorizedAccounts = true)
         } catch (e: NoCredentialException) {
             try {
-                val credential = credentialManager.getCredential(
-                    context = activityContext,
-                    request = getCredentialRequest(checkPreviouslyUsedAccounts = false)
-                ).credential
-                getGoogleUserFromCredential(credential)
+                getGoogleUserFromCredential(filterByAuthorizedAccounts = false)
             } catch (e: GetCredentialException) {
                 handleCredentialException(e)
             } catch (e: NullPointerException) {
@@ -67,7 +59,11 @@ internal class GoogleAuthUiProviderImpl(
         return googleLegacyAuthentication.signIn()
     }
 
-    private fun getGoogleUserFromCredential(credential: Credential): GoogleUser? {
+    private suspend fun getGoogleUserFromCredential(filterByAuthorizedAccounts: Boolean): GoogleUser? {
+        val credential = credentialManager.getCredential(
+            context = activityContext,
+            request = getCredentialRequest(filterByAuthorizedAccounts)
+        ).credential
         return when {
             credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
                 try {
@@ -89,20 +85,20 @@ internal class GoogleAuthUiProviderImpl(
         }
     }
 
-    private fun getCredentialRequest(checkPreviouslyUsedAccounts: Boolean): GetCredentialRequest {
+    private fun getCredentialRequest(filterByAuthorizedAccounts: Boolean): GetCredentialRequest {
         return GetCredentialRequest.Builder()
             .addCredentialOption(
                 getGoogleIdOption(
                     serverClientId = credentials.serverId,
-                    checkPreviouslyUsedAccounts = checkPreviouslyUsedAccounts
+                    filterByAuthorizedAccounts = filterByAuthorizedAccounts
                 )
             )
             .build()
     }
 
-    private fun getGoogleIdOption(serverClientId: String, checkPreviouslyUsedAccounts: Boolean): GetGoogleIdOption {
+    private fun getGoogleIdOption(serverClientId: String, filterByAuthorizedAccounts: Boolean): GetGoogleIdOption {
         return GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(checkPreviouslyUsedAccounts)
+            .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
             .setAutoSelectEnabled(true)
             .setServerClientId(serverClientId)
             .build()
