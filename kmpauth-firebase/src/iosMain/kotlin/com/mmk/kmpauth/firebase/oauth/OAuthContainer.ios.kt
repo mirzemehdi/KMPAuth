@@ -13,11 +13,13 @@ import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
+import dev.gitlive.firebase.auth.ios
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import dev.gitlive.firebase.auth.ios
 
 //On iOS this is needed for some reason, app is recomposed again when navigate to OAuth Screen.
 // rememberUpdatedState doesn't solve the problem

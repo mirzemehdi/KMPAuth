@@ -13,6 +13,7 @@ import com.mmk.kmpauth.core.getActivity
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
+import dev.gitlive.firebase.auth.android
 import dev.gitlive.firebase.auth.auth
 
 @OptIn(KMPAuthInternalApi::class)
