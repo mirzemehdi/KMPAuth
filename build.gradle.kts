@@ -22,9 +22,9 @@ plugins {
 allprojects {
     group = "io.github.mirzemehdi"
     version = project.properties["kmpAuthVersion"] as String
-
-    val gpgKeySecret = gradleLocalProperties(rootDir).getProperty("gpgKeySecret")
-    val gpgKeyPassword = gradleLocalProperties(rootDir).getProperty("gpgKeyPassword")
+    
+    val gpgKeySecret = gradleLocalProperties(rootDir, providers).getProperty("gpgKeySecret")
+    val gpgKeyPassword = gradleLocalProperties(rootDir, providers).getProperty("gpgKeyPassword")
 
     val excludedModules = listOf(":sampleApp:composeApp", ":sampleApp")
     if (project.path in excludedModules) return@allprojects
@@ -89,8 +89,8 @@ nexusPublishing {
         sonatype {  //only for users registered in Sonatype after 24 Feb 2021
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            val sonatypeUsername = gradleLocalProperties(rootDir).getProperty("sonatypeUsername")
-            val sonatypePassword = gradleLocalProperties(rootDir).getProperty("sonatypePassword")
+            val sonatypeUsername = gradleLocalProperties(rootDir, providers).getProperty("sonatypeUsername")
+            val sonatypePassword = gradleLocalProperties(rootDir, providers).getProperty("sonatypePassword")
             username = sonatypeUsername
             password = sonatypePassword
         }
