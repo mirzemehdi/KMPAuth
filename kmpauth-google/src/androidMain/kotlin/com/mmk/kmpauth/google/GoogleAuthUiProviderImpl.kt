@@ -21,10 +21,11 @@ internal class GoogleAuthUiProviderImpl(
     private val googleLegacyAuthentication: GoogleLegacyAuthentication,
 ) :
     GoogleAuthUiProvider {
-    override suspend fun signIn(): GoogleUser? {
+    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
         return try {
-            getGoogleUserFromCredential(filterByAuthorizedAccounts = true)
+            getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
         } catch (e: NoCredentialException) {
+            if (!filterByAuthorizedAccounts) return handleCredentialException(e)
             try {
                 getGoogleUserFromCredential(filterByAuthorizedAccounts = false)
             } catch (e: GetCredentialException) {

@@ -8,7 +8,7 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
     @OptIn(ExperimentalForeignApi::class)
-    override suspend fun signIn(): GoogleUser? = suspendCoroutine { continutation ->
+    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? = suspendCoroutine { continutation ->
 
         val rootViewController =
             UIApplication.sharedApplication.keyWindow?.rootViewController
