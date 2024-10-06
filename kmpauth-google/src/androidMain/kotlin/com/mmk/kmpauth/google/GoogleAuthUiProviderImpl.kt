@@ -21,24 +21,36 @@ internal class GoogleAuthUiProviderImpl(
     private val googleLegacyAuthentication: GoogleLegacyAuthentication,
 ) :
     GoogleAuthUiProvider {
-    override suspend fun signIn(): GoogleUser? {
+    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
         return try {
-            val credential = credentialManager.getCredential(
-                context = activityContext,
-                request = getCredentialRequest()
-            ).credential
-            getGoogleUserFromCredential(credential)
-        } catch (e: GetCredentialException) {
-            println("GoogleAuthUiProvider error: ${e.message}")
-            val shouldCheckLegacyAuthServices = when (e) {
-                is GetCredentialProviderConfigurationException -> true
-                is NoCredentialException -> true
-                is GetCredentialUnsupportedException -> true
-                else -> false
+            getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
+        } catch (e: NoCredentialException) {
+            if (!filterByAuthorizedAccounts) return handleCredentialException(e)
+            try {
+                getGoogleUserFromCredential(filterByAuthorizedAccounts = false)
+            } catch (e: GetCredentialException) {
+                handleCredentialException(e)
+            } catch (e: NullPointerException) {
+                null
             }
-            if (shouldCheckLegacyAuthServices) checkLegacyGoogleSignIn()
-            else null
+        } catch (e: GetCredentialException) {
+            handleCredentialException(e)
         } catch (e: NullPointerException) {
+            null
+        }
+    }
+
+    private suspend fun handleCredentialException(e: GetCredentialException): GoogleUser? {
+        println("GoogleAuthUiProvider error: ${e.message}")
+        val shouldCheckLegacyAuthServices = when (e) {
+            is GetCredentialProviderConfigurationException -> true
+            is NoCredentialException -> true
+            is GetCredentialUnsupportedException -> true
+            else -> false
+        }
+        return if (shouldCheckLegacyAuthServices) {
+            checkLegacyGoogleSignIn()
+        } else {
             null
         }
     }
@@ -48,7 +60,11 @@ internal class GoogleAuthUiProviderImpl(
         return googleLegacyAuthentication.signIn()
     }
 
-    private fun getGoogleUserFromCredential(credential: Credential): GoogleUser? {
+    private suspend fun getGoogleUserFromCredential(filterByAuthorizedAccounts: Boolean): GoogleUser? {
+        val credential = credentialManager.getCredential(
+            context = activityContext,
+            request = getCredentialRequest(filterByAuthorizedAccounts)
+        ).credential
         return when {
             credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
                 try {
@@ -70,15 +86,20 @@ internal class GoogleAuthUiProviderImpl(
         }
     }
 
-    private fun getCredentialRequest(): GetCredentialRequest {
+    private fun getCredentialRequest(filterByAuthorizedAccounts: Boolean): GetCredentialRequest {
         return GetCredentialRequest.Builder()
-            .addCredentialOption(getGoogleIdOption(serverClientId = credentials.serverId))
+            .addCredentialOption(
+                getGoogleIdOption(
+                    serverClientId = credentials.serverId,
+                    filterByAuthorizedAccounts = filterByAuthorizedAccounts
+                )
+            )
             .build()
     }
 
-    private fun getGoogleIdOption(serverClientId: String): GetGoogleIdOption {
+    private fun getGoogleIdOption(serverClientId: String, filterByAuthorizedAccounts: Boolean): GetGoogleIdOption {
         return GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
+            .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
             .setAutoSelectEnabled(true)
             .setServerClientId(serverClientId)
             .build()

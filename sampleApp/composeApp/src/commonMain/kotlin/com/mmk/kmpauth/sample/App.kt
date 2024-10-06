@@ -70,12 +70,12 @@ fun App() {
             }
 
             //Apple Sign-In with Custom Button and authentication with Firebase
-            AppleButtonUiContainer(onResult = onFirebaseResult) {
+            AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
                 Button(onClick = { this.onClick() }) { Text("Apple Sign-In (Custom Design)") }
             }
 
             //Github Sign-In with Custom Button and authentication with Firebase
-            GithubButtonUiContainer(onResult = onFirebaseResult) {
+            GithubButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
                 Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
             }
 
@@ -109,12 +109,12 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
     ) {
 
         //Google Sign-In Button and authentication with Firebase
-        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
             GoogleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp), fontSize = 19.sp) { this.onClick() }
         }
 
         //Apple Sign-In Button and authentication with Firebase
-        AppleButtonUiContainer(onResult = onFirebaseResult) {
+        AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
             AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { this.onClick() }
         }
 
@@ -132,12 +132,12 @@ fun IconOnlyButtonsAndFirebaseAuth(
     ) {
 
         //Google Sign-In IconOnly Button and authentication with Firebase
-        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
             GoogleSignInButtonIconOnly(onClick = { this.onClick() })
         }
 
         //Apple Sign-In IconOnly Button and authentication with Firebase
-        AppleButtonUiContainer(onResult = onFirebaseResult) {
+        AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
             AppleSignInButtonIconOnly(onClick = { this.onClick() })
         }
     }

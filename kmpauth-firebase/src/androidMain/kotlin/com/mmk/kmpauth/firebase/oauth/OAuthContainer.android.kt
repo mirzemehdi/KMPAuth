@@ -13,6 +13,7 @@ import com.mmk.kmpauth.core.getActivity
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
+import dev.gitlive.firebase.auth.android
 import dev.gitlive.firebase.auth.auth
 
 @OptIn(KMPAuthInternalApi::class)
@@ -21,23 +22,41 @@ public actual fun OAuthContainer(
     modifier: Modifier,
     oAuthProvider: OAuthProvider,
     onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
     val activity = LocalContext.current.getActivity()
     val uiContainerScope = remember {
         object : UiContainerScope {
             override fun onClick() {
-                onClickSignIn(activity, oAuthProvider, onResult)
+                onClickSignIn(activity, oAuthProvider, onResult, linkAccount)
             }
         }
     }
     Box(modifier = modifier) { uiContainerScope.content() }
 }
 
+@Deprecated(
+    "Use OAuthContainer with linkAccount parameter, which defaults to false",
+    ReplaceWith(""),
+    DeprecationLevel.WARNING
+)
+@OptIn(KMPAuthInternalApi::class)
+@Composable
+public actual fun OAuthContainer(
+    modifier: Modifier,
+    oAuthProvider: OAuthProvider,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+    OAuthContainer(modifier, oAuthProvider, onResult, false, content)
+}
+
 private fun onClickSignIn(
     activity: ComponentActivity?,
     oAuthProvider: OAuthProvider,
     onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean,
 ) {
     val auth = Firebase.auth.android
     val pendingAuthResult = auth.pendingAuthResult
@@ -46,9 +65,16 @@ private fun onClickSignIn(
     } else {
         if (activity == null)
             onResult(Result.failure(IllegalStateException("Activity is null")))
-        else
-            auth.startActivityForSignInWithProvider(activity, oAuthProvider.android)
-                .resultAsFirebaseUser(onResult)
+        else {
+            val currentUser = auth.currentUser
+            val result = if (linkAccount && currentUser != null) {
+                currentUser.startActivityForLinkWithProvider(activity, oAuthProvider.android)
+            } else {
+                auth.startActivityForSignInWithProvider(activity, oAuthProvider.android)
+            }
+
+            result.resultAsFirebaseUser(onResult)
+        }
     }
 }
 

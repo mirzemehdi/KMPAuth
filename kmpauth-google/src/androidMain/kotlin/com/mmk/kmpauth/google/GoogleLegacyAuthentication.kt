@@ -25,7 +25,7 @@ internal class GoogleLegacyAuthentication(
 
 ) : GoogleAuthUiProvider {
 
-    override suspend fun signIn(): GoogleUser? {
+    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
         val signInClient = getGoogleSignInClient().signInIntent
         activityResultState.isInProgress = true
         try {

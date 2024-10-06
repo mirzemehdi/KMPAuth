@@ -12,6 +12,7 @@ import dev.gitlive.firebase.auth.FirebaseUser
  *
  * [onResult] callback will return [Result] with [FirebaseUser] type.
  * @param requestScopes list of request scopes type of [AppleSignInRequestScope].
+ * @param linkAccount boolean value to link account with existing account. Default value is false
  * Example Usage:
  * ```
  * //Apple Sign-In with Custom Button and authentication with Firebase
@@ -22,6 +23,23 @@ import dev.gitlive.firebase.auth.FirebaseUser
  * ```
  *
  */
+@Composable
+public expect fun AppleButtonUiContainer(
+    modifier: Modifier = Modifier,
+    requestScopes: List<AppleSignInRequestScope> = listOf(
+        AppleSignInRequestScope.FullName,
+        AppleSignInRequestScope.Email
+    ),
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean = false,
+    content: @Composable UiContainerScope.() -> Unit,
+)
+
+@Deprecated(
+    "Use AppleButtonUiContainer with the linkAccount parameter, which defaults to false.",
+    ReplaceWith(""),
+    DeprecationLevel.WARNING
+)
 @Composable
 public expect fun AppleButtonUiContainer(
     modifier: Modifier = Modifier,
