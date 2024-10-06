@@ -1,5 +1,6 @@
 public final class com/mmk/kmpauth/firebase/apple/AppleButtonUiContainer_jvmKt {
 	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public abstract interface class com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope {
@@ -23,13 +24,16 @@ public final class com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope$FullNa
 
 public final class com/mmk/kmpauth/firebase/github/GithubButtonUiContainerKt {
 	public static final fun GithubButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Ljava/util/Map;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun GithubButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/mmk/kmpauth/firebase/google/GoogleButtonUiContainerFirebaseKt {
 	public static final fun GoogleButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun GoogleButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/mmk/kmpauth/firebase/oauth/OAuthContainer_jvmKt {
 	public static final fun OAuthContainer (Landroidx/compose/ui/Modifier;Ldev/gitlive/firebase/auth/OAuthProvider;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun OAuthContainer (Landroidx/compose/ui/Modifier;Ldev/gitlive/firebase/auth/OAuthProvider;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 

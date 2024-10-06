@@ -22,6 +22,11 @@ public final class com/mmk/kmpauth/google/GoogleAuthProvider$Companion {
 
 public abstract interface class com/mmk/kmpauth/google/GoogleAuthUiProvider {
 	public abstract fun signIn (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun signIn (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/google/GoogleAuthUiProvider$DefaultImpls {
+	public static fun signIn (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/mmk/kmpauth/google/GoogleButtonUiContainerKt {
