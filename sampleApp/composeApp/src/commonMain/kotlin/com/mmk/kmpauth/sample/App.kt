@@ -109,7 +109,7 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
     ) {
 
         //Google Sign-In Button and authentication with Firebase
-        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
             GoogleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp), fontSize = 19.sp) { this.onClick() }
         }
 
@@ -132,7 +132,7 @@ fun IconOnlyButtonsAndFirebaseAuth(
     ) {
 
         //Google Sign-In IconOnly Button and authentication with Firebase
-        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
+        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
             GoogleSignInButtonIconOnly(onClick = { this.onClick() })
         }
 

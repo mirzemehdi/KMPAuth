@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 @Composable
 public fun GoogleButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
+    linkAccount: Boolean = false,
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
@@ -50,7 +51,13 @@ public fun GoogleButtonUiContainerFirebase(
         val authCredential = GoogleAuthProvider.credential(idToken, accessToken)
         coroutineScope.launch {
             try {
-                val result = Firebase.auth.signInWithCredential(authCredential)
+                val auth = Firebase.auth
+                val currentUser = auth.currentUser
+                val result = if (linkAccount && currentUser != null) {
+                    currentUser.linkWithCredential(authCredential)
+                } else {
+                    auth.signInWithCredential(authCredential)
+                }
                 if (result.user == null) updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
                 else updatedOnResult(Result.success(result.user))
             } catch (e: Exception) {
@@ -62,3 +69,23 @@ public fun GoogleButtonUiContainerFirebase(
     }, content = content)
 
 }
+
+@Deprecated(
+    "Use GoogleButtonUiContainerFirebase with linkAccount parameter, which defaults to false",
+    ReplaceWith(""),
+    DeprecationLevel.WARNING
+)
+@Composable
+public fun GoogleButtonUiContainerFirebase(
+    modifier: Modifier = Modifier,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+    GoogleButtonUiContainerFirebase(
+        modifier = modifier,
+        linkAccount = false,
+        onResult = onResult,
+        content = content
+    )
+}
+
