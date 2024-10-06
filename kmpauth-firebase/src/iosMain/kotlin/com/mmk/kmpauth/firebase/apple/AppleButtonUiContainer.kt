@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
 import androidx.compose.ui.unit.dp
 import cocoapods.FirebaseAuth.FIRAuth
+import cocoapods.FirebaseAuth.FIRAuthDataResult
 import cocoapods.FirebaseAuth.FIROAuthProvider
 import com.mmk.kmpauth.core.UiContainerScope
 import dev.gitlive.firebase.Firebase
@@ -61,6 +62,7 @@ private var currentNonce: String? = null
  *
  * [onResult] callback will return [Result] with [FirebaseUser] type.
  * @param requestScopes list of request scopes type of [AppleSignInRequestScope].
+ * @param linkAccount if true, it will link the account with the current user. Default value is false
  * Example Usage:
  * ```
  * //Apple Sign-In with Custom Button and authentication with Firebase
@@ -76,12 +78,13 @@ public actual fun AppleButtonUiContainer(
     modifier: Modifier,
     requestScopes: List<AppleSignInRequestScope>,
     onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
     val updatedOnResultFunc by rememberUpdatedState(onResult)
     val presentationContextProvider = PresentationContextProvider()
     val asAuthorizationControllerDelegate =
-        ASAuthorizationControllerDelegate(updatedOnResultFunc)
+        ASAuthorizationControllerDelegate(linkAccount, updatedOnResultFunc)
 
     val uiContainerScope = remember {
         object : UiContainerScope {
@@ -97,6 +100,21 @@ public actual fun AppleButtonUiContainer(
     }
     Box(modifier = modifier) { uiContainerScope.content() }
 
+}
+
+@Deprecated(
+    "Use AppleButtonUiContainer with the linkAccount parameter, which defaults to false.",
+    ReplaceWith(""),
+    DeprecationLevel.WARNING
+)
+@Composable
+public actual fun AppleButtonUiContainer(
+    modifier: Modifier,
+    requestScopes: List<AppleSignInRequestScope>,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+    AppleButtonUiContainer(modifier, requestScopes, onResult, false, content)
 }
 
 private fun signIn(
@@ -167,7 +185,10 @@ private class PresentationContextProvider :
     }
 }
 
-private class ASAuthorizationControllerDelegate(private val onResult: (Result<FirebaseUser?>) -> Unit) :
+private class ASAuthorizationControllerDelegate(
+    private val linkAccount: Boolean,
+    private val onResult: (Result<FirebaseUser?>) -> Unit
+) :
     ASAuthorizationControllerDelegateProtocol, NSObject() {
 
     @OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
@@ -199,16 +220,21 @@ private class ASAuthorizationControllerDelegate(private val onResult: (Result<Fi
             idTokenString, currentNonce, appleIDCredential.fullName
         )
 
-        FIRAuth.auth().signInWithCredential(credential) { firAuthDataResult, nsError ->
+        val currentUser = FIRAuth.auth().currentUser()
+
+        val handleResult: (FIRAuthDataResult?, NSError?) -> Unit = { firAuthDataResult, nsError ->
             if (nsError != null || firAuthDataResult == null) {
                 onResult(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))
-                return@signInWithCredential
             } else {
                 onResult(Result.success(Firebase.auth.currentUser))
-                return@signInWithCredential
             }
         }
 
+        if (linkAccount && currentUser != null) {
+            currentUser.linkWithCredential(credential, handleResult)
+        } else {
+            FIRAuth.auth().signInWithCredential(credential, handleResult)
+        }
     }
 
     override fun authorizationController(

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
 import com.mmk.kmpauth.firebase.oauth.OAuthContainer
-import com.mmk.kmpauth.google.GoogleUser
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 
@@ -16,6 +15,7 @@ import dev.gitlive.firebase.auth.OAuthProvider
  * [onResult] callback will return [Result] with [FirebaseUser] type.
  * @param requestScopes Request Scopes that is provided in Github OAuth. By Default, user's email is requested.
  * @param customParameters Custom Parameters that is provided in Github OAuth.
+ * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
  *
  * Example Usage:
  * ```
@@ -32,6 +32,7 @@ public fun GithubButtonUiContainer(
     modifier: Modifier = Modifier,
     requestScopes: List<String> = listOf("user:email"),
     customParameters: Map<String, String> = emptyMap(),
+    linkAccount: Boolean = false,
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
@@ -43,8 +44,33 @@ public fun GithubButtonUiContainer(
     OAuthContainer(
         modifier = modifier,
         oAuthProvider = oAuthProvider,
+        linkAccount = linkAccount,
         onResult = onResult,
         content = content
     )
 
+}
+
+
+@Deprecated(
+    "Use GithubButtonUiContainer with linkAccount parameter, which defaults to false",
+    ReplaceWith(""),
+    DeprecationLevel.WARNING
+)
+@Composable
+public fun GithubButtonUiContainer(
+    modifier: Modifier = Modifier,
+    requestScopes: List<String> = listOf("user:email"),
+    customParameters: Map<String, String> = emptyMap(),
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+    GithubButtonUiContainer(
+        modifier = modifier,
+        requestScopes = requestScopes,
+        linkAccount = false,
+        customParameters = customParameters,
+        onResult = onResult,
+        content = content
+    )
 }

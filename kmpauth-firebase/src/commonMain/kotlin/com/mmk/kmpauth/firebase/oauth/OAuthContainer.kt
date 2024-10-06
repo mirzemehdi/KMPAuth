@@ -13,6 +13,7 @@ import dev.gitlive.firebase.auth.OAuthProvider
  *
  * [onResult] callback will return [Result] with [FirebaseUser] type.
  * @param oAuthProvider [OAuthProvider] class object.
+ * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
  *
  * Example Usage:
  * ```
@@ -28,6 +29,20 @@ import dev.gitlive.firebase.auth.OAuthProvider
  * ```
  *
  */
+@Composable
+public expect fun OAuthContainer(
+    modifier: Modifier = Modifier,
+    oAuthProvider: OAuthProvider,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean = false,
+    content: @Composable UiContainerScope.() -> Unit,
+)
+
+@Deprecated(
+    "Use OAuthContainer with linkAccount parameter, which defaults to false",
+    ReplaceWith(""),
+    DeprecationLevel.WARNING
+)
 @Composable
 public expect fun OAuthContainer(
     modifier: Modifier = Modifier,

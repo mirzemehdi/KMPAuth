@@ -15,6 +15,7 @@ import dev.gitlive.firebase.auth.OAuthProvider
  *
  * [onResult] callback will return [Result] with [FirebaseUser] type.
  * @param requestScopes list of request scopes type of [AppleSignInRequestScope].
+ * @param linkAccount if true, it will link the account with the current user. Default value is false
  * Example Usage:
  * ```
  * //Apple Sign-In with Custom Button and authentication with Firebase
@@ -30,6 +31,7 @@ public actual fun AppleButtonUiContainer(
     modifier: Modifier,
     requestScopes: List<AppleSignInRequestScope>,
     onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
     val oathProviderRequestScopes = requestScopes.map {
@@ -43,6 +45,22 @@ public actual fun AppleButtonUiContainer(
         modifier = modifier,
         oAuthProvider = oAuthProvider,
         onResult = onResult,
+        linkAccount = linkAccount,
         content = content
     )
+}
+
+@Deprecated(
+    "Use AppleButtonUiContainer with the linkAccount parameter, which defaults to false.",
+    ReplaceWith(""),
+    DeprecationLevel.WARNING
+)
+@Composable
+public actual fun AppleButtonUiContainer(
+    modifier: Modifier,
+    requestScopes: List<AppleSignInRequestScope>,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+    AppleButtonUiContainer(modifier, requestScopes, onResult, false, content)
 }
