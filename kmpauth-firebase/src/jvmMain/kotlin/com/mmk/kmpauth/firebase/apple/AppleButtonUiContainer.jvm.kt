@@ -30,3 +30,14 @@ public actual fun AppleButtonUiContainer(
     content: @Composable UiContainerScope.() -> Unit
 ) {
 }
+
+@Composable
+public actual fun AppleButtonUiContainer(
+    modifier: Modifier,
+    requestScopes: List<AppleSignInRequestScope>,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+
+}

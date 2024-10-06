@@ -36,3 +36,14 @@ public actual fun OAuthContainer(
     content: @Composable UiContainerScope.() -> Unit
 ) {
 }
+
+@Composable
+public actual fun OAuthContainer(
+    modifier: Modifier,
+    oAuthProvider: OAuthProvider,
+    onResult: (Result<FirebaseUser?>) -> Unit,
+    linkAccount: Boolean,
+    content: @Composable UiContainerScope.() -> Unit,
+) {
+
+}

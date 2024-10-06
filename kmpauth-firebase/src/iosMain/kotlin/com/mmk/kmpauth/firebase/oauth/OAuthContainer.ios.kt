@@ -78,7 +78,7 @@ private suspend fun onClickSignIn(
             if (firAuthCredential != null) {
                 val authCredential = firAuthCredential.asAuthCredential().ios
                 val auth = Firebase.auth.ios
-                val currentUser = auth.currentUser
+                val currentUser = auth.currentUser()
 
                 val handleResult: (FIRAuthDataResult?, NSError?) -> Unit = { result, linkError ->
                     if (result != null) continuation.resume(Result.success(Firebase.auth.currentUser))

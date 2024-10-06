@@ -220,7 +220,7 @@ private class ASAuthorizationControllerDelegate(
             idTokenString, currentNonce, appleIDCredential.fullName
         )
 
-        val currentUser = FIRAuth.auth().currentUser
+        val currentUser = FIRAuth.auth().currentUser()
 
         val handleResult: (FIRAuthDataResult?, NSError?) -> Unit = { firAuthDataResult, nsError ->
             if (nsError != null || firAuthDataResult == null) {
