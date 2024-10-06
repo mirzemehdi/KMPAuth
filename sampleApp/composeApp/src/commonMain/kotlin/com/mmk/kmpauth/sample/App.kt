@@ -75,7 +75,7 @@ fun App() {
             }
 
             //Github Sign-In with Custom Button and authentication with Firebase
-            GithubButtonUiContainer(onResult = onFirebaseResult) {
+            GithubButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
                 Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
             }
 
