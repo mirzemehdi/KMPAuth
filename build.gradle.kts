@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.kotlinNativeCocoaPods) apply false
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.googleServices) apply false
+    alias(libs.plugins.kotlinx.serialization).apply(false)
     alias(libs.plugins.kotlinx.binary.validator)
     alias(libs.plugins.nexusPublish)
 }
