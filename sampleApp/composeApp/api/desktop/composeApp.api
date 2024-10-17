@@ -41,9 +41,11 @@ public final class com/mmk/kmpauth/sample/ComposableSingletons$MainKt {
 	public static final field INSTANCE Lcom/mmk/kmpauth/sample/ComposableSingletons$MainKt;
 	public static field lambda-1 Lkotlin/jvm/functions/Function3;
 	public static field lambda-2 Lkotlin/jvm/functions/Function3;
+	public static field lambda-3 Lkotlin/jvm/functions/Function3;
 	public fun <init> ()V
 	public final fun getLambda-1$composeApp ()Lkotlin/jvm/functions/Function3;
 	public final fun getLambda-2$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda-3$composeApp ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class com/mmk/kmpauth/sample/MainKt {
