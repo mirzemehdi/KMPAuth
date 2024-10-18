@@ -25,6 +25,8 @@ googleServices = "4.4.2"
 firebaseGitLiveAuth = "2.1.0"
 androidLegacyPlayServices = "21.2.0"
 nexusPublish = "2.0.0"
+ktor = "3.0.0"
+kotlinx-serialization = "1.7.3"
 
 
 [libraries]
@@ -59,6 +61,18 @@ googleIdIdentity = { module = "com.google.android.libraries.identity.googleid:go
 #Firebase
 firebase-gitlive-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveAuth" }
 
+#Ktor
+ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
+ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
+ktor-server-html-builder = { group = "io.ktor", name = "ktor-server-html-builder", version.ref = "ktor" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
@@ -71,3 +85,4 @@ kotlinx-binary-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-va
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexusPublish" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

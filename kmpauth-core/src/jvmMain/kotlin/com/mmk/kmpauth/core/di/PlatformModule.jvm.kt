@@ -7,3 +7,4 @@ import org.koin.dsl.module
 @KMPAuthInternalApi
 public actual fun isAndroidPlatform(): Boolean = false
 internal actual val platformModule: Module = module { }
+
