@@ -16,14 +16,6 @@ internal object HttpClientFactory {
         defaultRequest {
             header(HttpHeaders.ContentType, "application/json")
         }
-        install(Logging) {
-            logger = object : Logger {
-                override fun log(message: String) {
-                    println("NetworkRequest: $message")
-                }
-            }
-            level = LogLevel.ALL
-        }
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
