@@ -1,6 +1,4 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
@@ -20,7 +18,7 @@ kotlin {
             }
         }
     }
-    @OptIn(ExperimentalWasmDsl::class)
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "sampleApp"
         browser {
@@ -54,16 +52,18 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(project(":kmpauth-firebase"))
         }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
-            @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(project(":kmpauth-google"))
-            implementation(project(":kmpauth-firebase"))
             implementation(project(":kmpauth-uihelper"))
+        }
+        iosMain.dependencies {
+            implementation(project(":kmpauth-firebase"))
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
