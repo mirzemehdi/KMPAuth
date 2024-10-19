@@ -2,14 +2,16 @@ package com.mmk.kmpauth.google
 
 import androidx.compose.runtime.Composable
 
-internal class GoogleAuthProviderImpl : GoogleAuthProvider {
+internal class GoogleAuthProviderImpl(private val googleAuthCredentials: GoogleAuthCredentials) :
+    GoogleAuthProvider {
 
     @Composable
     override fun getUiProvider(): GoogleAuthUiProvider {
-        TODO("Not yet implemented")
+        return GoogleAuthUiProviderImpl(credentials = googleAuthCredentials)
     }
 
+
     override suspend fun signOut() {
-        TODO("Not yet implemented")
+       println("Not implemented")
     }
 }

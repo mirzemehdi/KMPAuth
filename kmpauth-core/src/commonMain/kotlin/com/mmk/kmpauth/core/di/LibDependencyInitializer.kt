@@ -1,6 +1,7 @@
 package com.mmk.kmpauth.core.di
 
 
+import com.mmk.kmpauth.core.HttpClientFactory
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import org.koin.core.Koin
 import org.koin.core.KoinApplication
@@ -24,6 +25,7 @@ public object LibDependencyInitializer {
     public fun initialize(modules: List<Module> = emptyList()) {
         if (isInitialized()) return
         val configModule = module {
+            single { HttpClientFactory.default() }
             includes(modules)
         }
         koinApp = koinApplication {
@@ -40,6 +42,6 @@ public object LibDependencyInitializer {
 }
 
 private fun Koin.onLibraryInitialized() {
-    println("Library is initialized")
+    println("KMPAuth Library is initialized")
 }
 

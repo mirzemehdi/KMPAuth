@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -15,6 +17,10 @@ kotlin {
                 jvmTarget = "1.8"
             }
         }
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
     }
     js(IR) {
         nodejs()
@@ -45,8 +51,13 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(libs.koin.compose)
-            api(libs.firebase.gitlive.auth)
             implementation(project(":kmpauth-google"))
+        }
+        androidMain.dependencies {
+            api(libs.firebase.gitlive.auth)
+        }
+        iosMain.dependencies {
+            api(libs.firebase.gitlive.auth)
         }
     }
 }

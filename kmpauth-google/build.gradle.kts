@@ -16,6 +16,10 @@ kotlin {
             }
         }
     }
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
     js(IR) {
         nodejs()
         browser()
@@ -54,7 +58,14 @@ kotlin {
             implementation(compose.foundation)
             implementation(libs.koin.compose)
             implementation(libs.koin.core)
+            implementation(libs.ktor.core)
             api(project(":kmpauth-core"))
+        }
+        jvmMain.dependencies {
+            implementation(libs.ktor.server.core)
+            implementation(libs.ktor.server.netty)
+            implementation(libs.ktor.server.html.builder)
+            implementation("com.auth0:java-jwt:4.4.0") // Check for the latest version
         }
     }
 }
