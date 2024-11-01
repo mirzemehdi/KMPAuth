@@ -73,6 +73,7 @@ internal class GoogleAuthUiProviderImpl(
                     GoogleUser(
                         idToken = googleIdTokenCredential.idToken,
                         accessToken = null,
+                        email = googleIdTokenCredential.id,
                         displayName = googleIdTokenCredential.displayName ?: "",
                         profilePicUrl = googleIdTokenCredential.profilePictureUri?.toString()
                     )
