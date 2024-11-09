@@ -27,7 +27,7 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
                         val googleUser = GoogleUser(
                             idToken = idToken,
                             accessToken = accessToken,
-                            email = user?.userID,
+                            email = profile?.email,
                             displayName = profile?.name ?: "",
                             profilePicUrl = profile?.imageURLWithDimension(320u)?.absoluteString
                         )
