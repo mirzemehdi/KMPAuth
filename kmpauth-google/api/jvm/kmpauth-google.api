@@ -30,7 +30,7 @@ public final class com/mmk/kmpauth/google/GoogleAuthUiProvider$DefaultImpls {
 }
 
 public final class com/mmk/kmpauth/google/GoogleButtonUiContainerKt {
-	public static final fun GoogleButtonUiContainer (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun GoogleButtonUiContainer (Landroidx/compose/ui/Modifier;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/mmk/kmpauth/google/GoogleUser {
