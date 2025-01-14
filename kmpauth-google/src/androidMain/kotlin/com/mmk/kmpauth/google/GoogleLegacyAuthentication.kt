@@ -11,10 +11,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import java.util.concurrent.atomic.AtomicReference
 
 
 internal class GoogleLegacyAuthentication(
@@ -25,18 +23,20 @@ internal class GoogleLegacyAuthentication(
 
 ) : GoogleAuthUiProvider {
 
-    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
+    override suspend fun signIn(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
         val signInClient = getGoogleSignInClient().signInIntent
         activityResultState.isInProgress = true
         try {
             activityResultLauncher.launch(signInClient)
-        }
-        catch (e: ActivityNotFoundException){
+        } catch (e: ActivityNotFoundException) {
             println(e.message)
             return null
         }
 
-        withContext(Dispatchers.Default){
+        withContext(Dispatchers.Default) {
             while (activityResultState.isInProgress) yield()
         }
         val data: Intent? = activityResultState.data?.data

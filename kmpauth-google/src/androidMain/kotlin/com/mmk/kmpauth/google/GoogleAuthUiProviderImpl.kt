@@ -21,7 +21,10 @@ internal class GoogleAuthUiProviderImpl(
     private val googleLegacyAuthentication: GoogleLegacyAuthentication,
 ) :
     GoogleAuthUiProvider {
-    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
+    override suspend fun signIn(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
         return try {
             getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
         } catch (e: NoCredentialException) {
@@ -98,7 +101,10 @@ internal class GoogleAuthUiProviderImpl(
             .build()
     }
 
-    private fun getGoogleIdOption(serverClientId: String, filterByAuthorizedAccounts: Boolean): GetGoogleIdOption {
+    private fun getGoogleIdOption(
+        serverClientId: String,
+        filterByAuthorizedAccounts: Boolean
+    ): GetGoogleIdOption {
         return GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
             .setAutoSelectEnabled(true)

@@ -26,7 +26,10 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 
     private val authUrl = "https://accounts.google.com/o/oauth2/v2/auth"
 
-    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
+    override suspend fun signIn(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
         val scope = "email profile"
         val redirectUri = "http://localhost:8080/callback"
         val state: String

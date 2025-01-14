@@ -18,5 +18,17 @@ public interface GoogleAuthUiProvider {
      * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
      * setting to false list any accounts that have previously been used to sign in to your app.
      */
-    public suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser?
+    public suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? =
+        signIn(filterByAuthorizedAccounts = filterByAuthorizedAccounts, scopes = emptyList())
+
+
+    /**
+     * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in. Default value is false
+     * @param scopes Custom scopes to retrieve more information
+     * setting to false list any accounts that have previously been used to sign in to your app.
+     */
+    public suspend fun signIn(
+        filterByAuthorizedAccounts: Boolean = false,
+        scopes: List<String> = emptyList()
+    ): GoogleUser?
 }
