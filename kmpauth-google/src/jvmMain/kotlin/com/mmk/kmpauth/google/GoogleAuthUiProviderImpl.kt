@@ -30,13 +30,13 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
     ): GoogleUser? {
-        val scope = "email profile"
+        val scopeString = scopes.joinToString(" ")
         val redirectUri = "http://localhost:8080/callback"
         val state: String
         val nonce: String
         val googleAuthUrl = withContext(Dispatchers.IO) {
             state = URLEncoder.encode(generateRandomString(), StandardCharsets.UTF_8.toString())
-            val encodedScope = URLEncoder.encode(scope, StandardCharsets.UTF_8.toString())
+            val encodedScope = URLEncoder.encode(scopeString, StandardCharsets.UTF_8.toString())
             nonce = URLEncoder.encode(generateRandomString(), StandardCharsets.UTF_8.toString())
 
             "$authUrl?" +
