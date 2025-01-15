@@ -5,6 +5,10 @@ package com.mmk.kmpauth.google
  */
 public interface GoogleAuthUiProvider {
 
+    public companion object {
+        internal val BASIC_AUTH_SCOPE = listOf("email", "profile")
+    }
+
     /**
      * Opens Sign In with Google UI, and returns [GoogleUser]
      * if sign-in was successful, otherwise, null
@@ -12,17 +16,15 @@ public interface GoogleAuthUiProvider {
      * @see signIn(filterByAuthorizedAccounts: Boolean)
      * @return returns GoogleUser or null(if sign-in was not successful)
      */
-    public suspend fun signIn(): GoogleUser? = signIn(filterByAuthorizedAccounts = false)
+    public suspend fun signIn(): GoogleUser? =
+        signIn(filterByAuthorizedAccounts = false, scopes = BASIC_AUTH_SCOPE)
 
     /**
      * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
      * setting to false list any accounts that have previously been used to sign in to your app.
      */
     public suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? =
-        signIn(
-            filterByAuthorizedAccounts = filterByAuthorizedAccounts,
-            scopes = listOf("email", "profile")
-        )
+        signIn(filterByAuthorizedAccounts = filterByAuthorizedAccounts, scopes = BASIC_AUTH_SCOPE)
 
 
     /**
@@ -33,6 +35,6 @@ public interface GoogleAuthUiProvider {
      */
     public suspend fun signIn(
         filterByAuthorizedAccounts: Boolean = false,
-        scopes: List<String> = listOf("email", "profile")
+        scopes: List<String> = BASIC_AUTH_SCOPE
     ): GoogleUser?
 }

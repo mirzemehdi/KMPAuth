@@ -25,7 +25,11 @@ internal class GoogleAuthUiProviderImpl(
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
     ): GoogleUser? {
-        return try {
+
+        val googleUser = try {
+            // Temporary solution until to find out requesting additional scopes with Credential Manager.
+            if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) throw GetCredentialProviderConfigurationException() //Will open Legacy Sign In
+
             getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
         } catch (e: NoCredentialException) {
             if (!filterByAuthorizedAccounts) return handleCredentialException(e)
@@ -41,6 +45,7 @@ internal class GoogleAuthUiProviderImpl(
         } catch (e: NullPointerException) {
             null
         }
+        return googleUser
     }
 
     private suspend fun handleCredentialException(e: GetCredentialException): GoogleUser? {
