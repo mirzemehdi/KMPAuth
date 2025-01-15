@@ -8,10 +8,7 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
     @OptIn(ExperimentalForeignApi::class)
-    override suspend fun signIn(
-        filterByAuthorizedAccounts: Boolean,
-        scopes: List<String>
-    ): GoogleUser? = suspendCoroutine { continutation ->
+    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? = suspendCoroutine { continutation ->
 
         val rootViewController =
             UIApplication.sharedApplication.keyWindow?.rootViewController
@@ -19,7 +16,7 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
         if (rootViewController == null) continutation.resume(null)
         else {
             GIDSignIn.sharedInstance
-                .signInWithPresentingViewController(rootViewController,null, scopes) { gidSignInResult, nsError ->
+                .signInWithPresentingViewController(rootViewController) { gidSignInResult, nsError ->
                     nsError?.let { println("Error While signing: $nsError") }
 
                     val user = gidSignInResult?.user
@@ -30,8 +27,6 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
                         val googleUser = GoogleUser(
                             idToken = idToken,
                             accessToken = accessToken,
-                            email = profile?.email,
-                            serverAuthCode = gidSignInResult.serverAuthCode,
                             displayName = profile?.name ?: "",
                             profilePicUrl = profile?.imageURLWithDimension(320u)?.absoluteString
                         )
