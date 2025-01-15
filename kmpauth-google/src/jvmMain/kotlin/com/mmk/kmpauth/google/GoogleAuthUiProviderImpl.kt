@@ -54,7 +54,6 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
             return null
         }
         val jwt = JWT().decodeJwt(idToken)
-        val email = jwt.getClaim("email")?.asString()
         val name = jwt.getClaim("name")?.asString() // User's name
         val picture = jwt.getClaim("picture")?.asString()
         val receivedNonce = jwt.getClaim("nonce")?.asString()
@@ -66,7 +65,6 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         return GoogleUser(
             idToken = idToken,
             accessToken = null,
-            email = email,
             displayName = name ?: "",
             profilePicUrl = picture
         )

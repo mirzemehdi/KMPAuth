@@ -52,7 +52,6 @@ internal class GoogleLegacyAuthentication(
                 GoogleUser(
                     idToken = idToken,
                     accessToken = null,
-                    email = account.email,
                     displayName = account.displayName ?: "",
                     profilePicUrl = account.photoUrl?.toString()
                 ).also {
