@@ -19,7 +19,7 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
         if (rootViewController == null) continutation.resume(null)
         else {
             GIDSignIn.sharedInstance
-                .signInWithPresentingViewController(rootViewController) { gidSignInResult, nsError ->
+                .signInWithPresentingViewController(rootViewController,null, scopes) { gidSignInResult, nsError ->
                     nsError?.let { println("Error While signing: $nsError") }
 
                     val user = gidSignInResult?.user
