@@ -31,6 +31,7 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
                             idToken = idToken,
                             accessToken = accessToken,
                             email = profile?.email,
+                            serverAuthCode = gidSignInResult.serverAuthCode,
                             displayName = profile?.name ?: "",
                             profilePicUrl = profile?.imageURLWithDimension(320u)?.absoluteString
                         )
