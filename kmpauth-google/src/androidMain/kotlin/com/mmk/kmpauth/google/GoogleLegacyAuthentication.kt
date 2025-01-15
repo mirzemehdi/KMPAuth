@@ -10,11 +10,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import java.util.concurrent.atomic.AtomicReference
 
 
 internal class GoogleLegacyAuthentication(
@@ -25,18 +24,20 @@ internal class GoogleLegacyAuthentication(
 
 ) : GoogleAuthUiProvider {
 
-    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
-        val signInClient = getGoogleSignInClient().signInIntent
+    override suspend fun signIn(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
+        val signInClient = getGoogleSignInClient(scopes = scopes).signInIntent
         activityResultState.isInProgress = true
         try {
             activityResultLauncher.launch(signInClient)
-        }
-        catch (e: ActivityNotFoundException){
+        } catch (e: ActivityNotFoundException) {
             println(e.message)
             return null
         }
 
-        withContext(Dispatchers.Default){
+        withContext(Dispatchers.Default) {
             while (activityResultState.isInProgress) yield()
         }
         val data: Intent? = activityResultState.data?.data
@@ -52,6 +53,7 @@ internal class GoogleLegacyAuthentication(
                 GoogleUser(
                     idToken = idToken,
                     accessToken = null,
+                    serverAuthCode = account.serverAuthCode,
                     email = account.email,
                     displayName = account.displayName ?: "",
                     profilePicUrl = account.photoUrl?.toString()
@@ -66,15 +68,25 @@ internal class GoogleLegacyAuthentication(
         }
     }
 
-    private fun getGoogleSignInOptions(): GoogleSignInOptions {
-        return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+    private fun getGoogleSignInOptions(scopes: List<String>): GoogleSignInOptions {
+        val builder = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(credentials.serverId)
             .requestEmail()
-            .build()
+
+
+        if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) {
+            scopes.forEach { scope ->
+                builder.requestScopes(Scope(scope))
+            }
+            builder.requestServerAuthCode(credentials.serverId)
+        }
+
+
+        return builder.build()
     }
 
-    private fun getGoogleSignInClient(): GoogleSignInClient {
-        return GoogleSignIn.getClient(activityContext, getGoogleSignInOptions())
+    private fun getGoogleSignInClient(scopes: List<String>): GoogleSignInClient {
+        return GoogleSignIn.getClient(activityContext, getGoogleSignInOptions(scopes))
     }
 
 }
