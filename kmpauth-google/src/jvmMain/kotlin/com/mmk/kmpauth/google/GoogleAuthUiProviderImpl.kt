@@ -26,20 +26,25 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 
     private val authUrl = "https://accounts.google.com/o/oauth2/v2/auth"
 
-    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
-        val scope = "email profile"
+    override suspend fun signIn(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
+        val responseType = "id_token token"
+        val scopeString = scopes.joinToString(" ")
         val redirectUri = "http://localhost:8080/callback"
         val state: String
-        val nonce: String
+        var nonce: String?
         val googleAuthUrl = withContext(Dispatchers.IO) {
+            val encodedResponseType =
+                URLEncoder.encode(responseType, StandardCharsets.UTF_8.toString())
             state = URLEncoder.encode(generateRandomString(), StandardCharsets.UTF_8.toString())
-            val encodedScope = URLEncoder.encode(scope, StandardCharsets.UTF_8.toString())
+            val encodedScope = URLEncoder.encode(scopeString, StandardCharsets.UTF_8.toString())
             nonce = URLEncoder.encode(generateRandomString(), StandardCharsets.UTF_8.toString())
-
             "$authUrl?" +
                     "client_id=${credentials.serverId}" +
                     "&redirect_uri=$redirectUri" +
-                    "&response_type=id_token" +
+                    "&response_type=$encodedResponseType" +
                     "&scope=$encodedScope" +
                     "&nonce=$nonce" +
                     "&state=$state"
@@ -48,43 +53,52 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 
         openUrlInBrowser(googleAuthUrl)
 
-        val idToken = startHttpServerAndGetToken(state = state)
-        if (idToken == null) {
-            println("GoogleAuthUiProvider: idToken is null")
+        val (idToken, accessToken) = startHttpServerAndGetToken(state = state)
+        if (idToken == null && accessToken == null) {
+            println("GoogleAuthUiProvider: token is null")
             return null
         }
-        val jwt = JWT().decodeJwt(idToken)
-        val name = jwt.getClaim("name")?.asString() // User's name
-        val picture = jwt.getClaim("picture")?.asString()
-        val receivedNonce = jwt.getClaim("nonce")?.asString()
+
+
+        val jwt = idToken?.let { JWT().decodeJwt(it) }
+        val email = jwt?.getClaim("email")?.asString()
+        val name = jwt?.getClaim("name")?.asString() // User's name
+        val picture = jwt?.getClaim("picture")?.asString()
+        val receivedNonce = jwt?.getClaim("nonce")?.asString()
         if (receivedNonce != nonce) {
             println("GoogleAuthUiProvider: Invalid nonce state: A login callback was received, but no login request was sent.")
             return null
         }
 
         return GoogleUser(
-            idToken = idToken,
-            accessToken = null,
+            idToken = idToken ?: "",
+            accessToken = accessToken,
+            email = email,
             displayName = name ?: "",
             profilePicUrl = picture
         )
     }
 
+    //Pair, first one is idToken, second one is accessToken
     private suspend fun startHttpServerAndGetToken(
         redirectUriPath: String = "/callback",
         state: String
-    ): String? {
-        val idTokenDeferred = CompletableDeferred<String?>()
+    ): Pair<String?, String?> {
+        val tokenPairDeferred = CompletableDeferred<Pair<String?, String?>>()
 
         val jsCode = """
             var fragment = window.location.hash;
             if (fragment) {
                 var params = new URLSearchParams(fragment.substring(1)); 
                 var idToken = params.get('id_token');
+                var accessToken = params.get('access_token');
                 var receivedState = params.get('state');
                 var expectedState = '${state}'; 
                 if (receivedState === expectedState) {
-                    window.location.href = '$redirectUriPath/token?id_token=' + idToken;
+                    window.location.href = '$redirectUriPath/token?' + 
+                        (idToken ? 'id_token=' + idToken : '') + 
+                        (idToken && accessToken ? '&' : '') + 
+                        (accessToken ? 'access_token=' + accessToken : '');
                 } else {
                     console.error('State does not match! Possible CSRF attack.');
                     window.location.href = '$redirectUriPath/token?id_token=null';
@@ -101,26 +115,27 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 }
                 get("$redirectUriPath/token") {
                     val idToken = call.request.queryParameters["id_token"]
-                    if (idToken.isNullOrEmpty().not()) {
+                    val accessToken = call.request.queryParameters["access_token"]
+                    if (idToken.isNullOrEmpty().not() || accessToken.isNullOrEmpty().not()) {
                         call.respondText(
                             "Authorization is complete. You can close this window, and return to the application",
                             contentType = ContentType.Text.Plain
                         )
-                        idTokenDeferred.complete(idToken)
+                        tokenPairDeferred.complete(Pair(idToken, accessToken))
                     } else {
                         call.respondText(
                             "Authorization failed",
                             contentType = ContentType.Text.Plain
                         )
-                        idTokenDeferred.complete(null)
+                        tokenPairDeferred.complete(Pair(null, null))
                     }
                 }
             }
         }.start(wait = false)
 
-        val idToken = idTokenDeferred.await()
+        val idTokenAndAccessTokenPair = tokenPairDeferred.await()
         server.stop(1000, 1000)
-        return idToken
+        return idTokenAndAccessTokenPair
     }
 
     private fun openUrlInBrowser(url: String) {

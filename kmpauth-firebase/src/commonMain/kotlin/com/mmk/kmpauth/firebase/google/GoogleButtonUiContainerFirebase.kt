@@ -35,43 +35,49 @@ import kotlinx.coroutines.launch
 public fun GoogleButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
     linkAccount: Boolean = false,
+    filterByAuthorizedAccounts: Boolean = false,
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
 
     val updatedOnResult by rememberUpdatedState(onResult)
     val coroutineScope = rememberCoroutineScope()
-    GoogleButtonUiContainer(modifier = modifier, onGoogleSignInResult = { googleUser ->
-        val idToken = googleUser?.idToken
-        val accessToken = googleUser?.accessToken
-        if (idToken == null) {
-            updatedOnResult(Result.failure(IllegalStateException("Idtoken is null")))
-            return@GoogleButtonUiContainer
-        }
-        val authCredential = GoogleAuthProvider.credential(idToken, accessToken)
-        coroutineScope.launch {
-            try {
-                val auth = Firebase.auth
-                val currentUser = auth.currentUser
-                val result = if (linkAccount && currentUser != null) {
-                    currentUser.linkWithCredential(authCredential)
-                } else {
-                    auth.signInWithCredential(authCredential)
-                }
-                if (result.user == null) updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
-                else updatedOnResult(Result.success(result.user))
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                updatedOnResult(Result.failure(e))
+    GoogleButtonUiContainer(
+        modifier = modifier,
+        filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+        onGoogleSignInResult = { googleUser ->
+            val idToken = googleUser?.idToken
+            val accessToken = googleUser?.accessToken
+            if (idToken == null) {
+                updatedOnResult(Result.failure(IllegalStateException("Idtoken is null")))
+                return@GoogleButtonUiContainer
             }
-        }
+            val authCredential = GoogleAuthProvider.credential(idToken, accessToken)
+            coroutineScope.launch {
+                try {
+                    val auth = Firebase.auth
+                    val currentUser = auth.currentUser
+                    val result = if (linkAccount && currentUser != null) {
+                        currentUser.linkWithCredential(authCredential)
+                    } else {
+                        auth.signInWithCredential(authCredential)
+                    }
+                    if (result.user == null) updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
+                    else updatedOnResult(Result.success(result.user))
+                } catch (e: Exception) {
+                    if (e is CancellationException) throw e
+                    updatedOnResult(Result.failure(e))
+                }
+            }
 
-    }, content = content)
+        },
+        content = content
+    )
 
 }
 
 @Deprecated(
-    "Use GoogleButtonUiContainerFirebase with linkAccount parameter, which defaults to false",
+    "Use GoogleButtonUiContainerFirebase with linkAccount and filterByAuthorizedAccounts parameters, which defaults to false",
     ReplaceWith(""),
     DeprecationLevel.WARNING
 )
@@ -84,6 +90,7 @@ public fun GoogleButtonUiContainerFirebase(
     GoogleButtonUiContainerFirebase(
         modifier = modifier,
         linkAccount = false,
+        filterByAuthorizedAccounts = false,
         onResult = onResult,
         content = content
     )

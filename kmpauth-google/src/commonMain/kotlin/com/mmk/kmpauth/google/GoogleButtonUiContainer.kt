@@ -31,10 +31,13 @@ import kotlinx.coroutines.launch
  *
  * ```
  *
+ * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
+ * setting to false list any accounts that have previously been used to sign in to your app.
  */
 @Composable
 public fun GoogleButtonUiContainer(
     modifier: Modifier = Modifier,
+    filterByAuthorizedAccounts: Boolean = false,
     onGoogleSignInResult: (GoogleUser?) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
@@ -48,7 +51,7 @@ public fun GoogleButtonUiContainer(
             override fun onClick() {
                 println("GoogleUiButtonContainer is clicked")
                 coroutineScope.launch {
-                    val googleUser = googleAuthUiProvider.signIn()
+                    val googleUser = googleAuthUiProvider.signIn(filterByAuthorizedAccounts)
                     updatedOnResultFunc(googleUser)
                 }
             }
