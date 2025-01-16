@@ -21,8 +21,15 @@ internal class GoogleAuthUiProviderImpl(
     private val googleLegacyAuthentication: GoogleLegacyAuthentication,
 ) :
     GoogleAuthUiProvider {
-    override suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? {
-        return try {
+    override suspend fun signIn(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
+
+        val googleUser = try {
+            // Temporary solution until to find out requesting additional scopes with Credential Manager.
+            if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) throw GetCredentialProviderConfigurationException() //Will open Legacy Sign In
+
             getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
         } catch (e: NoCredentialException) {
             if (!filterByAuthorizedAccounts) return handleCredentialException(e)
@@ -38,6 +45,7 @@ internal class GoogleAuthUiProviderImpl(
         } catch (e: NullPointerException) {
             null
         }
+        return googleUser
     }
 
     private suspend fun handleCredentialException(e: GetCredentialException): GoogleUser? {
@@ -73,6 +81,7 @@ internal class GoogleAuthUiProviderImpl(
                     GoogleUser(
                         idToken = googleIdTokenCredential.idToken,
                         accessToken = null,
+                        email = googleIdTokenCredential.id,
                         displayName = googleIdTokenCredential.displayName ?: "",
                         profilePicUrl = googleIdTokenCredential.profilePictureUri?.toString()
                     )
@@ -97,7 +106,10 @@ internal class GoogleAuthUiProviderImpl(
             .build()
     }
 
-    private fun getGoogleIdOption(serverClientId: String, filterByAuthorizedAccounts: Boolean): GetGoogleIdOption {
+    private fun getGoogleIdOption(
+        serverClientId: String,
+        filterByAuthorizedAccounts: Boolean
+    ): GetGoogleIdOption {
         return GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
             .setAutoSelectEnabled(true)
