@@ -1,7 +1,6 @@
 package com.mmk.kmpauth.google
 
 import android.content.Context
-import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -32,23 +31,40 @@ internal class GoogleAuthUiProviderImpl(
 
             getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
         } catch (e: NoCredentialException) {
-            if (!filterByAuthorizedAccounts) return handleCredentialException(e)
+            if (!filterByAuthorizedAccounts)
+                return handleCredentialException(
+                    e = e,
+                    filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                    scopes = scopes
+                )
             try {
                 getGoogleUserFromCredential(filterByAuthorizedAccounts = false)
             } catch (e: GetCredentialException) {
-                handleCredentialException(e)
+                handleCredentialException(
+                    e = e,
+                    filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                    scopes = scopes
+                )
             } catch (e: NullPointerException) {
                 null
             }
         } catch (e: GetCredentialException) {
-            handleCredentialException(e)
+            handleCredentialException(
+                e = e,
+                filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                scopes = scopes
+            )
         } catch (e: NullPointerException) {
             null
         }
         return googleUser
     }
 
-    private suspend fun handleCredentialException(e: GetCredentialException): GoogleUser? {
+    private suspend fun handleCredentialException(
+        e: GetCredentialException,
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
         println("GoogleAuthUiProvider error: ${e.message}")
         val shouldCheckLegacyAuthServices = when (e) {
             is GetCredentialProviderConfigurationException -> true
@@ -57,15 +73,21 @@ internal class GoogleAuthUiProviderImpl(
             else -> false
         }
         return if (shouldCheckLegacyAuthServices) {
-            checkLegacyGoogleSignIn()
+            checkLegacyGoogleSignIn(filterByAuthorizedAccounts, scopes)
         } else {
             null
         }
     }
 
-    private suspend fun checkLegacyGoogleSignIn(): GoogleUser? {
+    private suspend fun checkLegacyGoogleSignIn(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
         println("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
-        return googleLegacyAuthentication.signIn()
+        return googleLegacyAuthentication.signIn(
+            filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+            scopes = scopes
+        )
     }
 
     private suspend fun getGoogleUserFromCredential(filterByAuthorizedAccounts: Boolean): GoogleUser? {

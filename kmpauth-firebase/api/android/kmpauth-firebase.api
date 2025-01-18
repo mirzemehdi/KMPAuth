@@ -29,7 +29,7 @@ public final class com/mmk/kmpauth/firebase/github/GithubButtonUiContainerKt {
 
 public final class com/mmk/kmpauth/firebase/google/GoogleButtonUiContainerFirebaseKt {
 	public static final fun GoogleButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
-	public static final fun GoogleButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;ZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun GoogleButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;ZZLjava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/mmk/kmpauth/firebase/oauth/OAuthContainer_androidKt {

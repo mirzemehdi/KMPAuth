@@ -19,6 +19,9 @@ import kotlinx.coroutines.launch
  * Child of this Composable can be any view or Composable function.
  * You need to call [UiContainerScope.onClick] function on your child view's click function.
  *
+ * @param linkAccount Default value is false
+ * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
+ * @param scopes Custom scopes to retrieve more information. Default value listOf("email", "profile")
  * [onResult] callback will return [Result] with [FirebaseUser] type.
  *
  * Example Usage:
@@ -36,6 +39,7 @@ public fun GoogleButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
     linkAccount: Boolean = false,
     filterByAuthorizedAccounts: Boolean = false,
+    scopes: List<String> = listOf("email", "profile"),
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
@@ -45,6 +49,7 @@ public fun GoogleButtonUiContainerFirebase(
     GoogleButtonUiContainer(
         modifier = modifier,
         filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+        scopes = scopes,
         onGoogleSignInResult = { googleUser ->
             val idToken = googleUser?.idToken
             val accessToken = googleUser?.accessToken

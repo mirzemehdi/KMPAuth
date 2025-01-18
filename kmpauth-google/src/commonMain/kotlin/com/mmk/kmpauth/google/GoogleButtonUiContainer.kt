@@ -8,6 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.google.GoogleAuthUiProvider.Companion.BASIC_AUTH_SCOPE
 import kotlinx.coroutines.launch
 
 /**
@@ -32,12 +33,14 @@ import kotlinx.coroutines.launch
  * ```
  *
  * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
+ * @param scopes Custom scopes to retrieve more information. Default value listOf("email", "profile")
  * setting to false list any accounts that have previously been used to sign in to your app.
  */
 @Composable
 public fun GoogleButtonUiContainer(
     modifier: Modifier = Modifier,
     filterByAuthorizedAccounts: Boolean = false,
+    scopes: List<String> = BASIC_AUTH_SCOPE,
     onGoogleSignInResult: (GoogleUser?) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
@@ -51,7 +54,10 @@ public fun GoogleButtonUiContainer(
             override fun onClick() {
                 println("GoogleUiButtonContainer is clicked")
                 coroutineScope.launch {
-                    val googleUser = googleAuthUiProvider.signIn(filterByAuthorizedAccounts)
+                    val googleUser = googleAuthUiProvider.signIn(
+                        filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                        scopes = scopes
+                    )
                     updatedOnResultFunc(googleUser)
                 }
             }
