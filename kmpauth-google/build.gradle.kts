@@ -1,9 +1,14 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinNativeCocoaPods)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.mavenPublish)
 }
 
 kotlin {
@@ -88,5 +93,47 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+}
+
+mavenPublishing {
+    configure(
+        KotlinMultiplatform(
+            javadocJar = JavadocJar.Dokka("dokkaHtml"),
+            sourcesJar = true
+        )
+    )
+    coordinates(
+        "io.github.mirzemehdi",
+        "kmpauth-google",
+        project.properties["kmpAuthVersion"] as String
+    )
+    pom {
+        name = "KMPAuth"
+        description = " Kotlin Multiplatform Authentication Library targeting ios and android"
+        url = "https://github.com/mirzemehdi/KMPAuth/"
+        licenses {
+            license {
+                name.set("Apache-2.0")
+                url.set("https://opensource.org/licenses/Apache-2.0")
+            }
+        }
+        developers {
+            developer {
+                name.set("Mirzamehdi Karimov")
+                email.set("mirzemehdi@gmail.com")
+            }
+        }
+        scm {
+            connection.set("https://github.com/mirzemehdi/KMPAuth.git")
+            url.set("https://github.com/mirzemehdi/KMPAuth")
+        }
+        issueManagement {
+            system.set("Github")
+            url.set("https://github.com/mirzemehdi/KMPAuth/issues")
+        }
+    }
+
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 }
 
