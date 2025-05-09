@@ -26,7 +26,8 @@ apiValidation {
     klib {
         enabled = true
     }
-//    ignoredProjects += ":sampleApp:composeApp"
+    ignoredProjects += "sampleApp"
+    ignoredProjects += "composeApp"
 }
 
 

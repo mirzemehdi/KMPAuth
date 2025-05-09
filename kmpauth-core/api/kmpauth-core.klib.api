@@ -1,0 +1,31 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.mirzemehdi:kmpauth-core>
+open annotation class com.mmk.kmpauth.core/KMPAuthInternalApi : kotlin/Annotation { // com.mmk.kmpauth.core/KMPAuthInternalApi|null[0]
+    constructor <init>() // com.mmk.kmpauth.core/KMPAuthInternalApi.<init>|<init>(){}[0]
+}
+
+abstract interface com.mmk.kmpauth.core/UiContainerScope { // com.mmk.kmpauth.core/UiContainerScope|null[0]
+    abstract fun onClick() // com.mmk.kmpauth.core/UiContainerScope.onClick|onClick(){}[0]
+}
+
+abstract class com.mmk.kmpauth.core.di/KMPKoinComponent : org.koin.core.component/KoinComponent { // com.mmk.kmpauth.core.di/KMPKoinComponent|null[0]
+    constructor <init>() // com.mmk.kmpauth.core.di/KMPKoinComponent.<init>|<init>(){}[0]
+
+    open fun getKoin(): org.koin.core/Koin // com.mmk.kmpauth.core.di/KMPKoinComponent.getKoin|getKoin(){}[0]
+}
+
+final object com.mmk.kmpauth.core.di/LibDependencyInitializer { // com.mmk.kmpauth.core.di/LibDependencyInitializer|null[0]
+    final var koinApp // com.mmk.kmpauth.core.di/LibDependencyInitializer.koinApp|{}koinApp[0]
+        final fun <get-koinApp>(): org.koin.core/KoinApplication? // com.mmk.kmpauth.core.di/LibDependencyInitializer.koinApp.<get-koinApp>|<get-koinApp>(){}[0]
+
+    final fun initialize(kotlin.collections/List<org.koin.core.module/Module> = ...) // com.mmk.kmpauth.core.di/LibDependencyInitializer.initialize|initialize(kotlin.collections.List<org.koin.core.module.Module>){}[0]
+    final fun initialize(org.koin.core.module/Module) // com.mmk.kmpauth.core.di/LibDependencyInitializer.initialize|initialize(org.koin.core.module.Module){}[0]
+}
+
+final fun com.mmk.kmpauth.core.di/isAndroidPlatform(): kotlin/Boolean // com.mmk.kmpauth.core.di/isAndroidPlatform|isAndroidPlatform(){}[0]

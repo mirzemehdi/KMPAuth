@@ -1,0 +1,79 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.mirzemehdi:kmpauth-uihelper>
+sealed interface com.mmk.kmpauth.uihelper.apple/AppleButtonMode { // com.mmk.kmpauth.uihelper.apple/AppleButtonMode|null[0]
+    final object Black : com.mmk.kmpauth.uihelper.apple/AppleButtonMode { // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.Black|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.Black.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.Black.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.Black.toString|toString(){}[0]
+    }
+
+    final object White : com.mmk.kmpauth.uihelper.apple/AppleButtonMode { // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.White|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.White.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.White.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.White.toString|toString(){}[0]
+    }
+
+    final object WhiteWithOutline : com.mmk.kmpauth.uihelper.apple/AppleButtonMode { // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.WhiteWithOutline|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.WhiteWithOutline.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.WhiteWithOutline.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.uihelper.apple/AppleButtonMode.WhiteWithOutline.toString|toString(){}[0]
+    }
+}
+
+sealed interface com.mmk.kmpauth.uihelper.google/GoogleButtonMode { // com.mmk.kmpauth.uihelper.google/GoogleButtonMode|null[0]
+    final object Dark : com.mmk.kmpauth.uihelper.google/GoogleButtonMode { // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Dark|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Dark.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Dark.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Dark.toString|toString(){}[0]
+    }
+
+    final object Light : com.mmk.kmpauth.uihelper.google/GoogleButtonMode { // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Light|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Light.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Light.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Light.toString|toString(){}[0]
+    }
+
+    final object Neutral : com.mmk.kmpauth.uihelper.google/GoogleButtonMode { // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Neutral|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Neutral.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Neutral.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.uihelper.google/GoogleButtonMode.Neutral.toString|toString(){}[0]
+    }
+}
+
+final val com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_Black$stableprop // com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_Black$stableprop|#static{}com_mmk_kmpauth_uihelper_apple_AppleButtonMode_Black$stableprop[0]
+final val com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_White$stableprop // com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_White$stableprop|#static{}com_mmk_kmpauth_uihelper_apple_AppleButtonMode_White$stableprop[0]
+final val com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_WhiteWithOutline$stableprop // com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_WhiteWithOutline$stableprop|#static{}com_mmk_kmpauth_uihelper_apple_AppleButtonMode_WhiteWithOutline$stableprop[0]
+final val com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Dark$stableprop // com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Dark$stableprop|#static{}com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Dark$stableprop[0]
+final val com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Light$stableprop // com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Light$stableprop|#static{}com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Light$stableprop[0]
+final val com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Neutral$stableprop // com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Neutral$stableprop|#static{}com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Neutral$stableprop[0]
+final val com.mmk.kmpauth.uihelper.theme/com_mmk_kmpauth_uihelper_theme_Fonts$stableprop // com.mmk.kmpauth.uihelper.theme/com_mmk_kmpauth_uihelper_theme_Fonts$stableprop|#static{}com_mmk_kmpauth_uihelper_theme_Fonts$stableprop[0]
+final val io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res$stableprop // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res$stableprop|#static{}io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res$stableprop[0]
+final val io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_array$stableprop // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_array$stableprop|#static{}io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_array$stableprop[0]
+final val io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_drawable$stableprop // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_drawable$stableprop|#static{}io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_drawable$stableprop[0]
+final val io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_font$stableprop // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_font$stableprop|#static{}io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_font$stableprop[0]
+final val io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_plurals$stableprop // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_plurals$stableprop|#static{}io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_plurals$stableprop[0]
+final val io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_string$stableprop // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_string$stableprop|#static{}io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_string$stableprop[0]
+
+final fun com.mmk.kmpauth.uihelper.apple/AppleSignInButton(androidx.compose.ui/Modifier?, com.mmk.kmpauth.uihelper.apple/AppleButtonMode?, kotlin/String?, androidx.compose.ui.text.font/FontFamily?, androidx.compose.ui.graphics/Shape?, kotlin/Function0<kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.uihelper.apple/AppleSignInButton|AppleSignInButton(androidx.compose.ui.Modifier?;com.mmk.kmpauth.uihelper.apple.AppleButtonMode?;kotlin.String?;androidx.compose.ui.text.font.FontFamily?;androidx.compose.ui.graphics.Shape?;kotlin.Function0<kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.uihelper.apple/AppleSignInButtonIconOnly(androidx.compose.ui/Modifier?, com.mmk.kmpauth.uihelper.apple/AppleButtonMode?, androidx.compose.ui.graphics/Shape?, kotlin/Function0<kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.uihelper.apple/AppleSignInButtonIconOnly|AppleSignInButtonIconOnly(androidx.compose.ui.Modifier?;com.mmk.kmpauth.uihelper.apple.AppleButtonMode?;androidx.compose.ui.graphics.Shape?;kotlin.Function0<kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_Black$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_Black$stableprop_getter|com_mmk_kmpauth_uihelper_apple_AppleButtonMode_Black$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_White$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_White$stableprop_getter|com_mmk_kmpauth_uihelper_apple_AppleButtonMode_White$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_WhiteWithOutline$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.uihelper.apple/com_mmk_kmpauth_uihelper_apple_AppleButtonMode_WhiteWithOutline$stableprop_getter|com_mmk_kmpauth_uihelper_apple_AppleButtonMode_WhiteWithOutline$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.uihelper.google/GoogleSignInButton(androidx.compose.ui/Modifier?, com.mmk.kmpauth.uihelper.google/GoogleButtonMode?, kotlin/String?, androidx.compose.ui.graphics/Shape?, androidx.compose.ui.unit/TextUnit, kotlin/Function0<kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.uihelper.google/GoogleSignInButton|GoogleSignInButton(androidx.compose.ui.Modifier?;com.mmk.kmpauth.uihelper.google.GoogleButtonMode?;kotlin.String?;androidx.compose.ui.graphics.Shape?;androidx.compose.ui.unit.TextUnit;kotlin.Function0<kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.uihelper.google/GoogleSignInButtonIconOnly(androidx.compose.ui/Modifier?, com.mmk.kmpauth.uihelper.google/GoogleButtonMode?, androidx.compose.ui.graphics/Shape?, kotlin/Function0<kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.uihelper.google/GoogleSignInButtonIconOnly|GoogleSignInButtonIconOnly(androidx.compose.ui.Modifier?;com.mmk.kmpauth.uihelper.google.GoogleButtonMode?;androidx.compose.ui.graphics.Shape?;kotlin.Function0<kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Dark$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Dark$stableprop_getter|com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Dark$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Light$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Light$stableprop_getter|com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Light$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Neutral$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.uihelper.google/com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Neutral$stableprop_getter|com_mmk_kmpauth_uihelper_google_GoogleButtonMode_Neutral$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.uihelper.theme/com_mmk_kmpauth_uihelper_theme_Fonts$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.uihelper.theme/com_mmk_kmpauth_uihelper_theme_Fonts$stableprop_getter|com_mmk_kmpauth_uihelper_theme_Fonts$stableprop_getter(){}[0]
+final fun io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res$stableprop_getter(): kotlin/Int // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res$stableprop_getter|io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res$stableprop_getter(){}[0]
+final fun io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_array$stableprop_getter(): kotlin/Int // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_array$stableprop_getter|io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_array$stableprop_getter(){}[0]
+final fun io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_drawable$stableprop_getter(): kotlin/Int // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_drawable$stableprop_getter|io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_drawable$stableprop_getter(){}[0]
+final fun io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_font$stableprop_getter(): kotlin/Int // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_font$stableprop_getter|io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_font$stableprop_getter(){}[0]
+final fun io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_plurals$stableprop_getter(): kotlin/Int // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_plurals$stableprop_getter|io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_plurals$stableprop_getter(){}[0]
+final fun io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_string$stableprop_getter(): kotlin/Int // io.github.mirzemehdi.kmpauth_uihelper.generated.resources/io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_string$stableprop_getter|io_github_mirzemehdi_kmpauth_uihelper_generated_resources_Res_string$stableprop_getter(){}[0]

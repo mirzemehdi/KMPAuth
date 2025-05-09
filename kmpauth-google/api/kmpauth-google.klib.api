@@ -1,0 +1,76 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.mirzemehdi:kmpauth-google>
+abstract interface com.mmk.kmpauth.google/GoogleAuthProvider { // com.mmk.kmpauth.google/GoogleAuthProvider|null[0]
+    abstract fun getUiProvider(androidx.compose.runtime/Composer?, kotlin/Int): com.mmk.kmpauth.google/GoogleAuthUiProvider // com.mmk.kmpauth.google/GoogleAuthProvider.getUiProvider|getUiProvider(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    abstract suspend fun signOut() // com.mmk.kmpauth.google/GoogleAuthProvider.signOut|signOut(){}[0]
+
+    final object Companion { // com.mmk.kmpauth.google/GoogleAuthProvider.Companion|null[0]
+        final fun create(com.mmk.kmpauth.google/GoogleAuthCredentials): com.mmk.kmpauth.google/GoogleAuthProvider // com.mmk.kmpauth.google/GoogleAuthProvider.Companion.create|create(com.mmk.kmpauth.google.GoogleAuthCredentials){}[0]
+    }
+}
+
+abstract interface com.mmk.kmpauth.google/GoogleAuthUiProvider { // com.mmk.kmpauth.google/GoogleAuthUiProvider|null[0]
+    abstract suspend fun signIn(kotlin/Boolean = ..., kotlin.collections/List<kotlin/String> = ...): com.mmk.kmpauth.google/GoogleUser? // com.mmk.kmpauth.google/GoogleAuthUiProvider.signIn|signIn(kotlin.Boolean;kotlin.collections.List<kotlin.String>){}[0]
+    open suspend fun signIn(): com.mmk.kmpauth.google/GoogleUser? // com.mmk.kmpauth.google/GoogleAuthUiProvider.signIn|signIn(){}[0]
+    open suspend fun signIn(kotlin/Boolean): com.mmk.kmpauth.google/GoogleUser? // com.mmk.kmpauth.google/GoogleAuthUiProvider.signIn|signIn(kotlin.Boolean){}[0]
+
+    final object Companion // com.mmk.kmpauth.google/GoogleAuthUiProvider.Companion|null[0]
+}
+
+final class com.mmk.kmpauth.google/GoogleAuthCredentials { // com.mmk.kmpauth.google/GoogleAuthCredentials|null[0]
+    constructor <init>(kotlin/String) // com.mmk.kmpauth.google/GoogleAuthCredentials.<init>|<init>(kotlin.String){}[0]
+
+    final val serverId // com.mmk.kmpauth.google/GoogleAuthCredentials.serverId|{}serverId[0]
+        final fun <get-serverId>(): kotlin/String // com.mmk.kmpauth.google/GoogleAuthCredentials.serverId.<get-serverId>|<get-serverId>(){}[0]
+
+    final fun component1(): kotlin/String // com.mmk.kmpauth.google/GoogleAuthCredentials.component1|component1(){}[0]
+    final fun copy(kotlin/String = ...): com.mmk.kmpauth.google/GoogleAuthCredentials // com.mmk.kmpauth.google/GoogleAuthCredentials.copy|copy(kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.google/GoogleAuthCredentials.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.mmk.kmpauth.google/GoogleAuthCredentials.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.mmk.kmpauth.google/GoogleAuthCredentials.toString|toString(){}[0]
+}
+
+final class com.mmk.kmpauth.google/GoogleUser { // com.mmk.kmpauth.google/GoogleUser|null[0]
+    constructor <init>(kotlin/String, kotlin/String? = ..., kotlin/String? = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.google/GoogleUser.<init>|<init>(kotlin.String;kotlin.String?;kotlin.String?;kotlin.String;kotlin.String?;kotlin.String?){}[0]
+
+    final val accessToken // com.mmk.kmpauth.google/GoogleUser.accessToken|{}accessToken[0]
+        final fun <get-accessToken>(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.accessToken.<get-accessToken>|<get-accessToken>(){}[0]
+    final val displayName // com.mmk.kmpauth.google/GoogleUser.displayName|{}displayName[0]
+        final fun <get-displayName>(): kotlin/String // com.mmk.kmpauth.google/GoogleUser.displayName.<get-displayName>|<get-displayName>(){}[0]
+    final val email // com.mmk.kmpauth.google/GoogleUser.email|{}email[0]
+        final fun <get-email>(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.email.<get-email>|<get-email>(){}[0]
+    final val idToken // com.mmk.kmpauth.google/GoogleUser.idToken|{}idToken[0]
+        final fun <get-idToken>(): kotlin/String // com.mmk.kmpauth.google/GoogleUser.idToken.<get-idToken>|<get-idToken>(){}[0]
+    final val profilePicUrl // com.mmk.kmpauth.google/GoogleUser.profilePicUrl|{}profilePicUrl[0]
+        final fun <get-profilePicUrl>(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.profilePicUrl.<get-profilePicUrl>|<get-profilePicUrl>(){}[0]
+    final val serverAuthCode // com.mmk.kmpauth.google/GoogleUser.serverAuthCode|{}serverAuthCode[0]
+        final fun <get-serverAuthCode>(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.serverAuthCode.<get-serverAuthCode>|<get-serverAuthCode>(){}[0]
+
+    final fun component1(): kotlin/String // com.mmk.kmpauth.google/GoogleUser.component1|component1(){}[0]
+    final fun component2(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.component3|component3(){}[0]
+    final fun component4(): kotlin/String // com.mmk.kmpauth.google/GoogleUser.component4|component4(){}[0]
+    final fun component5(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.component5|component5(){}[0]
+    final fun component6(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.component6|component6(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ...): com.mmk.kmpauth.google/GoogleUser // com.mmk.kmpauth.google/GoogleUser.copy|copy(kotlin.String;kotlin.String?;kotlin.String?;kotlin.String;kotlin.String?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.google/GoogleUser.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.mmk.kmpauth.google/GoogleUser.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.mmk.kmpauth.google/GoogleUser.toString|toString(){}[0]
+}
+
+final val com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop|#static{}com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop[0]
+final val com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthProviderImpl$stableprop // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthProviderImpl$stableprop|#static{}com_mmk_kmpauth_google_GoogleAuthProviderImpl$stableprop[0]
+final val com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthUiProviderImpl$stableprop // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthUiProviderImpl$stableprop|#static{}com_mmk_kmpauth_google_GoogleAuthUiProviderImpl$stableprop[0]
+final val com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleUser$stableprop // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleUser$stableprop|#static{}com_mmk_kmpauth_google_GoogleUser$stableprop[0]
+
+final fun com.mmk.kmpauth.google/GoogleButtonUiContainer(androidx.compose.ui/Modifier?, kotlin/Boolean, kotlin.collections/List<kotlin/String>?, kotlin/Function1<com.mmk.kmpauth.google/GoogleUser?, kotlin/Unit>, kotlin/Function3<com.mmk.kmpauth.core/UiContainerScope, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.google/GoogleButtonUiContainer|GoogleButtonUiContainer(androidx.compose.ui.Modifier?;kotlin.Boolean;kotlin.collections.List<kotlin.String>?;kotlin.Function1<com.mmk.kmpauth.google.GoogleUser?,kotlin.Unit>;kotlin.Function3<com.mmk.kmpauth.core.UiContainerScope,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop_getter|com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthProviderImpl$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthProviderImpl$stableprop_getter|com_mmk_kmpauth_google_GoogleAuthProviderImpl$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthUiProviderImpl$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthUiProviderImpl$stableprop_getter|com_mmk_kmpauth_google_GoogleAuthUiProviderImpl$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleUser$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleUser$stableprop_getter|com_mmk_kmpauth_google_GoogleUser$stableprop_getter(){}[0]
