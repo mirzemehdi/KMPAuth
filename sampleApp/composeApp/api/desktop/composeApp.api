@@ -12,40 +12,26 @@ public final class com/mmk/kmpauth/sample/AppKt {
 
 public final class com/mmk/kmpauth/sample/ComposableSingletons$AppKt {
 	public static final field INSTANCE Lcom/mmk/kmpauth/sample/ComposableSingletons$AppKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function3;
-	public static field lambda-10 Lkotlin/jvm/functions/Function3;
-	public static field lambda-11 Lkotlin/jvm/functions/Function3;
-	public static field lambda-2 Lkotlin/jvm/functions/Function3;
-	public static field lambda-3 Lkotlin/jvm/functions/Function3;
-	public static field lambda-4 Lkotlin/jvm/functions/Function3;
-	public static field lambda-5 Lkotlin/jvm/functions/Function3;
-	public static field lambda-6 Lkotlin/jvm/functions/Function3;
-	public static field lambda-7 Lkotlin/jvm/functions/Function2;
-	public static field lambda-8 Lkotlin/jvm/functions/Function3;
-	public static field lambda-9 Lkotlin/jvm/functions/Function3;
 	public fun <init> ()V
-	public final fun getLambda-1$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-10$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-11$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-2$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-3$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-4$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-5$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-6$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-7$composeApp ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda-8$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-9$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-1334004050$composeApp ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-1554835367$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-1758533006$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-2090548660$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-575520089$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1728577865$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1864608439$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$228912731$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$545619734$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$681595522$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$861815883$composeApp ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class com/mmk/kmpauth/sample/ComposableSingletons$MainKt {
 	public static final field INSTANCE Lcom/mmk/kmpauth/sample/ComposableSingletons$MainKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function3;
-	public static field lambda-2 Lkotlin/jvm/functions/Function3;
-	public static field lambda-3 Lkotlin/jvm/functions/Function3;
 	public fun <init> ()V
-	public final fun getLambda-1$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-2$composeApp ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-3$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-987171806$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1058141748$composeApp ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1154485198$composeApp ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class com/mmk/kmpauth/sample/MainKt {

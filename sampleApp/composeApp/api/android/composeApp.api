@@ -12,36 +12,24 @@ public final class com/mmk/kmpauth/sample/AppKt {
 
 public final class com/mmk/kmpauth/sample/ComposableSingletons$AppKt {
 	public static final field INSTANCE Lcom/mmk/kmpauth/sample/ComposableSingletons$AppKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function3;
-	public static field lambda-10 Lkotlin/jvm/functions/Function3;
-	public static field lambda-11 Lkotlin/jvm/functions/Function3;
-	public static field lambda-2 Lkotlin/jvm/functions/Function3;
-	public static field lambda-3 Lkotlin/jvm/functions/Function3;
-	public static field lambda-4 Lkotlin/jvm/functions/Function3;
-	public static field lambda-5 Lkotlin/jvm/functions/Function3;
-	public static field lambda-6 Lkotlin/jvm/functions/Function3;
-	public static field lambda-7 Lkotlin/jvm/functions/Function2;
-	public static field lambda-8 Lkotlin/jvm/functions/Function3;
-	public static field lambda-9 Lkotlin/jvm/functions/Function3;
 	public fun <init> ()V
-	public final fun getLambda-1$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-10$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-11$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-2$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-3$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-4$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-5$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-6$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-7$composeApp_release ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda-8$composeApp_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda-9$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-1334004050$composeApp_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-1554835367$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-1758533006$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-2090548660$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-575520089$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1728577865$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1864608439$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$228912731$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$545619734$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$681595522$composeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$861815883$composeApp_release ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class com/mmk/kmpauth/sample/ComposableSingletons$MainActivityKt {
 	public static final field INSTANCE Lcom/mmk/kmpauth/sample/ComposableSingletons$MainActivityKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function2;
 	public fun <init> ()V
-	public final fun getLambda-1$composeApp_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-1221600592$composeApp_release ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class com/mmk/kmpauth/sample/MainActivity : androidx/activity/ComponentActivity {
