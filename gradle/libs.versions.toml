@@ -24,7 +24,7 @@ googleServices = "4.4.2"
 firebaseGitLiveAuth = "2.1.0"
 androidLegacyPlayServices = "21.2.0"
 nexusPublish = "2.0.0"
-ktor = "3.0.0"
+ktor = "3.0.3"
 kotlinx-serialization = "1.7.3"
 
 
