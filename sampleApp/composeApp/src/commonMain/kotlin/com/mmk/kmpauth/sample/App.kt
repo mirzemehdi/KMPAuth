@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.core.KMPAuthInternalApi
-import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.firebase.apple.AppleButtonUiContainer
 import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
@@ -54,7 +53,7 @@ fun App() {
                         firebaseUser?.displayName ?: firebaseUser?.email ?: "Null User"
                 } else {
                     signedInUserName = "Null User"
-                    currentLogger.log("Error Result: ${result.exceptionOrNull()?.message}")
+                    println("Error Result: ${result.exceptionOrNull()?.message}")
                 }
 
             }
