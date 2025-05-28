@@ -11,8 +11,10 @@ import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.logger.currentLogger
 
-
+@OptIn(KMPAuthInternalApi::class)
 internal class GoogleAuthUiProviderImpl(
     private val activityContext: Context,
     private val credentialManager: CredentialManager,
@@ -60,12 +62,13 @@ internal class GoogleAuthUiProviderImpl(
         return googleUser
     }
 
+
     private suspend fun handleCredentialException(
         e: GetCredentialException,
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
     ): GoogleUser? {
-        println("GoogleAuthUiProvider error: ${e.message}")
+        currentLogger.log("GoogleAuthUiProvider error: ${e.message}")
         val shouldCheckLegacyAuthServices = when (e) {
             is GetCredentialProviderConfigurationException -> true
             is NoCredentialException -> true
@@ -79,17 +82,19 @@ internal class GoogleAuthUiProviderImpl(
         }
     }
 
+    @OptIn(KMPAuthInternalApi::class)
     private suspend fun checkLegacyGoogleSignIn(
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
     ): GoogleUser? {
-        println("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
+        currentLogger.log("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
         return googleLegacyAuthentication.signIn(
             filterByAuthorizedAccounts = filterByAuthorizedAccounts,
             scopes = scopes
         )
     }
 
+    @OptIn(KMPAuthInternalApi::class)
     private suspend fun getGoogleUserFromCredential(filterByAuthorizedAccounts: Boolean): GoogleUser? {
         val credential = credentialManager.getCredential(
             context = activityContext,
@@ -108,7 +113,7 @@ internal class GoogleAuthUiProviderImpl(
                         profilePicUrl = googleIdTokenCredential.profilePictureUri?.toString()
                     )
                 } catch (e: GoogleIdTokenParsingException) {
-                    println("GoogleAuthUiProvider Received an invalid google id token response: ${e.message}")
+                    currentLogger.log("GoogleAuthUiProvider Received an invalid google id token response: ${e.message}")
                     null
                 }
             }
