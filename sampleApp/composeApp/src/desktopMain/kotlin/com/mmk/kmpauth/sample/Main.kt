@@ -28,7 +28,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "KMPAuth Desktop",
     ) {
-        println("Desktop app is started")
+        currentLogger.log("Desktop app is started")
 //        App()
 
         Column(

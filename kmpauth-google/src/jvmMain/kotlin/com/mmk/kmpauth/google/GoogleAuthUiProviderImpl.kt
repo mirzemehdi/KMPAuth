@@ -55,7 +55,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 
         val (idToken, accessToken) = startHttpServerAndGetToken(state = state)
         if (idToken == null && accessToken == null) {
-            println("GoogleAuthUiProvider: token is null")
+            currentLogger.log("GoogleAuthUiProvider: token is null")
             return null
         }
 
@@ -66,7 +66,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         val picture = jwt?.getClaim("picture")?.asString()
         val receivedNonce = jwt?.getClaim("nonce")?.asString()
         if (receivedNonce != nonce) {
-            println("GoogleAuthUiProvider: Invalid nonce state: A login callback was received, but no login request was sent.")
+            currentLogger.log("GoogleAuthUiProvider: Invalid nonce state: A login callback was received, but no login request was sent.")
             return null
         }
 
@@ -142,7 +142,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         if (Desktop.isDesktopSupported()) {
             Desktop.getDesktop().browse(URI(url))
         } else {
-            println("GoogleAuthUiProvider: Desktop is not supported on this platform.")
+            currentLogger.log("GoogleAuthUiProvider: Desktop is not supported on this platform.")
         }
     }
 

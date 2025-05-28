@@ -12,6 +12,6 @@ internal class GoogleAuthProviderImpl(private val googleAuthCredentials: GoogleA
 
 
     override suspend fun signOut() {
-       println("Not implemented")
+       currentLogger.log("Not implemented")
     }
 }
