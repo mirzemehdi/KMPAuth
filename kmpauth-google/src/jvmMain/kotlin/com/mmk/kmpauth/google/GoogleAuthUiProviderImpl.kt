@@ -10,6 +10,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import io.ktor.utils.io.core.use
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,6 +18,7 @@ import kotlinx.html.body
 import kotlinx.html.script
 import kotlinx.html.unsafe
 import java.awt.Desktop
+import java.net.ServerSocket
 import java.net.URI
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -109,7 +111,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
             }                 
         """.trimIndent()
 
-        val server = embeddedServer(Netty, port = 8080) {
+        val server = embeddedServer(Netty, port = findAvailablePort()) {
             routing {
                 get(redirectUriPath) {
                     call.respondHtml {
@@ -157,5 +159,10 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         return Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes)
     }
 
+
+    private fun findAvailablePort(): Int {
+        val port = ServerSocket(0).use { socket -> socket.localPort }
+        return port
+    }
 
 }

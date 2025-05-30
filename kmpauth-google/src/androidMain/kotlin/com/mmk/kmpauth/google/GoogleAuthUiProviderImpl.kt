@@ -29,10 +29,14 @@ internal class GoogleAuthUiProviderImpl(
 
         val googleUser = try {
             // Temporary solution until to find out requesting additional scopes with Credential Manager.
-            if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) throw GetCredentialProviderConfigurationException() //Will open Legacy Sign In
+            if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) {
+                currentLogger.log("GoogleAuthUiProvider: Scopes are not empty. Trying to request additional scopes...")
+                throw GetCredentialProviderConfigurationException() //Will open Legacy Sign In
+            }
 
             getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
         } catch (e: NoCredentialException) {
+            currentLogger.log("GoogleAuthUiProvider: NoCredentialException while getting credential")
             if (!filterByAuthorizedAccounts)
                 return handleCredentialException(
                     e = e,
@@ -42,21 +46,25 @@ internal class GoogleAuthUiProviderImpl(
             try {
                 getGoogleUserFromCredential(filterByAuthorizedAccounts = false)
             } catch (e: GetCredentialException) {
+                currentLogger.log("GoogleAuthUiProvider: GetCredentialException while getting credential")
                 handleCredentialException(
                     e = e,
                     filterByAuthorizedAccounts = filterByAuthorizedAccounts,
                     scopes = scopes
                 )
             } catch (e: NullPointerException) {
+                currentLogger.log("GoogleAuthUiProvider: NullPointerException while getting credential")
                 null
             }
         } catch (e: GetCredentialException) {
+            currentLogger.log("GoogleAuthUiProvider: GetCredentialException while getting credential")
             handleCredentialException(
                 e = e,
                 filterByAuthorizedAccounts = filterByAuthorizedAccounts,
                 scopes = scopes
             )
         } catch (e: NullPointerException) {
+            currentLogger.log("GoogleAuthUiProvider: NullPointerException while getting credential")
             null
         }
         return googleUser
@@ -68,7 +76,7 @@ internal class GoogleAuthUiProviderImpl(
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
     ): GoogleUser? {
-        currentLogger.log("GoogleAuthUiProvider error: ${e.message}")
+        currentLogger.log("GoogleAuthUiProvider error: $e and message: ${e.message}")
         val shouldCheckLegacyAuthServices = when (e) {
             is GetCredentialProviderConfigurationException -> true
             is NoCredentialException -> true
@@ -76,8 +84,10 @@ internal class GoogleAuthUiProviderImpl(
             else -> false
         }
         return if (shouldCheckLegacyAuthServices) {
+            currentLogger.log("GoogleAuthUiProvider: Legacy Sign In is needed")
             checkLegacyGoogleSignIn(filterByAuthorizedAccounts, scopes)
         } else {
+            currentLogger.log("GoogleAuthUiProvider: No valid credential response found")
             null
         }
     }
@@ -100,6 +110,9 @@ internal class GoogleAuthUiProviderImpl(
             context = activityContext,
             request = getCredentialRequest(filterByAuthorizedAccounts)
         ).credential
+
+        currentLogger.log("GoogleAuthUiProvider Received Credential: $credential")
+
         return when {
             credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
                 try {
@@ -118,7 +131,10 @@ internal class GoogleAuthUiProviderImpl(
                 }
             }
 
-            else -> null
+            else -> {
+                currentLogger.log("GoogleAuthUiProvider Received an invalid credential response: ${credential.type}")
+                null
+            }
         }
     }
 

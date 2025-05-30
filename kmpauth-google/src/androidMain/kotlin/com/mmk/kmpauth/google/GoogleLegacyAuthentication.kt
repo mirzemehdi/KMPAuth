@@ -35,12 +35,14 @@ internal class GoogleLegacyAuthentication(
         try {
             activityResultLauncher.launch(signInClient)
         } catch (e: ActivityNotFoundException) {
-            currentLogger.log(e.message)
+            currentLogger.log("GoogleLegacyAuth Error: $e")
             return null
         }
 
         withContext(Dispatchers.Default) {
+            currentLogger.log("GoogleLegacyAuth: Waiting for activity result...")
             while (activityResultState.isInProgress) yield()
+            currentLogger.log("GoogleLegacyAuth: Activity result is finished")
         }
         val data: Intent? = activityResultState.data?.data
         return getGoogleUserFromIntentData(data)
