@@ -7,10 +7,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.google.GoogleAuthUiProvider.Companion.BASIC_AUTH_SCOPE
 import kotlinx.coroutines.launch
 
+@OptIn(KMPAuthInternalApi::class)
 /**
  * GoogleButton Ui Container Composable that handles all sign-in functionality.
  * Make sure you create [GoogleAuthUiProvider] instance using [GoogleAuthProvider.create]
@@ -52,7 +55,7 @@ public fun GoogleButtonUiContainer(
     val uiContainerScope = remember {
         object : UiContainerScope {
             override fun onClick() {
-                println("GoogleUiButtonContainer is clicked")
+                currentLogger.log("GoogleUiButtonContainer is clicked")
                 coroutineScope.launch {
                     val googleUser = googleAuthUiProvider.signIn(
                         filterByAuthorizedAccounts = filterByAuthorizedAccounts,

@@ -1,6 +1,8 @@
 package com.mmk.kmpauth.google
 
 import androidx.compose.runtime.Composable
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.logger.currentLogger
 
 internal class GoogleAuthProviderImpl(private val googleAuthCredentials: GoogleAuthCredentials) :
     GoogleAuthProvider {
@@ -11,7 +13,8 @@ internal class GoogleAuthProviderImpl(private val googleAuthCredentials: GoogleA
     }
 
 
+    @OptIn(KMPAuthInternalApi::class)
     override suspend fun signOut() {
-       println("Not implemented")
+       currentLogger.log("Not implemented")
     }
 }

@@ -9,7 +9,7 @@
             android:exported="false"
             tools:node="merge">
             <!-- This entry makes ExampleLoggerInitializer discoverable. -->
-            <meta-data  android:name="com.mmk.kmpauth.core.di.ContextInitializer"
+            <meta-data  android:name="com.mmk.kmpauth.core.di.KMPAuthContextInitializer"
                 android:value="androidx.startup" />
         </provider>
     </application>

@@ -32,9 +32,8 @@ public final class com/mmk/kmpauth/uihelper/apple/AppleSignInButtonKt {
 
 public final class com/mmk/kmpauth/uihelper/google/ComposableSingletons$GoogleSignInButtonKt {
 	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/google/ComposableSingletons$GoogleSignInButtonKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function3;
 	public fun <init> ()V
-	public final fun getLambda-1$kmpauth_uihelper ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-2074569670$kmpauth_uihelper ()Lkotlin/jvm/functions/Function3;
 }
 
 public abstract interface class com/mmk/kmpauth/uihelper/google/GoogleButtonMode {

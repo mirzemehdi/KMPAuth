@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.firebase.apple.AppleButtonUiContainer
 import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
@@ -33,6 +34,7 @@ import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButtonIconOnly
 import dev.gitlive.firebase.auth.FirebaseUser
 
+@OptIn(KMPAuthInternalApi::class)
 @Composable
 fun App() {
 
@@ -110,7 +112,10 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
 
         //Google Sign-In Button and authentication with Firebase
         GoogleButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
-            GoogleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp), fontSize = 19.sp) { this.onClick() }
+            GoogleSignInButton(
+                modifier = Modifier.fillMaxWidth().height(44.dp),
+                fontSize = 19.sp
+            ) { this.onClick() }
         }
 
         //Apple Sign-In Button and authentication with Firebase

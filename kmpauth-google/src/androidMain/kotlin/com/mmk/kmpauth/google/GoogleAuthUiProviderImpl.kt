@@ -11,8 +11,10 @@ import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.logger.currentLogger
 
-
+@OptIn(KMPAuthInternalApi::class)
 internal class GoogleAuthUiProviderImpl(
     private val activityContext: Context,
     private val credentialManager: CredentialManager,
@@ -27,10 +29,14 @@ internal class GoogleAuthUiProviderImpl(
 
         val googleUser = try {
             // Temporary solution until to find out requesting additional scopes with Credential Manager.
-            if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) throw GetCredentialProviderConfigurationException() //Will open Legacy Sign In
+            if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) {
+                currentLogger.log("GoogleAuthUiProvider: Scopes are not empty. Trying to request additional scopes...")
+                throw GetCredentialProviderConfigurationException() //Will open Legacy Sign In
+            }
 
             getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
         } catch (e: NoCredentialException) {
+            currentLogger.log("GoogleAuthUiProvider: NoCredentialException while getting credential")
             if (!filterByAuthorizedAccounts)
                 return handleCredentialException(
                     e = e,
@@ -40,32 +46,37 @@ internal class GoogleAuthUiProviderImpl(
             try {
                 getGoogleUserFromCredential(filterByAuthorizedAccounts = false)
             } catch (e: GetCredentialException) {
+                currentLogger.log("GoogleAuthUiProvider: GetCredentialException while getting credential")
                 handleCredentialException(
                     e = e,
                     filterByAuthorizedAccounts = filterByAuthorizedAccounts,
                     scopes = scopes
                 )
             } catch (e: NullPointerException) {
+                currentLogger.log("GoogleAuthUiProvider: NullPointerException while getting credential")
                 null
             }
         } catch (e: GetCredentialException) {
+            currentLogger.log("GoogleAuthUiProvider: GetCredentialException while getting credential")
             handleCredentialException(
                 e = e,
                 filterByAuthorizedAccounts = filterByAuthorizedAccounts,
                 scopes = scopes
             )
         } catch (e: NullPointerException) {
+            currentLogger.log("GoogleAuthUiProvider: NullPointerException while getting credential")
             null
         }
         return googleUser
     }
+
 
     private suspend fun handleCredentialException(
         e: GetCredentialException,
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
     ): GoogleUser? {
-        println("GoogleAuthUiProvider error: ${e.message}")
+        currentLogger.log("GoogleAuthUiProvider error: $e and message: ${e.message}")
         val shouldCheckLegacyAuthServices = when (e) {
             is GetCredentialProviderConfigurationException -> true
             is NoCredentialException -> true
@@ -73,28 +84,35 @@ internal class GoogleAuthUiProviderImpl(
             else -> false
         }
         return if (shouldCheckLegacyAuthServices) {
+            currentLogger.log("GoogleAuthUiProvider: Legacy Sign In is needed")
             checkLegacyGoogleSignIn(filterByAuthorizedAccounts, scopes)
         } else {
+            currentLogger.log("GoogleAuthUiProvider: No valid credential response found")
             null
         }
     }
 
+    @OptIn(KMPAuthInternalApi::class)
     private suspend fun checkLegacyGoogleSignIn(
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
     ): GoogleUser? {
-        println("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
+        currentLogger.log("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
         return googleLegacyAuthentication.signIn(
             filterByAuthorizedAccounts = filterByAuthorizedAccounts,
             scopes = scopes
         )
     }
 
+    @OptIn(KMPAuthInternalApi::class)
     private suspend fun getGoogleUserFromCredential(filterByAuthorizedAccounts: Boolean): GoogleUser? {
         val credential = credentialManager.getCredential(
             context = activityContext,
             request = getCredentialRequest(filterByAuthorizedAccounts)
         ).credential
+
+        currentLogger.log("GoogleAuthUiProvider Received Credential: $credential")
+
         return when {
             credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
                 try {
@@ -108,12 +126,15 @@ internal class GoogleAuthUiProviderImpl(
                         profilePicUrl = googleIdTokenCredential.profilePictureUri?.toString()
                     )
                 } catch (e: GoogleIdTokenParsingException) {
-                    println("GoogleAuthUiProvider Received an invalid google id token response: ${e.message}")
+                    currentLogger.log("GoogleAuthUiProvider Received an invalid google id token response: ${e.message}")
                     null
                 }
             }
 
-            else -> null
+            else -> {
+                currentLogger.log("GoogleAuthUiProvider Received an invalid credential response: ${credential.type}")
+                null
+            }
         }
     }
 
