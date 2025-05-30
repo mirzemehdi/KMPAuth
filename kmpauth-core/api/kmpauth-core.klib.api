@@ -1,5 +1,5 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64, js]
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, wasmJs]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -8,6 +8,10 @@
 // Library unique name: <io.github.mirzemehdi:kmpauth-core>
 open annotation class com.mmk.kmpauth.core/KMPAuthInternalApi : kotlin/Annotation { // com.mmk.kmpauth.core/KMPAuthInternalApi|null[0]
     constructor <init>() // com.mmk.kmpauth.core/KMPAuthInternalApi.<init>|<init>(){}[0]
+}
+
+abstract fun interface com.mmk.kmpauth.core.logger/KMPAuthLogger { // com.mmk.kmpauth.core.logger/KMPAuthLogger|null[0]
+    abstract fun log(kotlin/String?) // com.mmk.kmpauth.core.logger/KMPAuthLogger.log|log(kotlin.String?){}[0]
 }
 
 abstract interface com.mmk.kmpauth.core/UiContainerScope { // com.mmk.kmpauth.core/UiContainerScope|null[0]
@@ -27,5 +31,13 @@ final object com.mmk.kmpauth.core.di/LibDependencyInitializer { // com.mmk.kmpau
     final fun initialize(kotlin.collections/List<org.koin.core.module/Module> = ...) // com.mmk.kmpauth.core.di/LibDependencyInitializer.initialize|initialize(kotlin.collections.List<org.koin.core.module.Module>){}[0]
     final fun initialize(org.koin.core.module/Module) // com.mmk.kmpauth.core.di/LibDependencyInitializer.initialize|initialize(org.koin.core.module.Module){}[0]
 }
+
+final object com.mmk.kmpauth.core/KMPAuth { // com.mmk.kmpauth.core/KMPAuth|null[0]
+    final fun setLogger(com.mmk.kmpauth.core.logger/KMPAuthLogger) // com.mmk.kmpauth.core/KMPAuth.setLogger|setLogger(com.mmk.kmpauth.core.logger.KMPAuthLogger){}[0]
+}
+
+final var com.mmk.kmpauth.core.logger/currentLogger // com.mmk.kmpauth.core.logger/currentLogger|{}currentLogger[0]
+    final fun <get-currentLogger>(): com.mmk.kmpauth.core.logger/KMPAuthLogger // com.mmk.kmpauth.core.logger/currentLogger.<get-currentLogger>|<get-currentLogger>(){}[0]
+    final fun <set-currentLogger>(com.mmk.kmpauth.core.logger/KMPAuthLogger) // com.mmk.kmpauth.core.logger/currentLogger.<set-currentLogger>|<set-currentLogger>(com.mmk.kmpauth.core.logger.KMPAuthLogger){}[0]
 
 final fun com.mmk.kmpauth.core.di/isAndroidPlatform(): kotlin/Boolean // com.mmk.kmpauth.core.di/isAndroidPlatform|isAndroidPlatform(){}[0]
