@@ -1,6 +1,8 @@
 package com.mmk.kmpauth.google
 
 import com.auth0.jwt.JWT
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.logger.currentLogger
 import io.ktor.http.ContentType
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.html.respondHtml
@@ -26,6 +28,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 
     private val authUrl = "https://accounts.google.com/o/oauth2/v2/auth"
 
+    @OptIn(KMPAuthInternalApi::class)
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
@@ -138,6 +141,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         return idTokenAndAccessTokenPair
     }
 
+    @OptIn(KMPAuthInternalApi::class)
     private fun openUrlInBrowser(url: String) {
         if (Desktop.isDesktopSupported()) {
             Desktop.getDesktop().browse(URI(url))

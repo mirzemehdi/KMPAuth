@@ -3,27 +3,27 @@ package com.mmk.kmpauth.google
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.browser.document
-import kotlinx.browser.window
 import kotlinx.coroutines.*
 import org.w3c.dom.HTMLScriptElement
-import org.w3c.fetch.RequestInit
 import kotlin.coroutines.resume
-import kotlin.js.json
+import kotlin.js.Promise
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
-internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCredentials) : GoogleAuthUiProvider {
 
+internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCredentials) : GoogleAuthUiProvider {
     private var googleAuthScriptLoaded = false
 
     init {
         if (!googleAuthScriptLoaded) loadGoogleAuthScript()
     }
 
+
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
         scopes: List<String>
     ): GoogleUser? {
+
         val scriptLoaded = waitForGoogleAuthScriptToLoad()
         if (!scriptLoaded) return null
 
@@ -32,17 +32,17 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 clientId = credentials.serverId,
                 scope = scopes.joinToString(" "),
                 prompt = if (filterByAuthorizedAccounts) "none" else "select_account",
-                callback = { tokenResponse: dynamic ->
+                callback = { tokenResponse: JsAny ->
                     CoroutineScope(continuation.context).launch {
                         continuation.handleTokenResponse(tokenResponse)
                     }
                 }
             )
+
             val tokenClient = initTokenClient(tokenClientConfig)
             requestAccessToken(tokenClient)
         }
     }
-
 
     private fun loadGoogleAuthScript() {
         val script = document.createElement("script") as HTMLScriptElement
@@ -55,7 +55,19 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         document.head?.appendChild(script)
     }
 
-    private suspend fun CancellableContinuation<GoogleUser?>.handleTokenResponse(tokenResponse: dynamic) {
+    private suspend fun waitForGoogleAuthScriptToLoad(timeout: Duration = 5.minutes): Boolean {
+        if (googleAuthScriptLoaded) return true
+
+        return withTimeoutOrNull(timeout) {
+            while (!googleAuthScriptLoaded) delay(300)
+            true
+        } ?: run {
+            showConsoleError("Google Auth failed to initialize. Timeout reached: $timeout")
+            false
+        }
+    }
+
+    private suspend fun CancellableContinuation<GoogleUser?>.handleTokenResponse(tokenResponse: JsAny) {
 
         val error = getTokenResponseError(tokenResponse)
         if (error != null) {
@@ -67,8 +79,9 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         val idToken = getTokenResponseIdToken(tokenResponse) ?: ""
         val accessToken = getTokenResponseAccessToken(tokenResponse) ?: ""
 
+        val googleUserInfoPromise: Promise<JsAny> = fetchGoogleUserInfoPromise(accessToken).unsafeCast()
         try {
-            val userInfo = fetchGoogleUserInfo(accessToken = accessToken)
+            val userInfo = googleUserInfoPromise.await<JsAny>()
 
             val email = getUserInfoEmail(userInfo)
             val name = getUserInfoName(userInfo) ?: ""
@@ -95,56 +108,53 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         }
     }
 
-
-    private suspend fun fetchGoogleUserInfo(accessToken: String): dynamic {
-        val headers = js("({})")
-
-        headers["Authorization"] = "Bearer $accessToken"
-
-        val fetchOptions = js("({})")
-        fetchOptions["headers"] = headers
-
-        val response = window.fetch(
-            "https://www.googleapis.com/oauth2/v3/userinfo",
-            fetchOptions.unsafeCast<RequestInit>()
-        ).await()
-
-        val userInfo = response.json().await()
-        return userInfo.asDynamic()
-    }
-
-    private suspend fun waitForGoogleAuthScriptToLoad(timeout: Duration = 5.minutes): Boolean {
-        if (googleAuthScriptLoaded) return true
-
-        return withTimeoutOrNull(timeout) {
-            while (!googleAuthScriptLoaded) delay(300)
-            true
-        } ?: run {
-            showConsoleError("Google Auth failed to initialize. Timeout reached: $timeout")
-            false
-        }
-    }
-
-
 }
+
+
+private fun fetchGoogleUserInfoPromise(accessToken: String): JsAny =
+    js(
+        """
+       (() => {
+          const headers = { Authorization: "Bearer " + accessToken };
+          const fetchOptions = { headers };
+          return fetch("https://www.googleapis.com/oauth2/v3/userinfo", fetchOptions).then(res => res.json());
+       })()
+    """
+    )
+
+
+@JsFun(
+    """
+    (config, clientId, scope, prompt, callback) => {
+        config.client_id = clientId;
+        config.scope = scope;
+        config.prompt = prompt;
+        config.callback = callback;
+    }
+"""
+)
+private external fun setTokenClientConfigPropsImpl(
+    config: JsAny,
+    clientId: String,
+    scope: String,
+    prompt: String,
+    callback: (JsAny) -> Unit
+)
+
 
 private fun createTokenClientConfig(
     clientId: String,
-    callback: (dynamic) -> Unit,
+    callback: (JsAny) -> Unit,
     scope: String,
     prompt: String
-): dynamic {
-    val obj = js("({})")
-    js("Object.assign")(
-        obj, json(
-            "client_id" to clientId,
-            "callback" to callback,
-            "scope" to scope,
-            "prompt" to prompt
-        )
-    )
+): JsAny {
+    val obj: JsAny = createEmptyObject()
+    setTokenClientConfigPropsImpl(obj, clientId, scope, prompt, callback)
     return obj
 }
+
+
+private fun createEmptyObject(): JsAny = js("({})")
 
 @OptIn(KMPAuthInternalApi::class)
 private fun showConsoleError(message: String): Unit {
@@ -152,19 +162,25 @@ private fun showConsoleError(message: String): Unit {
     // js("console.error(message)") //TODO Show in console?
 }
 
-private fun initTokenClient(tokenClientConfig: dynamic): dynamic =
+private fun initTokenClient(tokenClientConfig: JsAny): JsAny =
     js("google.accounts.oauth2.initTokenClient(tokenClientConfig)")
 
-private fun requestAccessToken(tokenClient: dynamic): Unit = tokenClient.requestAccessToken()
+private fun requestAccessToken(tokenClient: JsAny): Unit = js("tokenClient.requestAccessToken()")
 
-private fun getUserInfoEmail(userInfo: dynamic): String? = userInfo.email
-private fun getUserInfoName(userInfo: dynamic): String? = userInfo.name
-private fun getUserInfoPicture(userInfo: dynamic): String? = userInfo.picture
+private fun getUserInfoEmail(userInfo: JsAny): String? = js("userInfo.email")
+private fun getUserInfoName(userInfo: JsAny): String? = js("userInfo.name")
+private fun getUserInfoPicture(userInfo: JsAny): String? = js("userInfo.picture")
 
-private fun getTokenResponseError(tokenResponse: dynamic): String? = tokenResponse.error
+private fun getTokenResponseError(tokenResponse: JsAny): String? = js("tokenResponse.error")
 
 // Extract id_token from tokenResponse
-private fun getTokenResponseIdToken(tokenResponse: dynamic): String? = tokenResponse.id_token
+private fun getTokenResponseIdToken(tokenResponse: JsAny): String? = js("tokenResponse.id_token")
 
 // Extract access_token from tokenResponse
-private fun getTokenResponseAccessToken(tokenResponse: dynamic): String? = tokenResponse.access_token
+private fun getTokenResponseAccessToken(tokenResponse: JsAny): String? = js("tokenResponse.access_token")
+
+
+
+
+
+
