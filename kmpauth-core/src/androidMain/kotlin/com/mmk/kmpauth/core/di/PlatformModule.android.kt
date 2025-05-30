@@ -8,7 +8,7 @@ import org.koin.dsl.module
 internal lateinit var applicationContext: Context
     private set
 
-internal class ContextInitializer : Initializer<Unit> {
+internal class KMPAuthContextInitializer : Initializer<Unit> {
     override fun create(context: Context) {
         applicationContext = context.applicationContext
     }
