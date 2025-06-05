@@ -22,6 +22,7 @@ internal class GoogleAuthUiProviderImpl(
     GoogleAuthUiProvider {
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
 
@@ -29,20 +30,22 @@ internal class GoogleAuthUiProviderImpl(
             // Temporary solution until to find out requesting additional scopes with Credential Manager.
             if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) throw GetCredentialProviderConfigurationException() //Will open Legacy Sign In
 
-            getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
+            getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts, isAutoSelectEnabled = isAutoSelectEnabled)
         } catch (e: NoCredentialException) {
             if (!filterByAuthorizedAccounts)
                 return handleCredentialException(
                     e = e,
                     filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                    isAutoSelectEnabled = isAutoSelectEnabled,
                     scopes = scopes
                 )
             try {
-                getGoogleUserFromCredential(filterByAuthorizedAccounts = false)
+                getGoogleUserFromCredential(filterByAuthorizedAccounts = false, isAutoSelectEnabled = isAutoSelectEnabled)
             } catch (e: GetCredentialException) {
                 handleCredentialException(
                     e = e,
                     filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                    isAutoSelectEnabled = isAutoSelectEnabled,
                     scopes = scopes
                 )
             } catch (e: NullPointerException) {
@@ -52,6 +55,7 @@ internal class GoogleAuthUiProviderImpl(
             handleCredentialException(
                 e = e,
                 filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                isAutoSelectEnabled = isAutoSelectEnabled,
                 scopes = scopes
             )
         } catch (e: NullPointerException) {
@@ -63,6 +67,7 @@ internal class GoogleAuthUiProviderImpl(
     private suspend fun handleCredentialException(
         e: GetCredentialException,
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
         println("GoogleAuthUiProvider error: ${e.message}")
@@ -73,7 +78,7 @@ internal class GoogleAuthUiProviderImpl(
             else -> false
         }
         return if (shouldCheckLegacyAuthServices) {
-            checkLegacyGoogleSignIn(filterByAuthorizedAccounts, scopes)
+            checkLegacyGoogleSignIn(filterByAuthorizedAccounts, isAutoSelectEnabled, scopes)
         } else {
             null
         }
@@ -81,19 +86,21 @@ internal class GoogleAuthUiProviderImpl(
 
     private suspend fun checkLegacyGoogleSignIn(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
         println("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
         return googleLegacyAuthentication.signIn(
             filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+            isAutoSelectEnabled = isAutoSelectEnabled,
             scopes = scopes
         )
     }
 
-    private suspend fun getGoogleUserFromCredential(filterByAuthorizedAccounts: Boolean): GoogleUser? {
+    private suspend fun getGoogleUserFromCredential(filterByAuthorizedAccounts: Boolean, isAutoSelectEnabled: Boolean): GoogleUser? {
         val credential = credentialManager.getCredential(
             context = activityContext,
-            request = getCredentialRequest(filterByAuthorizedAccounts)
+            request = getCredentialRequest(filterByAuthorizedAccounts, isAutoSelectEnabled)
         ).credential
         return when {
             credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
@@ -117,12 +124,16 @@ internal class GoogleAuthUiProviderImpl(
         }
     }
 
-    private fun getCredentialRequest(filterByAuthorizedAccounts: Boolean): GetCredentialRequest {
+    private fun getCredentialRequest(
+        filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean
+    ): GetCredentialRequest {
         return GetCredentialRequest.Builder()
             .addCredentialOption(
                 getGoogleIdOption(
                     serverClientId = credentials.serverId,
-                    filterByAuthorizedAccounts = filterByAuthorizedAccounts
+                    filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                    isAutoSelectEnabled = isAutoSelectEnabled,
                 )
             )
             .build()
@@ -130,11 +141,12 @@ internal class GoogleAuthUiProviderImpl(
 
     private fun getGoogleIdOption(
         serverClientId: String,
-        filterByAuthorizedAccounts: Boolean
+        filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean
     ): GetGoogleIdOption {
         return GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
-            .setAutoSelectEnabled(true)
+            .setAutoSelectEnabled(isAutoSelectEnabled)
             .setServerClientId(serverClientId)
             .build()
     }

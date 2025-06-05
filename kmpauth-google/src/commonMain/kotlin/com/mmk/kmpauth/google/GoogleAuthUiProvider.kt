@@ -17,14 +17,14 @@ public interface GoogleAuthUiProvider {
      * @return returns GoogleUser or null(if sign-in was not successful)
      */
     public suspend fun signIn(): GoogleUser? =
-        signIn(filterByAuthorizedAccounts = false, scopes = BASIC_AUTH_SCOPE)
+        signIn(filterByAuthorizedAccounts = false, isAutoSelectEnabled = true, scopes = BASIC_AUTH_SCOPE)
 
     /**
      * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
      * setting to false list any accounts that have previously been used to sign in to your app.
      */
-    public suspend fun signIn(filterByAuthorizedAccounts: Boolean): GoogleUser? =
-        signIn(filterByAuthorizedAccounts = filterByAuthorizedAccounts, scopes = BASIC_AUTH_SCOPE)
+    public suspend fun signIn(filterByAuthorizedAccounts: Boolean, isAutoSelectEnabled: Boolean): GoogleUser? =
+        signIn(filterByAuthorizedAccounts = filterByAuthorizedAccounts, isAutoSelectEnabled = isAutoSelectEnabled, scopes = BASIC_AUTH_SCOPE)
 
 
     /**
@@ -35,6 +35,7 @@ public interface GoogleAuthUiProvider {
      */
     public suspend fun signIn(
         filterByAuthorizedAccounts: Boolean = false,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String> = BASIC_AUTH_SCOPE
     ): GoogleUser?
 }

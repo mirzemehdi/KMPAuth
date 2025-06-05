@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 public fun GoogleButtonUiContainer(
     modifier: Modifier = Modifier,
     filterByAuthorizedAccounts: Boolean = false,
+    isAutoSelectEnabled: Boolean = true,
     scopes: List<String> = BASIC_AUTH_SCOPE,
     onGoogleSignInResult: (GoogleUser?) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
@@ -56,6 +57,7 @@ public fun GoogleButtonUiContainer(
                 coroutineScope.launch {
                     val googleUser = googleAuthUiProvider.signIn(
                         filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                        isAutoSelectEnabled = isAutoSelectEnabled,
                         scopes = scopes
                     )
                     updatedOnResultFunc(googleUser)

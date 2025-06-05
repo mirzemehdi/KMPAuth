@@ -26,6 +26,7 @@ internal class GoogleLegacyAuthentication(
 
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
         val signInClient = getGoogleSignInClient(scopes = scopes).signInIntent
