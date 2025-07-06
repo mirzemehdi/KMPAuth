@@ -1,6 +1,7 @@
 package com.mmk.kmpauth.google
 
 import android.content.Context
+import androidx.activity.result.IntentSenderRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -8,9 +9,16 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.GetCredentialProviderConfigurationException
 import androidx.credentials.exceptions.GetCredentialUnsupportedException
 import androidx.credentials.exceptions.NoCredentialException
+import com.google.android.gms.auth.api.identity.AuthorizationRequest
+import com.google.android.gms.auth.api.identity.AuthorizationResult
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.common.api.Scope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 
 internal class GoogleAuthUiProviderImpl(
@@ -18,6 +26,7 @@ internal class GoogleAuthUiProviderImpl(
     private val credentialManager: CredentialManager,
     private val credentials: GoogleAuthCredentials,
     private val googleLegacyAuthentication: GoogleLegacyAuthentication,
+    private val scopeIntentLauncher: (IntentSenderRequest) -> Unit
 ) :
     GoogleAuthUiProvider {
     override suspend fun signIn(
@@ -26,10 +35,10 @@ internal class GoogleAuthUiProviderImpl(
     ): GoogleUser? {
 
         val googleUser = try {
-            // Temporary solution until to find out requesting additional scopes with Credential Manager.
-            if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) throw GetCredentialProviderConfigurationException() //Will open Legacy Sign In
-
-            getGoogleUserFromCredential(filterByAuthorizedAccounts = filterByAuthorizedAccounts)
+            getGoogleUserFromCredential(
+                filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                scopes
+            )
         } catch (e: NoCredentialException) {
             if (!filterByAuthorizedAccounts)
                 return handleCredentialException(
@@ -38,7 +47,7 @@ internal class GoogleAuthUiProviderImpl(
                     scopes = scopes
                 )
             try {
-                getGoogleUserFromCredential(filterByAuthorizedAccounts = false)
+                getGoogleUserFromCredential(filterByAuthorizedAccounts = false, scopes)
             } catch (e: GetCredentialException) {
                 handleCredentialException(
                     e = e,
@@ -90,7 +99,10 @@ internal class GoogleAuthUiProviderImpl(
         )
     }
 
-    private suspend fun getGoogleUserFromCredential(filterByAuthorizedAccounts: Boolean): GoogleUser? {
+    private suspend fun getGoogleUserFromCredential(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>
+    ): GoogleUser? {
         val credential = credentialManager.getCredential(
             context = activityContext,
             request = getCredentialRequest(filterByAuthorizedAccounts)
@@ -100,9 +112,17 @@ internal class GoogleAuthUiProviderImpl(
                 try {
                     val googleIdTokenCredential =
                         GoogleIdTokenCredential.createFrom(credential.data)
+                    val accessToken =
+                        if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) {
+                            fetchAccessTokenWithScopes(
+                                scopes
+                            ).accessToken
+                        } else {
+                            null
+                        }
                     GoogleUser(
                         idToken = googleIdTokenCredential.idToken,
-                        accessToken = null,
+                        accessToken = accessToken,
                         email = googleIdTokenCredential.id,
                         displayName = googleIdTokenCredential.displayName ?: "",
                         profilePicUrl = googleIdTokenCredential.profilePictureUri?.toString()
@@ -116,6 +136,29 @@ internal class GoogleAuthUiProviderImpl(
             else -> null
         }
     }
+
+    private suspend fun fetchAccessTokenWithScopes(scopes: List<String>): AuthorizationResult =
+        suspendCancellableCoroutine { cont ->
+            val authClient = Identity.getAuthorizationClient(activityContext)
+            val request = AuthorizationRequest.builder()
+                .setRequestedScopes(scopes.map(::Scope))
+                .build()
+
+            authClient.authorize(request)
+                .addOnSuccessListener { r ->
+                    if (r.hasResolution()) {
+                        GoogleAuthContinuationRegistry.store(cont)
+                        r.pendingIntent?.let { intent ->
+                            scopeIntentLauncher(
+                                IntentSenderRequest.Builder(intent).build()
+                            )
+                        }
+                    } else {
+                        cont.resume(r)
+                    }
+                }
+                .addOnFailureListener { e -> cont.resumeWithException(e) }
+        }
 
     private fun getCredentialRequest(filterByAuthorizedAccounts: Boolean): GetCredentialRequest {
         return GetCredentialRequest.Builder()

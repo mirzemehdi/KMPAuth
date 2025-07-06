@@ -23,6 +23,12 @@ internal class GoogleAuthProviderImpl(
                 activityResultState.isInProgress = false
                 activityResultState.data = result
             }
+        val scopeIntentLauncher =
+            rememberLauncherForActivityResult(
+                ActivityResultContracts.StartIntentSenderForResult()
+            ) { res ->
+                GoogleAuthContinuationRegistry.deliver(activityContext,res)
+            }
         val googleLegacyAuthentication = GoogleLegacyAuthentication(
             activityContext = activityContext,
             credentials = credentials,
@@ -34,7 +40,8 @@ internal class GoogleAuthProviderImpl(
             activityContext = activityContext,
             credentialManager = credentialManager,
             credentials = credentials,
-            googleLegacyAuthentication = googleLegacyAuthentication
+            googleLegacyAuthentication = googleLegacyAuthentication,
+            scopeIntentLauncher = scopeIntentLauncher::launch
         )
     }
 
