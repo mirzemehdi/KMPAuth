@@ -1,6 +1,8 @@
 package com.mmk.kmpauth.google
 
+import android.app.Activity
 import android.content.Context
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -16,6 +18,10 @@ import com.google.android.gms.common.api.Scope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -26,7 +32,8 @@ internal class GoogleAuthUiProviderImpl(
     private val credentialManager: CredentialManager,
     private val credentials: GoogleAuthCredentials,
     private val googleLegacyAuthentication: GoogleLegacyAuthentication,
-    private val scopeIntentLauncher: (IntentSenderRequest) -> Unit
+    private val scopeIntentLauncher: (IntentSenderRequest) -> Unit,
+    private val authResultChannel: ReceiveChannel<ActivityResult>
 ) :
     GoogleAuthUiProvider {
     override suspend fun signIn(
@@ -137,28 +144,51 @@ internal class GoogleAuthUiProviderImpl(
         }
     }
 
-    private suspend fun fetchAccessTokenWithScopes(scopes: List<String>): AuthorizationResult =
-        suspendCancellableCoroutine { cont ->
-            val authClient = Identity.getAuthorizationClient(activityContext)
-            val request = AuthorizationRequest.builder()
-                .setRequestedScopes(scopes.map(::Scope))
-                .build()
+    private suspend fun fetchAccessTokenWithScopes(scopes: List<String>): AuthorizationResult {
+        val authClient = Identity.getAuthorizationClient(activityContext)
+        val request = AuthorizationRequest.builder()
+            .setRequestedScopes(scopes.map(::Scope))
+            .build()
 
+        return suspendCancellableCoroutine { continuation ->
             authClient.authorize(request)
                 .addOnSuccessListener { r ->
                     if (r.hasResolution()) {
-                        GoogleAuthContinuationRegistry.store(cont)
                         r.pendingIntent?.let { intent ->
-                            scopeIntentLauncher(
-                                IntentSenderRequest.Builder(intent).build()
+                            scopeIntentLauncher(IntentSenderRequest.Builder(intent).build())
+                            CoroutineScope(Dispatchers.Main).launch {
+                                try {
+                                    val result = authResultChannel.receive()
+                                    val authResult = processAuthResult(activityContext, result)
+                                    continuation.resume(authResult)
+                                } catch (e: Exception) {
+                                    continuation.resumeWithException(e)
+                                }
+                            }
+                        } ?: run {
+                            continuation.resumeWithException(
+                                IllegalStateException("Authorization has resolution but no pending intent")
                             )
                         }
                     } else {
-                        cont.resume(r)
+                        continuation.resume(r)
                     }
                 }
-                .addOnFailureListener { e -> cont.resumeWithException(e) }
+                .addOnFailureListener { e ->
+                    continuation.resumeWithException(e)
+                }
         }
+    }
+
+    private fun processAuthResult(ctx: Context, res: ActivityResult): AuthorizationResult {
+        if (res.resultCode == Activity.RESULT_OK && res.data != null) {
+            return Identity
+                .getAuthorizationClient(ctx)
+                .getAuthorizationResultFromIntent(res.data!!)
+        } else {
+            throw kotlin.coroutines.cancellation.CancellationException("User cancelled authorization")
+        }
+    }
 
     private fun getCredentialRequest(filterByAuthorizedAccounts: Boolean): GetCredentialRequest {
         return GetCredentialRequest.Builder()

@@ -1,12 +1,14 @@
 package com.mmk.kmpauth.google
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
+import kotlinx.coroutines.channels.Channel
 
 
 internal class GoogleAuthProviderImpl(
@@ -23,11 +25,14 @@ internal class GoogleAuthProviderImpl(
                 activityResultState.isInProgress = false
                 activityResultState.data = result
             }
+        val authResultChannel = remember { Channel<ActivityResult>(Channel.UNLIMITED) }
+
         val scopeIntentLauncher =
             rememberLauncherForActivityResult(
                 ActivityResultContracts.StartIntentSenderForResult()
             ) { res ->
-                GoogleAuthContinuationRegistry.deliver(activityContext,res)
+                // Send result to the channel
+                authResultChannel.trySend(res)
             }
         val googleLegacyAuthentication = GoogleLegacyAuthentication(
             activityContext = activityContext,
@@ -41,7 +46,8 @@ internal class GoogleAuthProviderImpl(
             credentialManager = credentialManager,
             credentials = credentials,
             googleLegacyAuthentication = googleLegacyAuthentication,
-            scopeIntentLauncher = scopeIntentLauncher::launch
+            scopeIntentLauncher = scopeIntentLauncher::launch,
+            authResultChannel = authResultChannel
         )
     }
 
