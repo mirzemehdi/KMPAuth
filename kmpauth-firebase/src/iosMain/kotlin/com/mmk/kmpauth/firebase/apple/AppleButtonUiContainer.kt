@@ -217,15 +217,32 @@ private class ASAuthorizationControllerDelegate(
 
         val handleResult: (FIRAuthDataResult?, NSError?) -> Unit = { firAuthDataResult, nsError ->
             if (nsError != null || firAuthDataResult == null) {
-                onResult(Result.failure(IllegalStateException(nsError?.localizedFailureReason)))
+                println("AppleSignIn: authorizationController failure function is called")
+                //onResult(Result.failure(IllegalStateException(nsError?.toString())))
+                println("AppleSignIn: Error details: ${nsError?.userInfo}")
+                if (nsError != null){
+                    println("AppleSignIn: Error code: ${nsError.code}")
+                    println("AppleSignIn: Error domain: ${nsError.domain}")
+                }
+
+                if(firAuthDataResult != null){
+                    println("AppleSignIn: User is signed in: ${firAuthDataResult.toString()}")
+                } else {
+                    println("AppleSignIn: No user data available in the result")
+                }
+                println("AppleSignIn: Error occurred during sign-in: ${nsError?.localizedDescription}")
+                onResult(Result.failure(IllegalStateException(nsError?.toString())))
             } else {
+                println("AppleSignIn: SUCCESSSSS")
                 onResult(Result.success(Firebase.auth.currentUser))
             }
         }
 
         if (linkAccount && currentUser != null) {
+            println("AppleSignIn: Linking account with current user")
             currentUser.linkWithCredential(credential, handleResult)
         } else {
+            println("AppleSignIn: Signing in with credential")
             FIRAuth.auth().signInWithCredential(credential, handleResult)
         }
     }

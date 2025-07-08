@@ -21,6 +21,7 @@ dokka = "2.0.0"
 androidxCredential = "1.5.0"
 googleIdIdentity = "1.1.1"
 googleServices = "4.4.2"
+facebook-login = "18.0.3"
 firebaseGitLiveAuth = "2.1.0"
 androidLegacyPlayServices = "21.3.0"
 mavenPublish = "0.31.0"
@@ -59,6 +60,9 @@ googleIdIdentity = { module = "com.google.android.libraries.identity.googleid:go
 
 #Firebase
 firebase-gitlive-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveAuth" }
+
+#Facebook
+facebook-login = { module = "com.facebook.android:facebook-login", version.ref = "facebook-login" }
 
 #Ktor
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

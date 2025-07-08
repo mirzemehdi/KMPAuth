@@ -39,12 +39,23 @@ kotlin {
             baseName = "KMPAuthFirebaseCore"
             isStatic = true
         }
-        noPodspec()
+        pod("FBSDKCoreKit"){
+            extraOpts += listOf("-compiler-option", "-fmodules")
+            version = "~> 18.0"
+        }
+        pod("FBSDKLoginKit"){
+            extraOpts += listOf("-compiler-option", "-fmodules")
+            version = "~> 18.0"
+        }
     }
 
 
 
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.facebook.login)
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)

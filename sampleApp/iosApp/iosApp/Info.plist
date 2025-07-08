@@ -42,6 +42,12 @@
 				<string>com.googleusercontent.apps.180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll</string>
 			</array>
 		</dict>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>fbapp_id</string>
+            </array>
+        </dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -73,5 +79,11 @@
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
+    <key>FacebookAppID</key>
+    <string>app_id</string>
+    <key>FacebookClientToken</key>
+    <string>client_token</string>
+    <key>FacebookDisplayName</key>
+    <string>display_name</string>
 </dict>
 </plist>
