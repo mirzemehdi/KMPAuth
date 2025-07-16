@@ -3,10 +3,7 @@ package com.mmk.kmpauth.firebase.facebook
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
-import com.mmk.kmpauth.firebase.apple.AppleSignInRequestScope
-import com.mmk.kmpauth.firebase.oauth.OAuthContainer
 import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.OAuthProvider
 
 /**
  * FacebookButton Ui Container Composable that handles all sign-in functionality for Facebook.
@@ -32,7 +29,7 @@ import dev.gitlive.firebase.auth.OAuthProvider
 public expect fun FacebookButtonUiContainer(
     modifier: Modifier = Modifier,
     requestScopes: List<FacebookSignInRequestScope> = listOf(
-        FacebookSignInRequestScope.FullName,
+        FacebookSignInRequestScope.PublicProfile,
         FacebookSignInRequestScope.Email
     ),
     onResult: (Result<FirebaseUser?>) -> Unit,
@@ -49,7 +46,7 @@ public expect fun FacebookButtonUiContainer(
 public expect fun FacebookButtonUiContainer(
     modifier: Modifier = Modifier,
     requestScopes: List<FacebookSignInRequestScope> = listOf(
-        FacebookSignInRequestScope.FullName,
+        FacebookSignInRequestScope.PublicProfile,
         FacebookSignInRequestScope.Email
     ),
     onResult: (Result<FirebaseUser?>) -> Unit,

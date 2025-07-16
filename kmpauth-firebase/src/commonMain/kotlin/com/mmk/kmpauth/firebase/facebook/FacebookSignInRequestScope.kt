@@ -1,14 +1,14 @@
 package com.mmk.kmpauth.firebase.facebook
 
 /***
- * Apple Sign in Request Scope that can be requested from user when first time user signup.
- * You can request from user [FacebookSignInRequestScope.FullName] and [FacebookSignInRequestScope.Email]
+ * Facebook Sign in Request Scope that can be requested from user when first time user signup.
+ * You can request from user [FacebookSignInRequestScope.PublicProfile] and [FacebookSignInRequestScope.Email]
  */
 public sealed interface FacebookSignInRequestScope {
     /**
-     * Request scope for user's fullname
+     * Request scope for user's public profile information
      */
-    public data object FullName : FacebookSignInRequestScope
+    public data object PublicProfile : FacebookSignInRequestScope
 
     /**
      * Request scope for user's email

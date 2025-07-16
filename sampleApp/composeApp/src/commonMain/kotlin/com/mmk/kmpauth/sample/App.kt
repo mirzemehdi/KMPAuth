@@ -84,7 +84,6 @@ fun App() {
             }
 
 
-
             // ************************** UiHelper Text Buttons *************
             Divider(modifier = Modifier.fillMaxWidth().padding(16.dp))
             AuthUiHelperButtonsAndFirebaseAuth(

@@ -45,7 +45,7 @@
         <dict>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>fbapp_id</string>
+                <string>fb1475521143802006</string>
             </array>
         </dict>
 	</array>
@@ -80,10 +80,10 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
     <key>FacebookAppID</key>
-    <string>app_id</string>
+    <string>1475521143802006</string>
     <key>FacebookClientToken</key>
-    <string>client_token</string>
+    <string>2f0106590469e9250aceb32194b93d82</string>
     <key>FacebookDisplayName</key>
-    <string>display_name</string>
+    <string>KmpAuth-Demo</string>
 </dict>
 </plist>

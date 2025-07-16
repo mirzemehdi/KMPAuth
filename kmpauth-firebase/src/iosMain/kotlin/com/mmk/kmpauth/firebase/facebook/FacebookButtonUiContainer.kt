@@ -39,18 +39,18 @@ import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowScene
 
 /**
- * AppleButton Ui Container Composable that handles all sign-in functionality for Apple.
+ * FacebookButton Ui Container Composable that handles all sign-in functionality for Facebook.
  * Child of this Composable can be any view or Composable function.
  * You need to call [UiContainerScope.onClick] function on your child view's click function.
  *
  * [onResult] callback will return [Result] with [FirebaseUser] type.
- * @param requestScopes list of request scopes type of [AppleSignInRequestScope].
+ * @param requestScopes list of request scopes type of [FacebookSignInRequestScope].
  * @param linkAccount if true, it will link the account with the current user. Default value is false
  * Example Usage:
  * ```
- * //Apple Sign-In with Custom Button and authentication with Firebase
- * AppleButtonUiContainer(onResult = onFirebaseResult) {
- *     Button(onClick = { this.onClick() }) { Text("Apple Sign-In (Custom Design)") }
+ * //Facebook Sign-In with Custom Button and authentication with Firebase
+ * FacebookButtonUiContainer(onResult = onFirebaseResult) {
+ *     Button(onClick = { this.onClick() }) { Text("Facebook Sign-In (Custom Design)") }
  * }
  *
  * ```
@@ -66,6 +66,13 @@ public actual fun FacebookButtonUiContainer(
     content: @Composable UiContainerScope.() -> Unit,
 ) {
     val updatedOnResultFunc by rememberUpdatedState(onResult)
+
+    val permissions: List<String> = requestScopes.map {
+        when (it) {
+            FacebookSignInRequestScope.Email -> "email"
+            FacebookSignInRequestScope.PublicProfile -> "public_profile"
+        }
+    }
 
     val rememberCoroutine = rememberCoroutineScope()
     val uiContainerScope = remember {
@@ -88,10 +95,7 @@ public actual fun FacebookButtonUiContainer(
                 loginManager.logInFromViewController(
                     rootVC,
                     FBSDKLoginConfiguration(
-                        permissions = listOf(
-                            "email",
-                            "public_profile"
-                        ),
+                        permissions = permissions,
                         tracking = FBSDKLoginTrackingLimited,
                         nonce = sha256(nonce),
                     ),
@@ -107,9 +111,6 @@ public actual fun FacebookButtonUiContainer(
 
                         rememberCoroutine.launch {
                             val accessToken = result?.authenticationToken()?.tokenString() ?: ""
-                            println("FB access Token: $accessToken")
-
-                            println("nonce: " + result?.authenticationToken()?.nonce())
 
                             val credential = OAuthProvider.credential(
                                 providerId = "facebook.com",
@@ -121,7 +122,6 @@ public actual fun FacebookButtonUiContainer(
                             val currentUser = auth.currentUser
 
                             try {
-
                                 val result = if (linkAccount && currentUser != null) {
                                     currentUser.linkWithCredential(credential)
                                 } else {
@@ -156,7 +156,7 @@ private fun sha256(input: String): String {
 }
 
 @Deprecated(
-    "Use AppleButtonUiContainer with the linkAccount parameter, which defaults to false.",
+    "Use FacebookButtonUiContainer with the linkAccount parameter, which defaults to false.",
     ReplaceWith(""),
     DeprecationLevel.WARNING
 )
