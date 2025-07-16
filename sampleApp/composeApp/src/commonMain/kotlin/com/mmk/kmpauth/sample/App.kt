@@ -32,6 +32,7 @@ import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButton
+import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButtonIconOnly
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -83,6 +84,10 @@ fun App() {
                 Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
             }
 
+            //Facebook Sign-In with Custom Button and authentication with Firebase
+            FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
+                Button(onClick = { this.onClick() }) { Text("Facebook Sign-In (Custom Design)") }
+            }
 
             // ************************** UiHelper Text Buttons *************
             Divider(modifier = Modifier.fillMaxWidth().padding(16.dp))
@@ -151,6 +156,11 @@ fun IconOnlyButtonsAndFirebaseAuth(
         //Apple Sign-In IconOnly Button and authentication with Firebase
         AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
             AppleSignInButtonIconOnly(onClick = { this.onClick() })
+        }
+
+        //Facebook Sign-In IconOnly Button and authentication with Firebase
+        FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = true) {
+            FacebookSignInButtonIconOnly(onClick = { this.onClick() })
         }
     }
 }

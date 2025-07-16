@@ -49,7 +49,7 @@ import kotlin.math.roundToInt
 @Composable
 public fun FacebookSignInButtonIconOnly(
     modifier: Modifier = Modifier.size(44.dp),
-    mode: FacebookButtonMode = FacebookButtonMode.Dark,
+    mode: FacebookButtonMode = FacebookButtonMode.Normal,
     shape: Shape = ButtonDefaults.shape,
     onClick: () -> Unit,
 ) {
@@ -88,7 +88,7 @@ public fun FacebookSignInButtonIconOnly(
 @Composable
 public fun FacebookSignInButton(
     modifier: Modifier = Modifier.height(44.dp),
-    mode: FacebookButtonMode = FacebookButtonMode.Dark,
+    mode: FacebookButtonMode = FacebookButtonMode.Normal,
     text: String = "Sign in with Facebook",
     fontFamily: FontFamily = Fonts.robotoFontFamily,
     shape: Shape = ButtonDefaults.shape,
@@ -145,9 +145,7 @@ public fun FacebookSignInButton(
 @Composable
 private fun FacebookIcon(modifier: Modifier = Modifier, mode: FacebookButtonMode) {
     val source = when (mode) {
-        FacebookButtonMode.Dark -> Res.drawable.ic_facebook
-        FacebookButtonMode.White -> Res.drawable.ic_facebook
-        FacebookButtonMode.WhiteWithOutline -> Res.drawable.ic_facebook
+        FacebookButtonMode.Normal -> Res.drawable.ic_facebook
     }
     Image(
         modifier = modifier,
@@ -159,12 +157,7 @@ private fun FacebookIcon(modifier: Modifier = Modifier, mode: FacebookButtonMode
 
 private fun getBorderStroke(mode: FacebookButtonMode): BorderStroke? {
     val borderStroke = when (mode) {
-        FacebookButtonMode.WhiteWithOutline -> BorderStroke(
-            width = 1.dp,
-            color = Color.Black,
-        )
-
-        else -> null
+        FacebookButtonMode.Normal -> null
     }
     return borderStroke
 }
@@ -172,12 +165,12 @@ private fun getBorderStroke(mode: FacebookButtonMode): BorderStroke? {
 @Composable
 private fun getButtonColor(mode: FacebookButtonMode): ButtonColors {
     val containerColor = when (mode) {
-        FacebookButtonMode.Dark -> Color(0xFF1877F2)
+        FacebookButtonMode.Normal -> Color(0xFF1877F2)
         else -> Color.White
     }
 
     val contentColor = when (mode) {
-        FacebookButtonMode.Dark -> Color.White
+        FacebookButtonMode.Normal -> Color.White
         else -> Color.Black
     }
 
