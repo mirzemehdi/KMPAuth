@@ -36,19 +36,3 @@ public expect fun FacebookButtonUiContainer(
     linkAccount: Boolean = false,
     content: @Composable UiContainerScope.() -> Unit,
 )
-
-@Deprecated(
-    "Use AppleButtonUiContainer with the linkAccount parameter, which defaults to false.",
-    ReplaceWith(""),
-    DeprecationLevel.WARNING
-)
-@Composable
-public expect fun FacebookButtonUiContainer(
-    modifier: Modifier = Modifier,
-    requestScopes: List<FacebookSignInRequestScope> = listOf(
-        FacebookSignInRequestScope.PublicProfile,
-        FacebookSignInRequestScope.Email
-    ),
-    onResult: (Result<FirebaseUser?>) -> Unit,
-    content: @Composable UiContainerScope.() -> Unit,
-)
