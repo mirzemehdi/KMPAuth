@@ -119,18 +119,3 @@ private fun facebookSignInCallback(
         updatedOnResult(Result.failure(IllegalStateException("Facebook sign-in failed with error: ${error.message}")))
     }
 }
-
-@Deprecated(
-    message = "Use FacebookButtonUiContainer with the linkAccount parameter, which defaults to false.",
-    replaceWith = ReplaceWith(expression = ""),
-    level = DeprecationLevel.WARNING
-)
-@Composable
-public actual fun FacebookButtonUiContainer(
-    modifier: Modifier,
-    requestScopes: List<FacebookSignInRequestScope>,
-    onResult: (Result<FirebaseUser?>) -> Unit,
-    content: @Composable (UiContainerScope.() -> Unit)
-) {
-    FacebookButtonUiContainer(modifier,requestScopes,onResult,false) { }
-}
