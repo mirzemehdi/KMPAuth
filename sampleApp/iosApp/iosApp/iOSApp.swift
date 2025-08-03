@@ -9,9 +9,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         FirebaseApp.configure()
-
-        print("INITIALIZING GOOGLE SIGN-IN")
-        // Initialize Facebook SDK
+        // Initialize Facebook SDK. Maybe move this to KMPAuth later
         FBSDKCoreKit.ApplicationDelegate.shared.application(
             application,
             didFinishLaunchingWithOptions: launchOptions
@@ -25,8 +23,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ app: UIApplication,
         open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
-
-        print("App opened with URL: \(url)")
 
         var handled: Bool
 
@@ -61,8 +57,6 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView().onOpenURL(perform: { url in
-                // print a message when the app is opened with a URL
-                print("App opened with URL: \(url)")
                 GIDSignIn.sharedInstance.handle(url)
             })
         }
