@@ -11,8 +11,8 @@ import dev.gitlive.firebase.auth.FirebaseUser
  * You need to call [UiContainerScope.onClick] function on your child view's click function.
  *
  * [onResult] callback will return [Result] with [FirebaseUser] type.
- * @param requestScopes Request Scopes that is provided in Facebook OAuth. By Default, user's email is requested.
- * @param customParameters Custom Parameters that is provided in Facebook OAuth.
+ * @param requestScopes Request Scopes that is provided in Facebook OAuth. By Default, user's email
+ * and public profile info is requested.
  * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
  *
  * Example Usage:

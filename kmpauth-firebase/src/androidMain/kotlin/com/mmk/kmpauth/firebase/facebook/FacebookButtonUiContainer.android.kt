@@ -1,6 +1,7 @@
 package com.mmk.kmpauth.firebase.facebook
 
 import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -15,6 +16,7 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.mmk.kmpauth.core.KMPAuth
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.UiContainerScope
 import com.mmk.kmpauth.core.getActivity
@@ -28,9 +30,26 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
-public val callbackManager: CallbackManager = CallbackManager.Factory.create()
 
-private val loginManager = LoginManager.getInstance()
+/**
+ * You mush call `KMPAuth.handleFacebookActivityResult` from your Activity's onActivityResult to handle Facebook login.
+ *
+ * Example:
+ * ```
+ * override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+ *   super.onActivityResult(requestCode, resultCode, data)
+ *   KMPAuth.handleFacebookActivityResult(requestCode, resultCode, data)
+ * }
+ * ```
+ */
+public fun KMPAuth.handleFacebookActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    facebookLoginCallbackManager.onActivityResult(requestCode, resultCode, data)
+}
+
+
+private val facebookLoginCallbackManager: CallbackManager by lazy { CallbackManager.Factory.create() }
+
+private val loginManager: LoginManager by lazy { LoginManager.getInstance() }
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
@@ -47,12 +66,12 @@ public actual fun FacebookButtonUiContainer(
 
     DisposableEffect(Unit) {
         loginManager.registerCallback(
-            callbackManager,
+            facebookLoginCallbackManager,
             facebookSignInCallback(coroutineScope, linkAccount, updatedOnResult)
         )
 
         onDispose {
-            loginManager.unregisterCallback(callbackManager)
+            loginManager.unregisterCallback(facebookLoginCallbackManager)
         }
     }
 
@@ -66,6 +85,10 @@ public actual fun FacebookButtonUiContainer(
     val uiContainerScope = remember {
         object : UiContainerScope {
             override fun onClick() {
+                if (activity == null) {
+                    updatedOnResult(Result.failure(IllegalStateException("Activity is null")))
+                    return
+                }
                 loginManager.logInWithReadPermissions(activity as Activity, permissions)
             }
         }
