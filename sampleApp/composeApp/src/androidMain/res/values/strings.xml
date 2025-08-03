@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">KMPAuth</string>
+    <string name="facebook_app_id">854643199751112</string>
+    <string name="fb_login_protocol_scheme">fb854643199751112</string>
+    <string name="facebook_client_token">69eecd2cd803b3a5324a6e1e27bcb81a</string>
 </resources>

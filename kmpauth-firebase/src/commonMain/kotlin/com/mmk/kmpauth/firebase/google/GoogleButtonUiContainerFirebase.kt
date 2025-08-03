@@ -5,7 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -34,6 +36,7 @@ import kotlinx.coroutines.launch
  * ```
  *
  */
+@OptIn(KMPAuthInternalApi::class)
 @Composable
 public fun GoogleButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
@@ -54,6 +57,7 @@ public fun GoogleButtonUiContainerFirebase(
             val idToken = googleUser?.idToken
             val accessToken = googleUser?.accessToken
             if (idToken == null) {
+                currentLogger.log("Google idToken is null")
                 updatedOnResult(Result.failure(IllegalStateException("Idtoken is null")))
                 return@GoogleButtonUiContainer
             }
@@ -67,10 +71,14 @@ public fun GoogleButtonUiContainerFirebase(
                     } else {
                         auth.signInWithCredential(authCredential)
                     }
-                    if (result.user == null) updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
+                    if (result.user == null) {
+                        currentLogger.log("Firebase user is null")
+                        updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
+                    }
                     else updatedOnResult(Result.success(result.user))
                 } catch (e: Exception) {
                     if (e is CancellationException) throw e
+                    currentLogger.log("Google sign-in failed with exception: $e")
                     updatedOnResult(Result.failure(e))
                 }
             }

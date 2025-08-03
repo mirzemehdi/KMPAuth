@@ -3,6 +3,7 @@ package com.mmk.kmpauth.core.di
 
 import com.mmk.kmpauth.core.HttpClientFactory
 import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.logger.currentLogger
 import org.koin.core.Koin
 import org.koin.core.KoinApplication
 import org.koin.core.module.Module
@@ -40,8 +41,8 @@ public object LibDependencyInitializer {
 
 
 }
-
+@OptIn(KMPAuthInternalApi::class)
 private fun Koin.onLibraryInitialized() {
-    println("KMPAuth Library is initialized")
+    currentLogger.log("KMPAuth Library is initialized")
 }
 
