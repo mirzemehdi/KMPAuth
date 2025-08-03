@@ -6,7 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.mmk.kmpauth.firebase.facebook.facebookLoginCallbackManager
+import com.mmk.kmpauth.core.KMPAuth
+import com.mmk.kmpauth.firebase.facebook.handleFacebookActivityResult
 
 
 class MainActivity : ComponentActivity() {
@@ -18,7 +19,7 @@ class MainActivity : ComponentActivity() {
     }
 
     protected override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        facebookLoginCallbackManager.onActivityResult(requestCode, resultCode, data)
+        KMPAuth.handleFacebookActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 
