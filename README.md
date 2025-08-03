@@ -4,9 +4,12 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.mirzemehdi/kmpauth-google?color=blue)](https://search.maven.org/search?q=g:io.github.mirzemehdi+kmpauth)
 
 ![badge-android](http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat)
-![badge-ios](http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat)
+![badge-ios](http://img.shields.io/badge/platform-ios-AAAAFF.svg?style=flat)
+![badge-web](http://img.shields.io/badge/platform-web-FFCC66.svg?style=flat)
+![badge-desktop](http://img.shields.io/badge/platform-desktop-FF8E8E.svg?style=flat)
 
-Simple and easy to use Kotlin Multiplatform Authentication library targeting iOS and Android. Supporting **Google**, **Apple**, **Github** authentication integrations using Firebase.   
+
+Simple and easy to use Kotlin Multiplatform Authentication library targeting iOS, Android, Desktop and Web (`kmpauth-firebase` module doesn't have web support yet). Supporting **Google**, **Apple**, **Github** authentication integrations using Firebase.   
 Because I am using KMPAuth in [FindTravelNow](https://github.com/mirzemehdi/FindTravelNow-KMM/) production KMP project, I'll support development of this library :).   
 Related blog post: [Integrating Google Sign-In into Kotlin Multiplatform](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891)  
 You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full library api information.
