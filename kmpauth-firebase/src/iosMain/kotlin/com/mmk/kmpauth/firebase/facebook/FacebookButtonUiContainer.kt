@@ -7,20 +7,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import cocoapods.FBSDKLoginKit.FBSDKAccessToken
 import cocoapods.FBSDKLoginKit.FBSDKLoginConfiguration
 import cocoapods.FBSDKLoginKit.FBSDKLoginManager
-import cocoapods.FBSDKLoginKit.FBSDKLoginTrackingEnabled
 import cocoapods.FBSDKLoginKit.FBSDKLoginTrackingLimited
-import cocoapods.FirebaseAuth.FIRAuth
-import cocoapods.FirebaseAuth.FIRAuthCredential
-import cocoapods.FirebaseAuth.FIRAuthDataResult
-import cocoapods.FirebaseAuth.FIROAuthProvider
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.logger.currentLogger
 import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.FacebookAuthProvider
 import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.OAuthCredential
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
 import io.ktor.util.generateNonce
@@ -29,14 +23,13 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.refTo
 import kotlinx.cinterop.usePinned
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import platform.CoreCrypto.CC_SHA256
 import platform.CoreCrypto.CC_SHA256_DIGEST_LENGTH
-import platform.Foundation.NSError
 import platform.UIKit.UIApplication
 import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowScene
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * FacebookButton Ui Container Composable that handles all sign-in functionality for Facebook.
@@ -56,7 +49,7 @@ import platform.UIKit.UIWindowScene
  * ```
  *
  */
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, KMPAuthInternalApi::class)
 @Composable
 public actual fun FacebookButtonUiContainer(
     modifier: Modifier,
@@ -74,7 +67,7 @@ public actual fun FacebookButtonUiContainer(
         }
     }
 
-    val rememberCoroutine = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     val uiContainerScope = remember {
         object : UiContainerScope {
             override fun onClick() {
@@ -86,6 +79,7 @@ public actual fun FacebookButtonUiContainer(
 
                 val rootVC = rootVCList.firstOrNull()
                 if (rootVC == null) {
+                    currentLogger.log("Root View Controller is null")
                     updatedOnResultFunc(Result.failure(IllegalStateException("Root View Controller is null")))
                     return
                 }
@@ -101,6 +95,7 @@ public actual fun FacebookButtonUiContainer(
                     ),
                     completion = { result, error ->
                         if (error != null) {
+                            currentLogger.log("Facebook Login failed with error: ${error.localizedDescription}")
                             updatedOnResultFunc(Result.failure(IllegalStateException(error.localizedDescription)))
                             return@logInFromViewController
                         }
@@ -109,31 +104,42 @@ public actual fun FacebookButtonUiContainer(
                             return@logInFromViewController
                         }
 
-                        rememberCoroutine.launch {
-                            val accessToken = result?.authenticationToken()?.tokenString() ?: ""
-
-                            val credential = OAuthProvider.credential(
-                                providerId = "facebook.com",
-                                idToken = accessToken,
-                                rawNonce = nonce
-                            )
-
-                            val auth = Firebase.auth
-                            val currentUser = auth.currentUser
-
+                        coroutineScope.launch {
                             try {
-                                val result = if (linkAccount && currentUser != null) {
-                                    currentUser.linkWithCredential(credential)
-                                } else {
-                                    auth.signInWithCredential(credential)
-                                }
-                                updatedOnResultFunc(Result.success(result.user))
+                                val idTokenString =
+                                    result?.authenticationToken()?.tokenString() ?: ""
 
-                            } catch (e: Exception) {
-                                updatedOnResultFunc(
-                                    Result.failure(e)
+                                val credential = OAuthProvider.credential(
+                                    providerId = "facebook.com",
+                                    idToken = idTokenString,
+                                    rawNonce = nonce
                                 )
 
+                                val auth = Firebase.auth
+                                val currentUser = auth.currentUser
+
+
+                                val firebaseAuthResult = if (linkAccount && currentUser != null) {
+                                    currentLogger.log("Linking Facebook account with current firebase user: ${currentUser.uid}")
+                                    currentUser.linkWithCredential(credential)
+                                } else {
+                                    currentLogger.log("Signing in with Facebook account on Firebase")
+                                    auth.signInWithCredential(credential)
+                                }
+
+                                val user = firebaseAuthResult.user
+                                if (user == null) {
+                                    currentLogger.log("Firebase sign-in failed: Firebase user is null")
+                                    updatedOnResultFunc(Result.failure(IllegalStateException("Firebase user is null")))
+                                } else {
+                                    currentLogger.log("Firebase sign-in successful")
+                                    updatedOnResultFunc(Result.success(user))
+                                }
+
+                            } catch (e: Exception) {
+                                if (e is CancellationException) throw e
+                                currentLogger.log("Firebase sign-in failed with error: ${e.message}")
+                                updatedOnResultFunc(Result.failure(e))
                             }
                         }
                     }
@@ -153,19 +159,4 @@ private fun sha256(input: String): String {
         CC_SHA256(it.addressOf(0), inputData.size.convert(), hashedData.refTo(0))
     }
     return hashedData.toByteArray().toHexString(HexFormat.Default)
-}
-
-@Deprecated(
-    "Use FacebookButtonUiContainer with the linkAccount parameter, which defaults to false.",
-    ReplaceWith(""),
-    DeprecationLevel.WARNING
-)
-@Composable
-public actual fun FacebookButtonUiContainer(
-    modifier: Modifier,
-    requestScopes: List<FacebookSignInRequestScope>,
-    onResult: (Result<FirebaseUser?>) -> Unit,
-    content: @Composable UiContainerScope.() -> Unit,
-) {
-    FacebookButtonUiContainer(modifier, requestScopes, onResult, false, content)
 }
