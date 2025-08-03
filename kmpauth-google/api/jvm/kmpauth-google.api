@@ -22,9 +22,12 @@ public final class com/mmk/kmpauth/google/GoogleAuthProvider$Companion {
 
 public abstract interface class com/mmk/kmpauth/google/GoogleAuthUiProvider {
 	public static final field Companion Lcom/mmk/kmpauth/google/GoogleAuthUiProvider$Companion;
-	public abstract fun signIn (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signIn (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun signIn (ZLjava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun signIn (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signIn (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signIn$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZLjava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun signIn$suspendImpl (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signIn$suspendImpl (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/mmk/kmpauth/google/GoogleAuthUiProvider$Companion {

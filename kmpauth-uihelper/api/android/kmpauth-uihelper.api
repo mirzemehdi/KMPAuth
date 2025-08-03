@@ -30,6 +30,30 @@ public final class com/mmk/kmpauth/uihelper/apple/AppleSignInButtonKt {
 	public static final fun AppleSignInButtonIconOnly (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 }
 
+public abstract interface class com/mmk/kmpauth/uihelper/facebook/FacebookButtonMode {
+}
+
+public final class com/mmk/kmpauth/uihelper/facebook/FacebookButtonMode$Blue : com/mmk/kmpauth/uihelper/facebook/FacebookButtonMode {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/facebook/FacebookButtonMode$Blue;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/uihelper/facebook/FacebookButtonMode$White : com/mmk/kmpauth/uihelper/facebook/FacebookButtonMode {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/facebook/FacebookButtonMode$White;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/uihelper/facebook/FacebookSignInButtonKt {
+	public static final fun FacebookSignInButton-22lrwWk (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/facebook/FacebookButtonMode;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/graphics/Shape;JLkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun FacebookSignInButtonIconOnly (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/facebook/FacebookButtonMode;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class com/mmk/kmpauth/uihelper/google/ComposableSingletons$GoogleSignInButtonKt {
 	public static final field INSTANCE Lcom/mmk/kmpauth/uihelper/google/ComposableSingletons$GoogleSignInButtonKt;
 	public fun <init> ()V
