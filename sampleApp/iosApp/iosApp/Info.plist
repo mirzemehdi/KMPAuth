@@ -45,7 +45,7 @@
         <dict>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>fb1475521143802006</string>
+                <string>fb854643199751112</string>
             </array>
         </dict>
 	</array>
@@ -80,10 +80,17 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
     <key>FacebookAppID</key>
-    <string>1475521143802006</string>
+    <string>854643199751112</string>
     <key>FacebookClientToken</key>
-    <string>2f0106590469e9250aceb32194b93d82</string>
+    <string>69eecd2cd803b3a5324a6e1e27bcb81a</string>
     <key>FacebookDisplayName</key>
     <string>KmpAuth-Demo</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbapi</string>
+        <string>fb-messenger-api</string>
+        <string>fbauth2</string>
+        <string>fbshareextension</string>
+    </array>
 </dict>
 </plist>

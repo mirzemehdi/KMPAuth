@@ -131,7 +131,7 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
         }
 
 
-        FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = true) {
+        FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
             FacebookSignInButton(
                 modifier = Modifier.fillMaxWidth().height(44.dp),
                 fontSize = 19.sp
