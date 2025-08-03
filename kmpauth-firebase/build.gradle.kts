@@ -34,17 +34,28 @@ kotlin {
 
 
     cocoapods {
-        ios.deploymentTarget = "11.0"
+        ios.deploymentTarget = "12.0"
         framework {
             baseName = "KMPAuthFirebaseCore"
             isStatic = true
         }
-        noPodspec()
+        pod("FBSDKCoreKit"){
+            extraOpts += listOf("-compiler-option", "-fmodules")
+            version = libs.versions.facebookAuthIos.get()
+        }
+        pod("FBSDKLoginKit"){
+            extraOpts += listOf("-compiler-option", "-fmodules")
+            version = libs.versions.facebookAuthIos.get()
+        }
     }
 
 
 
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.facebookAuthAndroid)
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)

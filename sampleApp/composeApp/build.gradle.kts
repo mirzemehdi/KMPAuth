@@ -24,6 +24,10 @@ kotlin {
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
+        iosTarget.binaries.forEach {
+            binary ->
+                binary.linkerOpts.addAll(listOf("-framework", "FirebaseCore"))
+        }
         iosTarget.binaries.framework {
             baseName = "composeApp"
             isStatic = true
@@ -36,6 +40,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.facebookAuthAndroid)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
