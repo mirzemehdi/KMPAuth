@@ -1,5 +1,6 @@
 package com.mmk.kmpauth.sample
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,6 +33,7 @@ import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
+import com.mmk.kmpauth.uihelper.facebook.FacebookButtonMode
 import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButton
 import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
@@ -43,7 +46,7 @@ fun App() {
 
     MaterialTheme {
         Column(
-            Modifier.fillMaxSize().padding(20.dp),
+            Modifier.fillMaxSize().padding(20.dp).background(Color.Red),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
         ) {
@@ -132,7 +135,7 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
 
 
         FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = true) {
-            FacebookSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { this.onClick() }
+            FacebookSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp), fontSize = 19.sp) { this.onClick() }
         }
 
     }
