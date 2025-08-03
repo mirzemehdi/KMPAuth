@@ -41,11 +41,11 @@ kotlin {
         }
         pod("FBSDKCoreKit"){
             extraOpts += listOf("-compiler-option", "-fmodules")
-            version = "~> 18.0"
+            version = libs.versions.facebookAuthIos.get()
         }
         pod("FBSDKLoginKit"){
             extraOpts += listOf("-compiler-option", "-fmodules")
-            version = "~> 18.0"
+            version = libs.versions.facebookAuthIos.get()
         }
     }
 
