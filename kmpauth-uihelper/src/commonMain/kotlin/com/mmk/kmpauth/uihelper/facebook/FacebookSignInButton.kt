@@ -43,7 +43,6 @@ public fun FacebookSignInButtonIconOnly(
     shape: Shape = ButtonDefaults.shape,
     onClick: () -> Unit,
 ) {
-    val facebookBlueColor = Color(0xFF0965fe) //Facebook Blue
     val iconTintColor = when (mode) {
         FacebookButtonMode.Blue -> facebookBlueColor
         FacebookButtonMode.White -> Color.Transparent
