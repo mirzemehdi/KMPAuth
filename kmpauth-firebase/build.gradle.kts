@@ -53,7 +53,7 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.facebook.login)
+            implementation(libs.facebookAuthAndroid)
         }
 
         commonMain.dependencies {

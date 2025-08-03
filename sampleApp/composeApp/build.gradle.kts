@@ -40,7 +40,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.facebook.login)
+            implementation(libs.facebookAuthAndroid)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
