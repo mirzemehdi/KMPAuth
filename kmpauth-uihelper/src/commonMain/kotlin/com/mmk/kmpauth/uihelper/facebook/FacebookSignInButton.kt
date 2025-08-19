@@ -92,10 +92,9 @@ public fun FacebookSignInButton(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             //With Text Button We always request blue background icon
-            FacebookIcon(modifier = Modifier.size(24.dp), mode = FacebookButtonMode.Blue)
+            FacebookIcon(modifier = Modifier.size(24.dp), mode = mode)
             Spacer(modifier = Modifier.width(iconTextPadding))
             Text(
-                modifier = Modifier.weight(1f),
                 text = text,
                 maxLines = 1,
                 fontSize = fontSize,
