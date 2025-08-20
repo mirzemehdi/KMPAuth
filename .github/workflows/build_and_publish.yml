@@ -61,6 +61,10 @@ jobs:
       - name: Setup gradle
         uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
 
+      - name: Select XCode version
+        if: ${{ startsWith(matrix.config.os, 'macos') }}
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+
       - name: Test ${{ matrix.config.target }} targets
         continue-on-error: ${{ matrix.config.continueOnError }}
         run: ./gradlew ${{ matrix.config.tasks }}
