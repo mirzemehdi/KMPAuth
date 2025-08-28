@@ -1,5 +1,6 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -12,10 +13,8 @@ plugins {
 kotlin {
 
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
     jvm("desktop")
@@ -24,6 +23,10 @@ kotlin {
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
+        iosTarget.binaries.forEach {
+            binary ->
+                binary.linkerOpts.addAll(listOf("-framework", "FirebaseCore"))
+        }
         iosTarget.binaries.framework {
             baseName = "composeApp"
             isStatic = true
@@ -36,6 +39,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.facebookAuthAndroid)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

@@ -22,6 +22,29 @@ public final class com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope$FullNa
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/mmk/kmpauth/firebase/facebook/FacebookButtonUiContainer_jvmKt {
+	public static final fun FacebookButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+}
+
+public abstract interface class com/mmk/kmpauth/firebase/facebook/FacebookSignInRequestScope {
+}
+
+public final class com/mmk/kmpauth/firebase/facebook/FacebookSignInRequestScope$Email : com/mmk/kmpauth/firebase/facebook/FacebookSignInRequestScope {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/facebook/FacebookSignInRequestScope$Email;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/firebase/facebook/FacebookSignInRequestScope$PublicProfile : com/mmk/kmpauth/firebase/facebook/FacebookSignInRequestScope {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/facebook/FacebookSignInRequestScope$PublicProfile;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/mmk/kmpauth/firebase/github/GithubButtonUiContainerKt {
 	public static final fun GithubButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Ljava/util/Map;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun GithubButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V

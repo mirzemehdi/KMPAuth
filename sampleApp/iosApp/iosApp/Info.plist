@@ -42,6 +42,12 @@
 				<string>com.googleusercontent.apps.180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll</string>
 			</array>
 		</dict>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>fb854643199751112</string>
+            </array>
+        </dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -73,5 +79,18 @@
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
+    <key>FacebookAppID</key>
+    <string>854643199751112</string>
+    <key>FacebookClientToken</key>
+    <string>69eecd2cd803b3a5324a6e1e27bcb81a</string>
+    <key>FacebookDisplayName</key>
+    <string>KmpAuth-Demo</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbapi</string>
+        <string>fb-messenger-api</string>
+        <string>fbauth2</string>
+        <string>fbshareextension</string>
+    </array>
 </dict>
 </plist>

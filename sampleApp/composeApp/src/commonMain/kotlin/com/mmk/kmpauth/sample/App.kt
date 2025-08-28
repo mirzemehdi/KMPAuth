@@ -23,16 +23,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.firebase.apple.AppleButtonUiContainer
+import com.mmk.kmpauth.firebase.facebook.FacebookButtonUiContainer
 import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
+import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButton
+import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButtonIconOnly
 import dev.gitlive.firebase.auth.FirebaseUser
 
+@OptIn(KMPAuthInternalApi::class)
 @Composable
 fun App() {
 
@@ -79,6 +84,10 @@ fun App() {
                 Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
             }
 
+            //Facebook Sign-In with Custom Button and authentication with Firebase
+            FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
+                Button(onClick = { this.onClick() }) { Text("Facebook Sign-In (Custom Design)") }
+            }
 
             // ************************** UiHelper Text Buttons *************
             Divider(modifier = Modifier.fillMaxWidth().padding(16.dp))
@@ -110,12 +119,23 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
 
         //Google Sign-In Button and authentication with Firebase
         GoogleButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
-            GoogleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp), fontSize = 19.sp) { this.onClick() }
+            GoogleSignInButton(
+                modifier = Modifier.fillMaxWidth().height(44.dp),
+                fontSize = 19.sp
+            ) { this.onClick() }
         }
 
         //Apple Sign-In Button and authentication with Firebase
         AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
             AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { this.onClick() }
+        }
+
+
+        FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
+            FacebookSignInButton(
+                modifier = Modifier.fillMaxWidth().height(44.dp),
+                fontSize = 19.sp
+            ) { this.onClick() }
         }
 
     }
@@ -139,6 +159,11 @@ fun IconOnlyButtonsAndFirebaseAuth(
         //Apple Sign-In IconOnly Button and authentication with Firebase
         AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
             AppleSignInButtonIconOnly(onClick = { this.onClick() })
+        }
+
+        //Facebook Sign-In IconOnly Button and authentication with Firebase
+        FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
+            FacebookSignInButtonIconOnly(onClick = { this.onClick() })
         }
     }
 }

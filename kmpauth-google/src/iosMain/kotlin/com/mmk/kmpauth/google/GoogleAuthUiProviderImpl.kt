@@ -1,11 +1,14 @@
 package com.mmk.kmpauth.google
 
 import cocoapods.GoogleSignIn.GIDSignIn
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.UIKit.UIApplication
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+@OptIn(KMPAuthInternalApi::class)
 internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
     @OptIn(ExperimentalForeignApi::class)
     override suspend fun signIn(
@@ -20,7 +23,7 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
         else {
             GIDSignIn.sharedInstance
                 .signInWithPresentingViewController(rootViewController,null, scopes) { gidSignInResult, nsError ->
-                    nsError?.let { println("Error While signing: $nsError") }
+                    nsError?.let { currentLogger.log("Error While signing: $nsError") }
 
                     val user = gidSignInResult?.user
                     val idToken = user?.idToken?.tokenString
