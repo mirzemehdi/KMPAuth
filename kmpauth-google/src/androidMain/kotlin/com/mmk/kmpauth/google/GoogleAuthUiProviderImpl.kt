@@ -162,6 +162,7 @@ internal class GoogleAuthUiProviderImpl(
                                     val authResult = processAuthResult(activityContext, result)
                                     continuation.resume(authResult)
                                 } catch (e: Exception) {
+                                    if (e is CancellationException) throw e
                                     continuation.resumeWithException(e)
                                 }
                             }
