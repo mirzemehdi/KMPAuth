@@ -186,7 +186,7 @@ internal class GoogleAuthUiProviderImpl(
                 .getAuthorizationClient(ctx)
                 .getAuthorizationResultFromIntent(res.data!!)
         } else {
-            throw kotlin.coroutines.cancellation.CancellationException("User cancelled authorization")
+            throw Exception("User cancelled authorization")
         }
     }
 
