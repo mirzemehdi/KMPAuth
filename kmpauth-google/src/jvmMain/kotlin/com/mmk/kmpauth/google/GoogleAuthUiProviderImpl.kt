@@ -1,6 +1,8 @@
 package com.mmk.kmpauth.google
 
 import com.auth0.jwt.JWT
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.logger.currentLogger
 import io.ktor.http.ContentType
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.html.respondHtml
@@ -8,6 +10,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import io.ktor.utils.io.core.use
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,6 +18,7 @@ import kotlinx.html.body
 import kotlinx.html.script
 import kotlinx.html.unsafe
 import java.awt.Desktop
+import java.net.ServerSocket
 import java.net.URI
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -26,6 +30,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 
     private val authUrl = "https://accounts.google.com/o/oauth2/v2/auth"
 
+    @OptIn(KMPAuthInternalApi::class)
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
@@ -56,7 +61,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 
         val (idToken, accessToken) = startHttpServerAndGetToken(state = state)
         if (idToken == null && accessToken == null) {
-            println("GoogleAuthUiProvider: token is null")
+            currentLogger.log("GoogleAuthUiProvider: token is null")
             return null
         }
 
@@ -67,7 +72,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         val picture = jwt?.getClaim("picture")?.asString()
         val receivedNonce = jwt?.getClaim("nonce")?.asString()
         if (receivedNonce != nonce) {
-            println("GoogleAuthUiProvider: Invalid nonce state: A login callback was received, but no login request was sent.")
+            currentLogger.log("GoogleAuthUiProvider: Invalid nonce state: A login callback was received, but no login request was sent.")
             return null
         }
 
@@ -107,7 +112,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
             }                 
         """.trimIndent()
 
-        val server = embeddedServer(Netty, port = 8080) {
+        val server = embeddedServer(Netty, port = findAvailablePort()) {
             routing {
                 get(redirectUriPath) {
                     call.respondHtml {
@@ -139,11 +144,12 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         return idTokenAndAccessTokenPair
     }
 
+    @OptIn(KMPAuthInternalApi::class)
     private fun openUrlInBrowser(url: String) {
         if (Desktop.isDesktopSupported()) {
             Desktop.getDesktop().browse(URI(url))
         } else {
-            println("GoogleAuthUiProvider: Desktop is not supported on this platform.")
+            currentLogger.log("GoogleAuthUiProvider: Desktop is not supported on this platform.")
         }
     }
 
@@ -154,5 +160,10 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         return Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes)
     }
 
+
+    private fun findAvailablePort(): Int {
+        val port = ServerSocket(0).use { socket -> socket.localPort }
+        return port
+    }
 
 }

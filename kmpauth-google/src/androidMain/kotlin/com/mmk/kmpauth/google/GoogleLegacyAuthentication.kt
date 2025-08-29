@@ -11,11 +11,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
-
+@OptIn(KMPAuthInternalApi::class)
 internal class GoogleLegacyAuthentication(
     private val activityContext: Context,
     private val credentials: GoogleAuthCredentials,
@@ -34,12 +36,14 @@ internal class GoogleLegacyAuthentication(
         try {
             activityResultLauncher.launch(signInClient)
         } catch (e: ActivityNotFoundException) {
-            println(e.message)
+            currentLogger.log("GoogleLegacyAuth Error: $e")
             return null
         }
 
         withContext(Dispatchers.Default) {
+            currentLogger.log("GoogleLegacyAuth: Waiting for activity result...")
             while (activityResultState.isInProgress) yield()
+            currentLogger.log("GoogleLegacyAuth: Activity result is finished")
         }
         val data: Intent? = activityResultState.data?.data
         return getGoogleUserFromIntentData(data)
@@ -59,12 +63,12 @@ internal class GoogleLegacyAuthentication(
                     displayName = account.displayName ?: "",
                     profilePicUrl = account.photoUrl?.toString()
                 ).also {
-                    println("GoogleLegacy Auth is successful")
+                    currentLogger.log("GoogleLegacy Auth is successful")
                 }
             }
 
         } catch (e: ApiException) {
-            println("GoogleLegacyAuth Error: $e")
+            currentLogger.log("GoogleLegacyAuth Error: $e")
             null
         }
     }

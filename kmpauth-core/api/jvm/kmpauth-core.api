@@ -1,3 +1,8 @@
+public final class com/mmk/kmpauth/core/KMPAuth {
+	public static final field INSTANCE Lcom/mmk/kmpauth/core/KMPAuth;
+	public final fun setLogger (Lcom/mmk/kmpauth/core/logger/KMPAuthLogger;)V
+}
+
 public abstract interface annotation class com/mmk/kmpauth/core/KMPAuthInternalApi : java/lang/annotation/Annotation {
 }
 
@@ -20,5 +25,14 @@ public final class com/mmk/kmpauth/core/di/LibDependencyInitializer {
 
 public final class com/mmk/kmpauth/core/di/PlatformModule_jvmKt {
 	public static final fun isAndroidPlatform ()Z
+}
+
+public abstract interface class com/mmk/kmpauth/core/logger/KMPAuthLogger {
+	public abstract fun log (Ljava/lang/String;)V
+}
+
+public final class com/mmk/kmpauth/core/logger/LoggerKt {
+	public static final fun getCurrentLogger ()Lcom/mmk/kmpauth/core/logger/KMPAuthLogger;
+	public static final fun setCurrentLogger (Lcom/mmk/kmpauth/core/logger/KMPAuthLogger;)V
 }
 

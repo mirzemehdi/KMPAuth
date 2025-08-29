@@ -45,7 +45,7 @@ jobs:
       matrix:
         config: [
           { target: android, os: ubuntu-latest, tasks: testDebugUnitTest testReleaseUnitTest, continueOnError: false },
-          { target: apple, os: macos-latest, tasks: iosX64Test iosSimulatorArm64Test, continueOnError: false },
+          { target: apple, os: macos-latest, tasks: iosSimulatorArm64Test, continueOnError: false },
         ]
     runs-on: ${{ matrix.config.os }}
     name: Build ${{ matrix.config.target }}
@@ -61,6 +61,10 @@ jobs:
       - name: Setup gradle
         uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
 
+      - name: Select XCode version
+        if: ${{ startsWith(matrix.config.os, 'macos') }}
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+
       - name: Test ${{ matrix.config.target }} targets
         continue-on-error: ${{ matrix.config.continueOnError }}
         run: ./gradlew ${{ matrix.config.tasks }}
@@ -75,10 +79,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -87,44 +91,49 @@ jobs:
         uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
 
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Generate docs with dokka
         run: ./gradlew dokkaHtmlMultiModule
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ github.workspace }}/build/dokka/htmlMultiModule
 
       - name: Release to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
 
-      - name: Write secrets to local.properties
-        run: |
-          echo sonatypeUsername="${SONATYPE_USERNAME}" >> "local.properties"
-          echo sonatypePassword="${SONATYPE_PASSWORD}" >> "local.properties"
-          echo gpgKeyPassword="${GPG_KEY_PASSWORD}" >> "local.properties"
-          echo gpgKeySecret="${GPG_KEY_SECRET}" >> "local.properties"
+      - name: Install GPG
         env:
-          SONATYPE_USERNAME: mirzemehdi
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          GPG_KEY_PASSWORD: ${{ secrets.GPG_KEY_PASSWORD }}
-          GPG_KEY_SECRET: ${{ secrets.GPG_KEY_SECRET }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          brew install gpg
+          echo "$SIGNING_KEY" | gpg --dearmor > ${HOME}/secret_key.gpg
 
+      - name: Add Gradle Properties
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          echo "mavenCentralUsername=${MAVEN_CENTRAL_USERNAME}" >> gradle.properties
+          echo "mavenCentralPassword=${MAVEN_CENTRAL_PASSWORD}" >> gradle.properties
+          echo "signing.keyId=${SIGNING_KEY_ID}" >> gradle.properties
+          echo "signing.password=${SIGNING_KEY_PASSWORD}" >> gradle.properties
+          echo "signing.secretKeyRingFile=${HOME}/secret_key.gpg" >> gradle.properties
 
-      - name: Publish to sonatype
-        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
-        with:
-         arguments: |
-          publishToSonatype
-          closeAndReleaseSonatypeStagingRepository
+      - name: Publish to MavenCentral
+        run: |
+          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+
 
       - name: Create new release from tag
         env:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           token: ${{ env.github_token }}
