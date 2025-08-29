@@ -33,6 +33,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
     @OptIn(KMPAuthInternalApi::class)
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
         val responseType = "id_token token"

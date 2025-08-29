@@ -27,6 +27,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.logger.currentLogger
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(KMPAuthInternalApi::class)
 internal class GoogleAuthUiProviderImpl(
@@ -40,13 +41,15 @@ internal class GoogleAuthUiProviderImpl(
     GoogleAuthUiProvider {
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
 
         val googleUser = try {
             getGoogleUserFromCredential(
                 filterByAuthorizedAccounts = filterByAuthorizedAccounts,
-                scopes
+                isAutoSelectEnabled = isAutoSelectEnabled,
+                scopes = scopes
             )
         } catch (e: NoCredentialException) {
             currentLogger.log("GoogleAuthUiProvider: NoCredentialException while getting credential")
@@ -54,15 +57,20 @@ internal class GoogleAuthUiProviderImpl(
                 return handleCredentialException(
                     e = e,
                     filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                    isAutoSelectEnabled = isAutoSelectEnabled,
                     scopes = scopes
                 )
             try {
-                getGoogleUserFromCredential(filterByAuthorizedAccounts = false, scopes)
+                getGoogleUserFromCredential(
+                    filterByAuthorizedAccounts = false,
+                    isAutoSelectEnabled = isAutoSelectEnabled,
+                    scopes = scopes)
             } catch (e: GetCredentialException) {
                 currentLogger.log("GoogleAuthUiProvider: GetCredentialException while getting credential")
                 handleCredentialException(
                     e = e,
                     filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                    isAutoSelectEnabled = isAutoSelectEnabled,
                     scopes = scopes
                 )
             } catch (e: NullPointerException) {
@@ -74,6 +82,7 @@ internal class GoogleAuthUiProviderImpl(
             handleCredentialException(
                 e = e,
                 filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                isAutoSelectEnabled = isAutoSelectEnabled,
                 scopes = scopes
             )
         } catch (e: NullPointerException) {
@@ -87,6 +96,7 @@ internal class GoogleAuthUiProviderImpl(
     private suspend fun handleCredentialException(
         e: GetCredentialException,
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
         currentLogger.log("GoogleAuthUiProvider error: $e and message: ${e.message}")
@@ -98,7 +108,7 @@ internal class GoogleAuthUiProviderImpl(
         }
         return if (shouldCheckLegacyAuthServices) {
             currentLogger.log("GoogleAuthUiProvider: Legacy Sign In is needed")
-            checkLegacyGoogleSignIn(filterByAuthorizedAccounts, scopes)
+            checkLegacyGoogleSignIn(filterByAuthorizedAccounts, isAutoSelectEnabled, scopes)
         } else {
             currentLogger.log("GoogleAuthUiProvider: No valid credential response found")
             null
@@ -108,11 +118,13 @@ internal class GoogleAuthUiProviderImpl(
     @OptIn(KMPAuthInternalApi::class)
     private suspend fun checkLegacyGoogleSignIn(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
         currentLogger.log("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
         return googleLegacyAuthentication.signIn(
             filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+            isAutoSelectEnabled = isAutoSelectEnabled,
             scopes = scopes
         )
     }
@@ -120,11 +132,12 @@ internal class GoogleAuthUiProviderImpl(
     @OptIn(KMPAuthInternalApi::class)
     private suspend fun getGoogleUserFromCredential(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
         val credential = credentialManager.getCredential(
             context = activityContext,
-            request = getCredentialRequest(filterByAuthorizedAccounts)
+            request = getCredentialRequest(filterByAuthorizedAccounts, isAutoSelectEnabled)
         ).credential
 
         currentLogger.log("GoogleAuthUiProvider Received Credential: $credential")
@@ -209,12 +222,16 @@ internal class GoogleAuthUiProviderImpl(
         }
     }
 
-    private fun getCredentialRequest(filterByAuthorizedAccounts: Boolean): GetCredentialRequest {
+    private fun getCredentialRequest(
+        filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean
+    ): GetCredentialRequest {
         return GetCredentialRequest.Builder()
             .addCredentialOption(
                 getGoogleIdOption(
                     serverClientId = credentials.serverId,
-                    filterByAuthorizedAccounts = filterByAuthorizedAccounts
+                    filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+                    isAutoSelectEnabled = isAutoSelectEnabled,
                 )
             )
             .build()
@@ -222,11 +239,12 @@ internal class GoogleAuthUiProviderImpl(
 
     private fun getGoogleIdOption(
         serverClientId: String,
-        filterByAuthorizedAccounts: Boolean
+        filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean
     ): GetGoogleIdOption {
         return GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
-            .setAutoSelectEnabled(true)
+            .setAutoSelectEnabled(isAutoSelectEnabled)
             .setServerClientId(serverClientId)
             .build()
     }
