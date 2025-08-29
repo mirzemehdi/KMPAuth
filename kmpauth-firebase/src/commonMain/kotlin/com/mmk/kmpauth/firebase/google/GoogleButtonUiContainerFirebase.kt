@@ -42,6 +42,7 @@ public fun GoogleButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
     linkAccount: Boolean = false,
     filterByAuthorizedAccounts: Boolean = false,
+    isAutoSelectEnabled: Boolean = true,
     scopes: List<String> = listOf("email", "profile"),
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
@@ -52,6 +53,7 @@ public fun GoogleButtonUiContainerFirebase(
     GoogleButtonUiContainer(
         modifier = modifier,
         filterByAuthorizedAccounts = filterByAuthorizedAccounts,
+        isAutoSelectEnabled = isAutoSelectEnabled,
         scopes = scopes,
         onGoogleSignInResult = { googleUser ->
             val idToken = googleUser?.idToken

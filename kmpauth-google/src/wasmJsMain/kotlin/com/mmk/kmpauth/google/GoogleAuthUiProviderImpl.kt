@@ -21,6 +21,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
 

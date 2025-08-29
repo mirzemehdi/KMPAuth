@@ -95,7 +95,6 @@ public fun FacebookSignInButton(
             FacebookIcon(modifier = Modifier.size(24.dp), mode = FacebookButtonMode.Blue)
             Spacer(modifier = Modifier.width(iconTextPadding))
             Text(
-                modifier = Modifier.weight(1f),
                 text = text,
                 maxLines = 1,
                 fontSize = fontSize,

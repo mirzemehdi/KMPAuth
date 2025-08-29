@@ -1,6 +1,5 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -15,7 +14,7 @@ plugins {
 kotlin {
     explicitApi()
     androidTarget {
-        publishAllLibraryVariants()
+        publishLibraryVariants()
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_1_8)
         }
@@ -27,7 +26,6 @@ kotlin {
     }
     jvm()
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -129,7 +127,7 @@ mavenPublishing {
         }
     }
 
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 }
 

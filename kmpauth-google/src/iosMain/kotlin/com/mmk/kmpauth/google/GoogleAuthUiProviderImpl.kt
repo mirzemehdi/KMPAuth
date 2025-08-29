@@ -13,6 +13,7 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
     @OptIn(ExperimentalForeignApi::class)
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
+        isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? = suspendCoroutine { continutation ->
 

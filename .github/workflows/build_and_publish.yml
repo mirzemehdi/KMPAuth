@@ -45,7 +45,7 @@ jobs:
       matrix:
         config: [
           { target: android, os: ubuntu-latest, tasks: testDebugUnitTest testReleaseUnitTest, continueOnError: false },
-          { target: apple, os: macos-latest, tasks: iosX64Test iosSimulatorArm64Test, continueOnError: false },
+          { target: apple, os: macos-latest, tasks: iosSimulatorArm64Test, continueOnError: false },
         ]
     runs-on: ${{ matrix.config.os }}
     name: Build ${{ matrix.config.target }}
@@ -60,6 +60,12 @@ jobs:
 
       - name: Setup gradle
         uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
+
+      - name: Setup Xcode
+        if: ${{ startsWith(matrix.config.os, 'macos') }}
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
       - name: Test ${{ matrix.config.target }} targets
         continue-on-error: ${{ matrix.config.continueOnError }}
@@ -85,6 +91,11 @@ jobs:
 
       - name: Setup gradle
         uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
