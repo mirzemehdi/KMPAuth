@@ -27,6 +27,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.logger.currentLogger
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(KMPAuthInternalApi::class)
 internal class GoogleAuthUiProviderImpl(
