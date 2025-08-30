@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'kmpauth_firebase'
-    spec.version                  = '2.4.0-alpha03'
+    spec.version                  = '2.4.0-alpha05'
     spec.homepage                 = ''
     spec.source                   = { :http=> ''}
     spec.authors                  = ''

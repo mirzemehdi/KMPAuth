@@ -14,7 +14,7 @@ plugins {
 kotlin {
     explicitApi()
     androidTarget {
-        publishLibraryVariants()
+        publishLibraryVariants("release", "debug")
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_1_8)
         }
