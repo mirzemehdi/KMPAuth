@@ -111,8 +111,8 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 }
             }                 
         """.trimIndent()
-
-        val server = embeddedServer(Netty, port = findAvailablePort()) {
+//Set the port to 8080 since that is what the callback url is expecting
+        val server = embeddedServer(Netty, 8080) {
             routing {
                 get(redirectUriPath) {
                     call.respondHtml {
@@ -160,10 +160,11 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         return Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes)
     }
 
+//Callback url port needs to be set beforehand currently set to 8080 
 
-    private fun findAvailablePort(): Int {
-        val port = ServerSocket(0).use { socket -> socket.localPort }
-        return port
-    }
+    // private fun findAvailablePort(): Int {
+    //     val port = ServerSocket(0).use { socket -> socket.localPort }
+    //     return port
+    // }
 
 }
