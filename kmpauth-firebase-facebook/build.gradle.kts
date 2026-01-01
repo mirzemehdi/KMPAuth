@@ -33,40 +33,28 @@ kotlin {
     cocoapods {
         ios.deploymentTarget = "12.0"
         framework {
-            baseName = "KMPAuthFirebaseCore"
+            baseName = "KMPAuthFirebaseFacebook"
             isStatic = true
         }
-//        pod("FBSDKCoreKit"){
-//            extraOpts += listOf("-compiler-option", "-fmodules")
-//            version = libs.versions.facebookAuthIos.get()
-//        }
-//        pod("FBSDKLoginKit"){
-//            extraOpts += listOf("-compiler-option", "-fmodules")
-//            version = libs.versions.facebookAuthIos.get()
-//        }
     }
 
 
 
     sourceSets {
-        androidMain.dependencies {
-//            implementation(libs.facebookAuthAndroid)
-        }
-
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(libs.koin.compose)
-            api(libs.firebase.gitlive.auth)
             api(project(":kmpauth-core"))
-            implementation(project(":kmpauth-google"))
+            api(project(":kmpauth-firebase"))
+            api(project(":kmpauth-facebook"))
         }
     }
 }
 
 android {
-    namespace = "com.mmk.kmpauth.firebase"
+    namespace = "com.mmk.kmpauth.firebase.facebook"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -98,7 +86,7 @@ mavenPublishing {
     )
     coordinates(
         "io.github.mirzemehdi",
-        "kmpauth-firebase",
+        "kmpauth-firebase-facebook",
         project.properties["kmpAuthVersion"] as String
     )
     pom {

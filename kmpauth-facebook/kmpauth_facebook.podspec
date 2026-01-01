@@ -1,23 +1,24 @@
 Pod::Spec.new do |spec|
-    spec.name                     = 'kmpauth_firebase'
+    spec.name                     = 'kmpauth_facebook'
     spec.version                  = '2.4.0-alpha05'
     spec.homepage                 = ''
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
     spec.license                  = ''
     spec.summary                  = ''
-    spec.vendored_frameworks      = 'build/cocoapods/framework/KMPAuthFirebaseCore.framework'
+    spec.vendored_frameworks      = 'build/cocoapods/framework/KMPAuthFacebook.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target    = '12.0'
+    spec.dependency 'FBSDKCoreKit', '18.0.0'
+    spec.dependency 'FBSDKLoginKit', '18.0.0'
                 
-                
-    if !Dir.exist?('build/cocoapods/framework/KMPAuthFirebaseCore.framework') || Dir.empty?('build/cocoapods/framework/KMPAuthFirebaseCore.framework')
+    if !Dir.exist?('build/cocoapods/framework/KMPAuthFacebook.framework') || Dir.empty?('build/cocoapods/framework/KMPAuthFacebook.framework')
         raise "
 
-        Kotlin framework 'KMPAuthFirebaseCore' doesn't exist yet, so a proper Xcode project can't be generated.
+        Kotlin framework 'KMPAuthFacebook' doesn't exist yet, so a proper Xcode project can't be generated.
         'pod install' should be executed after running ':generateDummyFramework' Gradle task:
 
-            ./gradlew :kmpauth-firebase:generateDummyFramework
+            ./gradlew :kmpauth-facebook:generateDummyFramework
 
         Alternatively, proper pod installation is performed during Gradle sync in the IDE (if Podfile location is set)"
     end
@@ -27,13 +28,13 @@ Pod::Spec.new do |spec|
     }
                 
     spec.pod_target_xcconfig = {
-        'KOTLIN_PROJECT_PATH' => ':kmpauth-firebase',
-        'PRODUCT_MODULE_NAME' => 'KMPAuthFirebaseCore',
+        'KOTLIN_PROJECT_PATH' => ':kmpauth-facebook',
+        'PRODUCT_MODULE_NAME' => 'KMPAuthFacebook',
     }
                 
     spec.script_phases = [
         {
-            :name => 'Build kmpauth_firebase',
+            :name => 'Build kmpauth_facebook',
             :execution_position => :before_compile,
             :shell_path => '/bin/sh',
             :script => <<-SCRIPT

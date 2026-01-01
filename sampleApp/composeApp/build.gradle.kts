@@ -48,6 +48,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(project(":kmpauth-google"))
             implementation(project(":kmpauth-firebase"))
+            implementation(project(":kmpauth-firebase-facebook"))
             implementation(project(":kmpauth-uihelper"))
         }
         desktopMain.dependencies {

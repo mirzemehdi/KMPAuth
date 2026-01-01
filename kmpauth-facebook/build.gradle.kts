@@ -1,5 +1,6 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -19,38 +20,42 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
     js(IR) {
         nodejs()
         browser()
         binaries.library()
     }
     jvm()
-
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
-
 
     cocoapods {
         ios.deploymentTarget = "12.0"
         framework {
-            baseName = "KMPAuthFirebaseCore"
+            baseName = "KMPAuthFacebook"
             isStatic = true
         }
-//        pod("FBSDKCoreKit"){
-//            extraOpts += listOf("-compiler-option", "-fmodules")
-//            version = libs.versions.facebookAuthIos.get()
-//        }
-//        pod("FBSDKLoginKit"){
-//            extraOpts += listOf("-compiler-option", "-fmodules")
-//            version = libs.versions.facebookAuthIos.get()
-//        }
+        pod("FBSDKCoreKit"){
+            extraOpts += listOf("-compiler-option", "-fmodules")
+            version = libs.versions.facebookAuthIos.get()
+        }
+        pod("FBSDKLoginKit"){
+            extraOpts += listOf("-compiler-option", "-fmodules")
+            version = libs.versions.facebookAuthIos.get()
+        }
     }
 
 
 
     sourceSets {
+
         androidMain.dependencies {
-//            implementation(libs.facebookAuthAndroid)
+            implementation(libs.facebookAuthAndroid)
         }
 
         commonMain.dependencies {
@@ -58,15 +63,13 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(libs.koin.compose)
-            api(libs.firebase.gitlive.auth)
             api(project(":kmpauth-core"))
-            implementation(project(":kmpauth-google"))
         }
     }
 }
 
 android {
-    namespace = "com.mmk.kmpauth.firebase"
+    namespace = "com.mmk.kmpauth.facebook"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -98,7 +101,7 @@ mavenPublishing {
     )
     coordinates(
         "io.github.mirzemehdi",
-        "kmpauth-firebase",
+        "kmpauth-facebook",
         project.properties["kmpAuthVersion"] as String
     )
     pom {
@@ -130,4 +133,3 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 }
-
