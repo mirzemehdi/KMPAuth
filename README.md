@@ -84,6 +84,7 @@ sourceSets {
   commonMain.dependencies {
     implementation("io.github.mirzemehdi:kmpauth-google:<version>") //Google One Tap Sign-In 
     implementation("io.github.mirzemehdi:kmpauth-firebase:<version>") //Integrated Authentications with Firebase
+    implementation("io.github.mirzemehdi:kmpauth-firebase-facebook:<version>") //Facebook authentication with Firebase
     implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") //UiHelper SignIn buttons (AppleSignIn, GoogleSignInButton)
 
   }
@@ -253,11 +254,12 @@ GithubButtonUiContainer(onResult = onFirebaseResult) {
 ```
 ### Facebook Sign-In
 
+
 #### Usage Example
 ```kotlin
 
 //Facebook button with icon
-FacebookButtonUiContainer(
+FacebookButtonUiContainerFirebase(
     onResult = { result -> /* handle FirebaseUser result or error */ },
     linkAccount = false
 ) {
@@ -265,7 +267,7 @@ FacebookButtonUiContainer(
 }
 
 //Icon Only Button
-FacebookButtonUiContainer(
+FacebookButtonUiContainerFirebase(
     modifier = Modifier.fillMaxWidth().height(44.dp),
     onResult = { result -> /* handle result */ },
     linkAccount = false
@@ -274,7 +276,7 @@ FacebookButtonUiContainer(
 }
 
 //Custom Button
-FacebookButtonUiContainer(
+FacebookButtonUiContainerFirebase(
     modifier = Modifier.fillMaxWidth().height(44.dp),
     onResult = { result -> /* handle result */ },
     linkAccount = false

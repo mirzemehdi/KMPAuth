@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.mmk.kmpauth.core.KMPAuth
-import com.mmk.kmpauth.firebase.facebook.handleFacebookActivityResult
+import com.mmk.kmpauth.facebook.handleFacebookActivityResult
 
 
 class MainActivity : ComponentActivity() {

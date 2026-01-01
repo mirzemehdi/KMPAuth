@@ -36,21 +36,21 @@ kotlin {
             baseName = "KMPAuthFirebaseCore"
             isStatic = true
         }
-        pod("FBSDKCoreKit"){
-            extraOpts += listOf("-compiler-option", "-fmodules")
-            version = libs.versions.facebookAuthIos.get()
-        }
-        pod("FBSDKLoginKit"){
-            extraOpts += listOf("-compiler-option", "-fmodules")
-            version = libs.versions.facebookAuthIos.get()
-        }
+//        pod("FBSDKCoreKit"){
+//            extraOpts += listOf("-compiler-option", "-fmodules")
+//            version = libs.versions.facebookAuthIos.get()
+//        }
+//        pod("FBSDKLoginKit"){
+//            extraOpts += listOf("-compiler-option", "-fmodules")
+//            version = libs.versions.facebookAuthIos.get()
+//        }
     }
 
 
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.facebookAuthAndroid)
+//            implementation(libs.facebookAuthAndroid)
         }
 
         commonMain.dependencies {
