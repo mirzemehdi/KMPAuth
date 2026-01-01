@@ -25,6 +25,9 @@ import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import java.util.Base64
 
+
+private var foundAvailablePort: Int = 8080 //TODO temporary solution. Fix later in signin by passing redirect url
+
 internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCredentials) :
     GoogleAuthUiProvider {
 
@@ -38,7 +41,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
     ): GoogleUser? {
         val responseType = "id_token token"
         val scopeString = scopes.joinToString(" ")
-        val redirectUri = "http://localhost:8080/callback"
+        val redirectUri = "http://localhost:$foundAvailablePort/callback"
         val state: String
         var nonce: String?
         val googleAuthUrl = withContext(Dispatchers.IO) {
@@ -111,8 +114,8 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 }
             }                 
         """.trimIndent()
-
-        val server = embeddedServer(Netty, port = findAvailablePort()) {
+        foundAvailablePort = findAvailablePort()
+        val server = embeddedServer(Netty, port = foundAvailablePort) {
             routing {
                 get(redirectUriPath) {
                     call.respondHtml {
