@@ -26,6 +26,7 @@ kotlin {
     }
     jvm()
 
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -36,27 +37,27 @@ kotlin {
             baseName = "KMPAuthFirebaseCore"
             isStatic = true
         }
-        pod("FBSDKCoreKit"){
-            extraOpts += listOf("-compiler-option", "-fmodules")
-            version = libs.versions.facebookAuthIos.get()
-        }
-        pod("FBSDKLoginKit"){
-            extraOpts += listOf("-compiler-option", "-fmodules")
-            version = libs.versions.facebookAuthIos.get()
-        }
+//        pod("FBSDKCoreKit"){
+//            extraOpts += listOf("-compiler-option", "-fmodules")
+//            version = libs.versions.facebookAuthIos.get()
+//        }
+//        pod("FBSDKLoginKit"){
+//            extraOpts += listOf("-compiler-option", "-fmodules")
+//            version = libs.versions.facebookAuthIos.get()
+//        }
     }
 
 
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.facebookAuthAndroid)
+//            implementation(libs.facebookAuthAndroid)
         }
 
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(libs.koin.compose)
             api(libs.firebase.gitlive.auth)
             api(project(":kmpauth-core"))

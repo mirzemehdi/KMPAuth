@@ -20,7 +20,7 @@
 		A62229A92B479D28001B39BD /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = A62229A82B479D28001B39BD /* FirebaseAnalyticsOnDeviceConversion */; };
 		A62229AB2B479D28001B39BD /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A62229AA2B479D28001B39BD /* FirebaseAnalyticsSwift */; };
 		A62229AD2B479D28001B39BD /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = A62229AC2B479D28001B39BD /* FirebaseAnalyticsWithoutAdIdSupport */; };
-		A62229AF2B479D28001B39BD /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = A62229AE2B479D28001B39BD /* FirebaseAppCheck */; };
+		A62229AF2B479D28001B39BD /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		A62229B12B479D39001B39BD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A62229B02B479D39001B39BD /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -60,7 +60,7 @@
 				A62229AD2B479D28001B39BD /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				A61AEE9A2B3D018A00E17BA4 /* GoogleSignInSwift in Frameworks */,
 				A62229A72B479D28001B39BD /* FirebaseAnalytics in Frameworks */,
-				A62229AF2B479D28001B39BD /* FirebaseAppCheck in Frameworks */,
+				A62229AF2B479D28001B39BD /* (null) in Frameworks */,
 				A62229A92B479D28001B39BD /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
 				A62229AB2B479D28001B39BD /* FirebaseAnalyticsSwift in Frameworks */,
 				2E159BAD2DEF344200A00636 /* FacebookCore in Frameworks */,
@@ -144,7 +144,6 @@
 				A62229A82B479D28001B39BD /* FirebaseAnalyticsOnDeviceConversion */,
 				A62229AA2B479D28001B39BD /* FirebaseAnalyticsSwift */,
 				A62229AC2B479D28001B39BD /* FirebaseAnalyticsWithoutAdIdSupport */,
-				A62229AE2B479D28001B39BD /* FirebaseAppCheck */,
 				A615958A2B479F2A008C86AE /* FirebaseAuth */,
 				2E159BAC2DEF344200A00636 /* FacebookCore */,
 				2E159BAE2DEF344200A00636 /* FacebookLogin */,
@@ -447,8 +446,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/facebook/facebook-ios-sdk.git";
 			requirement = {
-				branch = releases/v18.0.0;
-				kind = branch;
+				kind = exactVersion;
+				version = 18.0.0;
 			};
 		};
 		A61AEE962B3D018A00E17BA4 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
