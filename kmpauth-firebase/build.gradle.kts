@@ -26,6 +26,7 @@ kotlin {
     }
     jvm()
 
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -56,7 +57,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(libs.koin.compose)
             api(libs.firebase.gitlive.auth)
             api(project(":kmpauth-core"))
