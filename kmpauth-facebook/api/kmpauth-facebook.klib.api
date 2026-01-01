@@ -1,0 +1,46 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.mirzemehdi:kmpauth-facebook>
+sealed interface com.mmk.kmpauth.facebook/FacebookSignInRequestScope { // com.mmk.kmpauth.facebook/FacebookSignInRequestScope|null[0]
+    final object Email : com.mmk.kmpauth.facebook/FacebookSignInRequestScope { // com.mmk.kmpauth.facebook/FacebookSignInRequestScope.Email|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.facebook/FacebookSignInRequestScope.Email.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.facebook/FacebookSignInRequestScope.Email.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.facebook/FacebookSignInRequestScope.Email.toString|toString(){}[0]
+    }
+
+    final object PublicProfile : com.mmk.kmpauth.facebook/FacebookSignInRequestScope { // com.mmk.kmpauth.facebook/FacebookSignInRequestScope.PublicProfile|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.facebook/FacebookSignInRequestScope.PublicProfile.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.facebook/FacebookSignInRequestScope.PublicProfile.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.facebook/FacebookSignInRequestScope.PublicProfile.toString|toString(){}[0]
+    }
+}
+
+final class com.mmk.kmpauth.facebook/FacebookUser { // com.mmk.kmpauth.facebook/FacebookUser|null[0]
+    constructor <init>(kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.facebook/FacebookUser.<init>|<init>(kotlin.String?;kotlin.String?){}[0]
+
+    final val accessToken // com.mmk.kmpauth.facebook/FacebookUser.accessToken|{}accessToken[0]
+        final fun <get-accessToken>(): kotlin/String? // com.mmk.kmpauth.facebook/FacebookUser.accessToken.<get-accessToken>|<get-accessToken>(){}[0]
+    final val nonce // com.mmk.kmpauth.facebook/FacebookUser.nonce|{}nonce[0]
+        final fun <get-nonce>(): kotlin/String? // com.mmk.kmpauth.facebook/FacebookUser.nonce.<get-nonce>|<get-nonce>(){}[0]
+
+    final fun component1(): kotlin/String? // com.mmk.kmpauth.facebook/FacebookUser.component1|component1(){}[0]
+    final fun component2(): kotlin/String? // com.mmk.kmpauth.facebook/FacebookUser.component2|component2(){}[0]
+    final fun copy(kotlin/String? = ..., kotlin/String? = ...): com.mmk.kmpauth.facebook/FacebookUser // com.mmk.kmpauth.facebook/FacebookUser.copy|copy(kotlin.String?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.facebook/FacebookUser.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.mmk.kmpauth.facebook/FacebookUser.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.mmk.kmpauth.facebook/FacebookUser.toString|toString(){}[0]
+}
+
+final val com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookSignInRequestScope_Email$stableprop // com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookSignInRequestScope_Email$stableprop|#static{}com_mmk_kmpauth_facebook_FacebookSignInRequestScope_Email$stableprop[0]
+final val com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookSignInRequestScope_PublicProfile$stableprop // com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookSignInRequestScope_PublicProfile$stableprop|#static{}com_mmk_kmpauth_facebook_FacebookSignInRequestScope_PublicProfile$stableprop[0]
+final val com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookUser$stableprop // com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookUser$stableprop|#static{}com_mmk_kmpauth_facebook_FacebookUser$stableprop[0]
+
+final fun com.mmk.kmpauth.facebook/FacebookButtonUiContainer(androidx.compose.ui/Modifier?, kotlin.collections/List<com.mmk.kmpauth.facebook/FacebookSignInRequestScope>?, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.facebook/FacebookUser>, kotlin/Unit>, kotlin/Boolean, kotlin/Function3<com.mmk.kmpauth.core/UiContainerScope, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.facebook/FacebookButtonUiContainer|FacebookButtonUiContainer(androidx.compose.ui.Modifier?;kotlin.collections.List<com.mmk.kmpauth.facebook.FacebookSignInRequestScope>?;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.facebook.FacebookUser>,kotlin.Unit>;kotlin.Boolean;kotlin.Function3<com.mmk.kmpauth.core.UiContainerScope,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookSignInRequestScope_Email$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookSignInRequestScope_Email$stableprop_getter|com_mmk_kmpauth_facebook_FacebookSignInRequestScope_Email$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookSignInRequestScope_PublicProfile$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookSignInRequestScope_PublicProfile$stableprop_getter|com_mmk_kmpauth_facebook_FacebookSignInRequestScope_PublicProfile$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookUser$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.facebook/com_mmk_kmpauth_facebook_FacebookUser$stableprop_getter|com_mmk_kmpauth_facebook_FacebookUser$stableprop_getter(){}[0]

@@ -1,0 +1,4 @@
+public final class com/mmk/kmpauth/firebase/facebook/FacebookButtonUiContainerFirebase_androidKt {
+	public static final fun FacebookButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+}
+

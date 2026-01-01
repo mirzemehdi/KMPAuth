@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'kmpauth_firebase'
-    spec.version                  = '2.4.0-alpha05'
+    spec.version                  = '2.5.0-alpha01'
     spec.homepage                 = ''
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
@@ -9,8 +9,7 @@ Pod::Spec.new do |spec|
     spec.vendored_frameworks      = 'build/cocoapods/framework/KMPAuthFirebaseCore.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target    = '12.0'
-    spec.dependency 'FBSDKCoreKit', '18.0.0'
-    spec.dependency 'FBSDKLoginKit', '18.0.0'
+                
                 
     if !Dir.exist?('build/cocoapods/framework/KMPAuthFirebaseCore.framework') || Dir.empty?('build/cocoapods/framework/KMPAuthFirebaseCore.framework')
         raise "
