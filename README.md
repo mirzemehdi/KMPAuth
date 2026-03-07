@@ -109,11 +109,58 @@ Create GoogleAuthProvider instance by providing _**Web Client Id**_ as a serverI
 GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = WebClientId))
 
 ```
+
+For **JVM/Desktop** platform, you can optionally specify a custom `redirectUri`:
+```kotlin
+GoogleAuthProvider.create(
+    credentials = GoogleAuthCredentials(
+        serverId = WebClientId,
+        redirectUri = "http://localhost:8080/callback" // Optional, defaults to http://localhost:8080/callback
+    )
+)
+```
+**Important:** Make sure the `redirectUri` you specify is registered as an authorized redirect URI in your Google Cloud Console OAuth 2.0 credentials.
+
 <details>
   <summary>Android</summary>
 
 ##### Android Setup
 There is not any platform specific setup in Android side.
+
+</details>
+
+<details>
+  <summary>JVM/Desktop</summary>
+
+##### JVM/Desktop Setup
+For JVM/Desktop applications, the library starts a local HTTP server to handle the OAuth callback. 
+
+**Default Behavior:**
+- The library tries to use port 8080 first
+- If port 8080 is occupied, it tries ports 8081-8089
+- The default redirect URI is `http://localhost:8080/callback`
+
+**Custom Redirect URI:**
+You can specify a custom redirect URI when creating the GoogleAuthProvider:
+```kotlin
+GoogleAuthProvider.create(
+    credentials = GoogleAuthCredentials(
+        serverId = "YOUR_WEB_CLIENT_ID",
+        redirectUri = "http://localhost:9090/callback" // Custom port
+    )
+)
+```
+
+**Google Cloud Console Setup:**
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Select your project
+3. Go to APIs & Services > Credentials
+4. Edit your OAuth 2.0 Client ID
+5. Add your redirect URI(s) to "Authorized redirect URIs":
+   - `http://localhost:8080/callback` (default)
+   - `http://localhost:8081/callback` (fallback)
+   - `http://localhost:8082/callback` (fallback)
+   - ... or your custom redirect URI
 
 </details>
 
