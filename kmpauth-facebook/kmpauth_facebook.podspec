@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'kmpauth_facebook'
-    spec.version                  = '2.5.0-alpha01'
+    spec.version                  = '2.5.0-alpha02'
     spec.homepage                 = ''
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
