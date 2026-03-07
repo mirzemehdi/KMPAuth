@@ -10,7 +10,6 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import io.ktor.utils.io.core.use
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,13 +24,11 @@ import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import java.util.Base64
 
-
-private var foundAvailablePort: Int = 8080 //TODO temporary solution. Fix later in signin by passing redirect url
-
 internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCredentials) :
     GoogleAuthUiProvider {
 
     private val authUrl = "https://accounts.google.com/o/oauth2/v2/auth"
+    private val preferredPort: Int = 8080
 
     @OptIn(KMPAuthInternalApi::class)
     override suspend fun signIn(
@@ -39,9 +36,25 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
     ): GoogleUser? {
+        // Parse custom redirectUri or use default with preferred port
+        val (redirectUri, port) = if (credentials.redirectUri != null) {
+            // Use custom redirectUri and extract port from it
+            val customUri = credentials.redirectUri
+            val portFromUri = try {
+                URI(customUri).port.takeIf { it > 0 } ?: 8080
+            } catch (e: Exception) {
+                currentLogger.log("GoogleAuthUiProvider: Failed to parse redirectUri, using default port 8080")
+                8080
+            }
+            customUri to portFromUri
+        } else {
+            // Use default behavior: try preferred port, fallback to nearby ports
+            val foundPort = findAvailablePort(preferredPort)
+            "http://localhost:$foundPort/callback" to foundPort
+        }
+
         val responseType = "id_token token"
         val scopeString = scopes.joinToString(" ")
-        val redirectUri = "http://localhost:$foundAvailablePort/callback"
         val state: String
         var nonce: String?
         val googleAuthUrl = withContext(Dispatchers.IO) {
@@ -59,10 +72,12 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                     "&state=$state"
         }
 
-
-        openUrlInBrowser(googleAuthUrl)
-
-        val (idToken, accessToken) = startHttpServerAndGetToken(state = state)
+        // Start server BEFORE opening browser
+        val (idToken, accessToken) = startHttpServerAndGetToken(
+            state = state,
+            googleAuthUrl = googleAuthUrl,
+            port = port
+        )
         if (idToken == null && accessToken == null) {
             currentLogger.log("GoogleAuthUiProvider: token is null")
             return null
@@ -91,7 +106,9 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
     //Pair, first one is idToken, second one is accessToken
     private suspend fun startHttpServerAndGetToken(
         redirectUriPath: String = "/callback",
-        state: String
+        state: String,
+        googleAuthUrl: String,
+        port: Int
     ): Pair<String?, String?> {
         val tokenPairDeferred = CompletableDeferred<Pair<String?, String?>>()
 
@@ -114,8 +131,8 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 }
             }                 
         """.trimIndent()
-        foundAvailablePort = findAvailablePort()
-        val server = embeddedServer(Netty, port = foundAvailablePort) {
+
+        val server = embeddedServer(Netty, port = port) {
             routing {
                 get(redirectUriPath) {
                     call.respondHtml {
@@ -142,6 +159,9 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
             }
         }.start(wait = false)
 
+        // Open browser AFTER server is started
+        openUrlInBrowser(googleAuthUrl)
+
         val idTokenAndAccessTokenPair = tokenPairDeferred.await()
         server.stop(1000, 1000)
         return idTokenAndAccessTokenPair
@@ -164,8 +184,29 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
     }
 
 
-    private fun findAvailablePort(): Int {
+    @OptIn(KMPAuthInternalApi::class)
+    private fun findAvailablePort(preferredPort: Int = 8080): Int {
+        // First, try the preferred port
+        try {
+            ServerSocket(preferredPort).use {
+                return preferredPort
+            }
+        } catch (_: Exception) {
+            // Port is occupied, try nearby ports (8080-8089)
+            for (port in (preferredPort + 1)..(preferredPort + 9)) {
+                try {
+                    ServerSocket(port).use {
+                        currentLogger.log("GoogleAuthUiProvider: Preferred port $preferredPort is occupied, using port $port instead")
+                        return port
+                    }
+                } catch (_: Exception) {
+                    // Try next port
+                }
+            }
+        }
+        // If all preferred ports are occupied, find any available port
         val port = ServerSocket(0).use { socket -> socket.localPort }
+        currentLogger.log("GoogleAuthUiProvider: All preferred ports (8080-8089) are occupied, using random port $port. Make sure this is configured in Google Console.")
         return port
     }
 
