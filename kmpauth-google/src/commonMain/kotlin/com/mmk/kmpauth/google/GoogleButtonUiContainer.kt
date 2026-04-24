@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.UiContainerScope
 import com.mmk.kmpauth.core.logger.currentLogger
@@ -48,6 +49,19 @@ public fun GoogleButtonUiContainer(
     onGoogleSignInResult: (GoogleUser?) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
+    // In Android Studio @Preview the androidx.startup Initializer that populates
+    // applicationContext never runs, so resolving GoogleAuthProvider would throw. Render the
+    // content (the consumer's button) with a no-op onClick so layout previews stay functional.
+    if (LocalInspectionMode.current) {
+        val previewScope = remember {
+            object : UiContainerScope {
+                override fun onClick() = Unit
+            }
+        }
+        Box(modifier = modifier) { previewScope.content() }
+        return
+    }
+
     val googleAuthProvider = GoogleAuthProvider.get()
     val googleAuthUiProvider = googleAuthProvider.getUiProvider()
     val coroutineScope = rememberCoroutineScope()
