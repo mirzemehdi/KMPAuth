@@ -71,6 +71,10 @@ kotlin {
             implementation(libs.ktor.server.html.builder)
             implementation("com.auth0:java-jwt:4.4.0") // Check for the latest version
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }
 
