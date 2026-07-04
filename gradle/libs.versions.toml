@@ -28,10 +28,12 @@ androidLegacyPlayServices = "21.4.0"
 mavenPublish = "0.35.0"
 ktor = "3.3.3"
 kotlinx-serialization = "1.9.0"
+kotlinx-coroutines = "1.10.2"
 
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
