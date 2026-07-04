@@ -65,6 +65,10 @@ kotlin {
             implementation(libs.koin.compose)
             api(project(":kmpauth-core"))
         }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }
 
