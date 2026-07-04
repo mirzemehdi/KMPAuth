@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose) apply false
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.androidApplication) apply false
-    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.androidKmpLibrary) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinNativeCocoaPods) apply false
     alias(libs.plugins.dokka) apply false
@@ -27,6 +27,7 @@ apiValidation {
     }
     ignoredProjects += "sampleApp"
     ignoredProjects += "composeApp"
+    ignoredProjects += "androidApp"
 }
 
 
@@ -36,7 +37,7 @@ allprojects {
     group = "io.github.mirzemehdi"
     version = project.properties["kmpAuthVersion"] as String
 
-    val excludedModules = listOf(":sampleApp:composeApp", ":sampleApp")
+    val excludedModules = listOf(":sampleApp:composeApp", ":sampleApp:androidApp", ":sampleApp")
     if (project.path in excludedModules) return@allprojects
 
     apply(plugin = "org.jetbrains.dokka")

@@ -32,8 +32,3 @@ kotlin {
         }
     }
 }
-
-android {
-    // Compose resources also live under commonMain/resources for this module.
-    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/resources")
-}

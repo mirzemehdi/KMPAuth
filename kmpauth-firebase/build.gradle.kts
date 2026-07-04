@@ -15,6 +15,10 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            // GitLive's Android artifacts declare Firebase dependencies without
+            // versions; the BoM must be on the classpath to pin them. Exposed
+            // as api so consumers of this module inherit the constraints.
+            api(project.dependencies.platform(libs.firebase.android.bom))
         }
 
         commonMain.dependencies {

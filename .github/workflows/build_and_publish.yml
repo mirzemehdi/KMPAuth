@@ -44,7 +44,7 @@ jobs:
     strategy:
       matrix:
         config: [
-          { target: android, os: ubuntu-latest, tasks: testDebugUnitTest testReleaseUnitTest jvmTest, continueOnError: false },
+          { target: android, os: ubuntu-latest, tasks: testAndroid jvmTest :sampleApp:androidApp:assembleDebug, continueOnError: false },
           { target: apple, os: macos-latest, tasks: iosSimulatorArm64Test, continueOnError: false },
         ]
     runs-on: ${{ matrix.config.os }}
