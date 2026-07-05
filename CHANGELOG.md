@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
 
 ### Added
+- **Pluggable auth backends.** New `com.mmk.kmpauth.core.auth` API in
+  `kmpauth-core`: `AuthProviderBackend` (sign-in/sign-out/current-user over
+  a backend-agnostic `AuthCredential` + `KMPAuthUser` model) and the
+  `KMPAuthBackend` registry. Firebase remains the default implementation
+  (registered automatically by `kmpauth-firebase`); a Supabase backend can
+  plug in via `KMPAuthBackend.register(...)` without any changes to UI code.
 - Characterization test suite locking the public 2.x behavior (DI lifecycle,
   `GoogleAuthProvider` entry points, sign-in overload defaults, public model shapes).
 
