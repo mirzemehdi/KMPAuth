@@ -11,9 +11,9 @@ import dev.gitlive.firebase.auth.FirebaseUser
 /**
  * Non-composable orchestration behind [GoogleButtonUiContainerFirebase]:
  * turns a [GoogleUser] sign-in result into a Firebase session through the
- * pluggable [AuthProviderBackend]. Extracted so the 2.x container contract
- * (exact failure messages, link-vs-sign-in decision, raw-user unwrapping)
- * is unit-testable with a fake backend.
+ * pluggable [AuthProviderBackend]. Kept separate from the composable so the
+ * container contract (exact failure messages, link-vs-sign-in decision,
+ * raw-user unwrapping) stays unit-testable with a fake backend.
  */
 internal class GoogleFirebaseSignInHandler(
     private val backend: AuthProviderBackend,

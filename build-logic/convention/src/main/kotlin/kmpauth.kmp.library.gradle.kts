@@ -1,18 +1,19 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SourcesJar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 /**
  * Convention plugin shared by every published kmpauth-* library module.
  *
- * Centralizes: target set (android/jvm/js/ios), explicit API mode, Android
- * library configuration via the AGP 9 KMP library plugin (namespace derived
- * from the module name), the shared kotlin-test dependency, and Maven Central
- * publishing with the common POM.
+ * Centralizes: the full target set (android/jvm/js/wasmJs/ios), explicit API
+ * mode, Android library configuration via the AGP 9 KMP library plugin
+ * (namespace derived from the module name), the shared kotlin-test
+ * dependency, and Maven Central publishing with the common POM.
  *
- * Modules keep only what genuinely differs: the wasmJs target (not all
- * modules support it), the iOS framework name, the swiftPMDependencies
- * block (external Apple frameworks), and their dependencies.
+ * Modules keep only what genuinely differs: the iOS framework name, the
+ * swiftPMDependencies block (external Apple frameworks), their dependencies,
+ * and any custom source-set wiring (e.g. the firebase modules' nonWasmMain).
  */
 
 plugins {
@@ -49,7 +50,7 @@ kotlin {
         }
     }
 
-    js(IR) {
+    js {
         nodejs()
         browser()
         binaries.library()
@@ -76,7 +77,7 @@ mavenPublishing {
         KotlinMultiplatform(
             // Dokka 2.x (V2 mode) task name; the V1 dokkaHtml task no longer exists.
             javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
-            sourcesJar = true
+            sourcesJar = SourcesJar.Sources()
         )
     )
     coordinates(
