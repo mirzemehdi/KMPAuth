@@ -2,18 +2,15 @@ package com.mmk.kmpauth.firebase.google
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.UiContainerScope
-import com.mmk.kmpauth.core.logger.currentLogger
+import com.mmk.kmpauth.core.auth.KMPAuthBackend
+import com.mmk.kmpauth.firebase.backend.ensureFirebaseBackendRegistered
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
-import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.GoogleAuthProvider
-import dev.gitlive.firebase.auth.auth
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 /**
@@ -36,7 +33,6 @@ import kotlinx.coroutines.launch
  * ```
  *
  */
-@OptIn(KMPAuthInternalApi::class)
 @Composable
 public fun GoogleButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
@@ -50,41 +46,19 @@ public fun GoogleButtonUiContainerFirebase(
 
     val updatedOnResult by rememberUpdatedState(onResult)
     val coroutineScope = rememberCoroutineScope()
+    val signInHandler = remember {
+        ensureFirebaseBackendRegistered()
+        GoogleFirebaseSignInHandler(backend = KMPAuthBackend.require())
+    }
     GoogleButtonUiContainer(
         modifier = modifier,
         filterByAuthorizedAccounts = filterByAuthorizedAccounts,
         isAutoSelectEnabled = isAutoSelectEnabled,
         scopes = scopes,
         onGoogleSignInResult = { googleUser ->
-            val idToken = googleUser?.idToken
-            val accessToken = googleUser?.accessToken
-            if (idToken == null) {
-                currentLogger.log("Google idToken is null")
-                updatedOnResult(Result.failure(IllegalStateException("Idtoken is null")))
-                return@GoogleButtonUiContainer
-            }
-            val authCredential = GoogleAuthProvider.credential(idToken, accessToken)
             coroutineScope.launch {
-                try {
-                    val auth = Firebase.auth
-                    val currentUser = auth.currentUser
-                    val result = if (linkAccount && currentUser != null) {
-                        currentUser.linkWithCredential(authCredential)
-                    } else {
-                        auth.signInWithCredential(authCredential)
-                    }
-                    if (result.user == null) {
-                        currentLogger.log("Firebase user is null")
-                        updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
-                    }
-                    else updatedOnResult(Result.success(result.user))
-                } catch (e: Exception) {
-                    if (e is CancellationException) throw e
-                    currentLogger.log("Google sign-in failed with exception: $e")
-                    updatedOnResult(Result.failure(e))
-                }
+                updatedOnResult(signInHandler.signIn(googleUser, linkAccount))
             }
-
         },
         content = content
     )

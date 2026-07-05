@@ -50,5 +50,9 @@ kotlin {
             api(project(":kmpauth-core"))
             implementation(project(":kmpauth-google"))
         }
+
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }
