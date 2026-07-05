@@ -74,7 +74,8 @@ kotlin {
 mavenPublishing {
     configure(
         KotlinMultiplatform(
-            javadocJar = JavadocJar.Dokka("dokkaHtml"),
+            // Dokka 2.x (V2 mode) task name; the V1 dokkaHtml task no longer exists.
+            javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
             sourcesJar = true
         )
     )

@@ -101,12 +101,12 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Generate docs with dokka
-        run: ./gradlew dokkaHtmlMultiModule
+        run: ./gradlew :dokkaGeneratePublicationHtml
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ github.workspace }}/build/dokka/htmlMultiModule
+          path: ${{ github.workspace }}/build/dokka/html
 
       - name: Release to GitHub Pages
         id: deployment
