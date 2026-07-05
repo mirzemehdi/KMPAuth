@@ -16,11 +16,12 @@ Step-by-step guide for upgrading from KMPAuth 2.x to 3.0.
 
 ## What did NOT change
 
-- All public composable containers keep their 2.x signatures:
-  `GoogleButtonUiContainer`, `GoogleButtonUiContainerFirebase`,
+- All public composable containers keep their 2.x signatures and behavior
+  (`GoogleButtonUiContainer`, `GoogleButtonUiContainerFirebase`,
   `AppleButtonUiContainer`, `GithubButtonUiContainer`, `OAuthContainer`,
-  `FacebookButtonUiContainer`, `FacebookButtonUiContainerFirebase`, and the
-  `kmpauth-uihelper` buttons.
+  `FacebookButtonUiContainer`, `FacebookButtonUiContainerFirebase`) and the
+  `kmpauth-uihelper` buttons. The containers are deprecated in favor of the
+  `SignInState` API (section 4) but stay fully functional until 4.0.
 - `GoogleAuthProvider.create(credentials)` initialization flow.
 - Public models: `GoogleUser`, `GoogleAuthCredentials`, `FacebookUser`,
   request-scope types.
@@ -48,7 +49,7 @@ frameworks through the Kotlin `swiftPMDependencies {}` DSL (Kotlin 2.4+).
 
 **In your shared KMP module:** if you consume KMPAuth from a KMP project
 that itself builds the iOS framework, no Kotlin code changes are needed —
-the `cocoapods.FirebaseAuth.*` bindings inside `kmpauth-firebase` come from
+the `cocoapods.FirebaseAuth.*` bindings inside `kmpauth-firebase-core` come from
 GitLive's bundled cinterop and keep working.
 
 ## 2. Koin removal
@@ -123,7 +124,7 @@ Notes:
 - One state per provider per screen; no wrapping container, the button is
   entirely yours.
 
-## 4b. Granular Firebase artifacts (optional)
+## 5. Granular Firebase artifacts (optional)
 
 `kmpauth-firebase` still works exactly as in 2.x — same coordinates, now
 published as an aggregator of the granular artifacts (its module lives
@@ -136,7 +137,7 @@ under `deprecated/` in the repository as a compatibility shim). Optionally slim 
 | Google + Firebase | `kmpauth-firebase-google` (+ `kmpauth-google`) |
 | Facebook + Firebase | `kmpauth-firebase-facebook` |
 
-## 4c. Pluggable auth backends
+## 6. Pluggable auth backends
 
 3.0 introduces `com.mmk.kmpauth.core.auth.AuthProviderBackend` with a
 backend-agnostic credential/user model (`AuthCredential`, `KMPAuthUser`).
