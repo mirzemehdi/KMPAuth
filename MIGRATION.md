@@ -52,9 +52,27 @@ that itself builds the iOS framework, no Kotlin code changes are needed —
 the `cocoapods.FirebaseAuth.*` bindings inside `kmpauth-firebase` come from
 GitLive's bundled cinterop and keep working.
 
-## 2. Koin removal _(pending)_
+## 2. Koin removal
 
-KMPAuth no longer uses (or ships) Koin. Details land with the DI PRs.
+KMPAuth no longer uses (or ships) Koin — internal wiring is plain
+constructor injection.
+
+**Most users need no changes.** `GoogleAuthProvider.create(credentials)` and
+all `*UiContainer` composables behave exactly as in 2.x (first `create()`
+wins, `get()` before `create()` throws the same `IllegalArgumentException`).
+
+You are only affected if you referenced the `@KMPAuthInternalApi`-annotated
+DI types directly (both deleted in 3.0):
+
+- `com.mmk.kmpauth.core.di.KMPKoinComponent` — was an internal bridge to
+  KMPAuth's private Koin container; there is no replacement. If you were
+  resolving KMPAuth types through it, use the public entry points instead.
+- `com.mmk.kmpauth.core.di.LibDependencyInitializer` — initialization now
+  happens inside `GoogleAuthProvider.create(...)`; simply delete the call.
+
+If your app uses Koin itself, nothing changes — KMPAuth never shared your
+application's Koin container (it ran a private `koinApplication`), so no
+modules need removing from your setup.
 
 ## 3. Toolchain requirements _(pending)_
 

@@ -15,7 +15,6 @@ androidx-espresso-core = "3.7.0"
 androidx-startup-runtime = "1.2.0"
 kotlin = "2.4.0"
 junit = "4.13.2"
-koin = "4.2.2"
 kotlinx-binary-validator = "0.18.1"
 dokka = "2.2.0"
 androidxCredential = "1.6.0"
@@ -54,9 +53,6 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activityCompose" }
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "androidx-startup-runtime" }
 
-koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
-koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
-koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
 
 # Gradle plugin artifacts for the build-logic included build
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

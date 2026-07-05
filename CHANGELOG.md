@@ -41,8 +41,16 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   `@Deprecated(ReplaceWith(...))` with migration hints.
 
 ### Removed
-- _(pending)_ Koin-based internal DI (`KMPKoinComponent`, `LibDependencyInitializer`,
-  `org.koin` dependency). These were `@KMPAuthInternalApi`-annotated internals.
+- **Koin.** KMPAuth no longer uses or ships Koin. The `@KMPAuthInternalApi`
+  DI types `KMPKoinComponent` and `LibDependencyInitializer` are deleted and
+  the `io.insert-koin:koin-core` dependency is gone from every module.
+  Public entry points (`GoogleAuthProvider.create`, all `*UiContainer`
+  composables) are unchanged — internal wiring is now plain constructor
+  injection. Only code that referenced those two internal-API types directly
+  is affected (see MIGRATION.md).
+- Stale `api/android/*.api` compatibility dumps (no longer generated or
+  validated under AGP 9's KMP library plugin; the klib and JVM dumps remain
+  the source of truth).
 
 ## [2.5.0-alpha01] — 2026-06
 
