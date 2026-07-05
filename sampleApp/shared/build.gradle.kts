@@ -55,7 +55,8 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(project(":providers:kmpauth-google"))
-            implementation(project(":deprecated:kmpauth-firebase"))
+            implementation(project(":backends:firebase:kmpauth-firebase-core"))
+            implementation(project(":backends:firebase:kmpauth-firebase-google"))
             implementation(project(":backends:firebase:kmpauth-firebase-facebook"))
             implementation(project(":kmpauth-uihelper"))
         }
