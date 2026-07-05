@@ -46,7 +46,6 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
-            implementation(libs.koin.compose)
             api(libs.firebase.gitlive.auth)
             api(project(":kmpauth-core"))
             implementation(project(":kmpauth-google"))

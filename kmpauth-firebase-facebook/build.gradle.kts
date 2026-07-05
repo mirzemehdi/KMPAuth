@@ -47,7 +47,6 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
-            implementation(libs.koin.compose)
             api(project(":kmpauth-core"))
             api(project(":kmpauth-firebase"))
             api(project(":kmpauth-facebook"))

@@ -3,12 +3,17 @@ package com.mmk.kmpauth.core.di
 import android.content.Context
 import androidx.startup.Initializer
 import com.mmk.kmpauth.core.KMPAuthInternalApi
-import org.koin.dsl.module
 
-internal lateinit var applicationContext: Context
+/**
+ * Application context captured automatically at process start via
+ * androidx.startup. Library-internal wiring only — not for consumer use.
+ */
+@KMPAuthInternalApi
+public lateinit var applicationContext: Context
     private set
 
 public class KMPAuthContextInitializer : Initializer<Unit> {
+    @OptIn(KMPAuthInternalApi::class)
     override fun create(context: Context) {
         applicationContext = context.applicationContext
     }
@@ -21,8 +26,3 @@ public class KMPAuthContextInitializer : Initializer<Unit> {
 
 @KMPAuthInternalApi
 public actual fun isAndroidPlatform(): Boolean = true
-internal actual val platformModule = module {
-    single { applicationContext }
-}
-
-
