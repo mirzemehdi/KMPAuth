@@ -35,5 +35,7 @@ include(":backends:firebase:kmpauth-firebase-facebook")
 // legacy status; artifact ids and coordinates are unchanged)
 include(":deprecated:kmpauth-firebase")
 
-include(":sampleApp:composeApp")
+include(":sampleApp:shared")
 include(":sampleApp:androidApp")
+include(":sampleApp:desktopApp")
+include(":sampleApp:webApp")

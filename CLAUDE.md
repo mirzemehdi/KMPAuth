@@ -20,7 +20,7 @@ Layout: identity **providers** (credential sources) live under `providers/`; ses
 | `:backends:firebase:kmpauth-firebase-facebook` | Facebook + Firebase combo container | firebase-core, facebook |
 | `:deprecated:kmpauth-firebase` | Backward-compat **aggregator** artifact: `api(firebase-core, firebase-google)` — keeps 2.x dependency blocks working | firebase-core, firebase-google |
 | `:kmpauth-uihelper` | Pre-styled Compose sign-in buttons (Google/Apple/Facebook) | core |
-| `sampleApp/*` | Demo: shared UI module, Android app (AGP 9 split), iOS Xcode project | all |
+| `sampleApp/shared` + `androidApp`/`desktopApp`/`webApp`/`iosApp` | Demo: shared UI module + per-platform entry points (webApp targets js — Firebase API is empty on wasm) | all |
 
 Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared by the convention plugin for every module. Firebase modules expose their API from a `nonWasmMain` intermediate source set (GitLive has no wasm target); their wasm variant is an intentionally empty klib so wasm consumers can still depend on them from commonMain. No iosX64 (dropped in 3.0; Compose Multiplatform 1.11+ does not ship it).
 
@@ -54,7 +54,7 @@ Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared b
 ./gradlew publishToMavenLocal   # local artifact smoke test
 ```
 
-Sample app: `./gradlew :sampleApp:composeApp:run` (desktop), `:sampleApp:androidApp:assembleDebug` (Android), iOS via `sampleApp/iosApp/iosApp.xcodeproj` (SPM resolves on open; the embedAndSign build phase drives Gradle).
+Sample apps: `./gradlew :sampleApp:desktopApp:run` (desktop), `:sampleApp:androidApp:assembleDebug` (Android), `:sampleApp:webApp:jsBrowserDevelopmentRun` (web), iOS via `sampleApp/iosApp/iosApp.xcodeproj` (framework `shared`; the embedAndSign build phase drives Gradle).
 
 ## CI / release
 

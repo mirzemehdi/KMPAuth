@@ -318,7 +318,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/../..\"\n./gradlew :sampleApp:composeApp:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/../..\"\n./gradlew :sampleApp:shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -465,7 +465,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
@@ -477,7 +477,7 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
-					composeApp,
+					shared,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.mmk.kmpauth;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -499,7 +499,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
@@ -511,7 +511,7 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
-					composeApp,
+					shared,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.mmk.kmpauth;
 				PRODUCT_NAME = "$(TARGET_NAME)";

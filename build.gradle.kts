@@ -20,8 +20,10 @@ apiValidation {
         enabled = true
     }
     ignoredProjects += "sampleApp"
-    ignoredProjects += "composeApp"
+    ignoredProjects += "shared"
     ignoredProjects += "androidApp"
+    ignoredProjects += "desktopApp"
+    ignoredProjects += "webApp"
     ignoredProjects += "providers"
     ignoredProjects += "backends"
     ignoredProjects += "firebase"
@@ -40,7 +42,7 @@ allprojects {
     // :deprecated:kmpauth-firebase) DO publish - the deprecated aggregator
     // must stay on Maven Central for 2.x consumers.
     val excludedModules = listOf(
-        ":sampleApp:composeApp", ":sampleApp:androidApp", ":sampleApp",
+        ":sampleApp:shared", ":sampleApp:androidApp", ":sampleApp:desktopApp", ":sampleApp:webApp", ":sampleApp",
         ":providers", ":backends", ":backends:firebase", ":deprecated",
     )
     if (project.path in excludedModules) return@allprojects

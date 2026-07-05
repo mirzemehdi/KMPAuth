@@ -1,5 +1,4 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -22,6 +21,11 @@ kotlin {
     }
 
     jvm("desktop")
+
+    js(IR) {
+        browser()
+    }
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -31,7 +35,7 @@ kotlin {
                 binary.linkerOpts.addAll(listOf("-framework", "FirebaseCore"))
         }
         iosTarget.binaries.framework {
-            baseName = "composeApp"
+            baseName = "shared"
             isStatic = true
         }
     }
@@ -56,19 +60,7 @@ kotlin {
             implementation(project(":kmpauth-uihelper"))
         }
         desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-        }
-    }
-}
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.mmk.kmpauthdesktop"
-            packageVersion = "1.0.0"
+            implementation(compose.desktop.common)
         }
     }
 }

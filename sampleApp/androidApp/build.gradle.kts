@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":sampleApp:composeApp"))
+    implementation(project(":sampleApp:shared"))
     implementation(project(":kmpauth-core"))
     implementation(project(":providers:kmpauth-facebook"))
     implementation(libs.compose.ui)

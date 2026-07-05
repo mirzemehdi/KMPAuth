@@ -1,5 +1,5 @@
 import SwiftUI
-import composeApp
+import shared
 import GoogleSignIn
 import FirebaseCore
 import FBSDKCoreKit
