@@ -82,9 +82,16 @@ Then in your shared module add desired dependencies in `commonMain`. Latest vers
 ```kotlin
 sourceSets {
   commonMain.dependencies {
-    implementation("io.github.mirzemehdi:kmpauth-google:<version>") //Google One Tap Sign-In 
-    implementation("io.github.mirzemehdi:kmpauth-firebase:<version>") //Integrated Authentications with Firebase
-    implementation("io.github.mirzemehdi:kmpauth-firebase-facebook:<version>") //Facebook authentication with Firebase
+    implementation("io.github.mirzemehdi:kmpauth-google:<version>") //Google Sign-In (no backend required)
+    implementation("io.github.mirzemehdi:kmpauth-facebook:<version>") //Facebook Login (no backend required)
+
+    // Firebase — pick granular artifacts (3.0+):
+    implementation("io.github.mirzemehdi:kmpauth-firebase-core:<version>") //Firebase backend + Apple/Github/OAuth sign-in
+    implementation("io.github.mirzemehdi:kmpauth-firebase-google:<version>") //Google Sign-In with Firebase
+    implementation("io.github.mirzemehdi:kmpauth-firebase-facebook:<version>") //Facebook Sign-In with Firebase
+    // ...or the 2.x-compatible bundle (aggregates -core and -google):
+    implementation("io.github.mirzemehdi:kmpauth-firebase:<version>")
+
     implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") //UiHelper SignIn buttons (AppleSignIn, GoogleSignInButton)
 
   }

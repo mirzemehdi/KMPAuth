@@ -50,9 +50,9 @@ kotlin {
             implementation(compose.material3)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
-            implementation(project(":kmpauth-google"))
-            implementation(project(":kmpauth-firebase"))
-            implementation(project(":kmpauth-firebase-facebook"))
+            implementation(project(":providers:kmpauth-google"))
+            implementation(project(":deprecated:kmpauth-firebase"))
+            implementation(project(":backends:firebase:kmpauth-firebase-facebook"))
             implementation(project(":kmpauth-uihelper"))
         }
         desktopMain.dependencies {
