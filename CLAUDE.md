@@ -8,17 +8,19 @@ KMPAuth — a Kotlin Multiplatform authentication library (Google, Apple, GitHub
 
 ## Module map
 
-| Module | Purpose | Depends on |
+Layout: identity **providers** (credential sources) live under `providers/`; session **backends** under `backends/` (Firebase today, Supabase planned under `backends/supabase/`). Directory grouping only — artifact ids are the project names. Legacy compatibility shims live under `deprecated/`.
+
+| Module (gradle path) | Purpose | Depends on |
 |---|---|---|
-| `kmpauth-core` | Base infrastructure: logging (`KMPAuth.setLogger`), `UiContainerScope`, HTTP client factory, `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`) | — |
-| `kmpauth-google` | Google Sign-In (Credential Manager on Android, GoogleSignIn SDK on iOS, OAuth loopback on JVM) | core |
-| `kmpauth-facebook` | Facebook Login via Facebook SDK (no Firebase) | core |
-| `kmpauth-firebase` | Firebase auth flows: `FirebaseAuthBackend` (default backend), `GoogleButtonUiContainerFirebase`, `AppleButtonUiContainer`, `GithubButtonUiContainer`, `OAuthContainer` (GitLive firebase-auth) | core, google |
-| `kmpauth-firebase-facebook` | Facebook + Firebase combo container | firebase, facebook |
-| `kmpauth-uihelper` | Pre-styled Compose sign-in buttons (Google/Apple/Facebook) | core, firebase |
-| `sampleApp/composeApp` | Shared demo UI (KMP library module) | all |
-| `sampleApp/androidApp` | Android demo app entry point (AGP 9 split) | composeApp |
-| `sampleApp/iosApp` | iOS demo app (Xcode project, SPM packages, embedAndSign + linkage package) | composeApp |
+| `:kmpauth-core` | Base infrastructure: logging, `UiContainerScope`, HTTP client factory, `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`) | — |
+| `:providers:kmpauth-google` | Google Sign-In (Credential Manager on Android, GoogleSignIn SDK on iOS, OAuth loopback on JVM) | core |
+| `:providers:kmpauth-facebook` | Facebook Login via Facebook SDK (no Firebase) | core |
+| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/OAuth web-flow containers (GitLive firebase-auth) | core |
+| `:backends:firebase:kmpauth-firebase-google` | `GoogleButtonUiContainerFirebase` + sign-in handler | firebase-core, google |
+| `:backends:firebase:kmpauth-firebase-facebook` | Facebook + Firebase combo container | firebase-core, facebook |
+| `:deprecated:kmpauth-firebase` | Backward-compat **aggregator** artifact: `api(firebase-core, firebase-google)` — keeps 2.x dependency blocks working | firebase-core, firebase-google |
+| `:kmpauth-uihelper` | Pre-styled Compose sign-in buttons (Google/Apple/Facebook) | core |
+| `sampleApp/*` | Demo: shared UI module, Android app (AGP 9 split), iOS Xcode project | all |
 
 Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared by the convention plugin for every module. Firebase modules expose their API from a `nonWasmMain` intermediate source set (GitLive has no wasm target); their wasm variant is an intentionally empty klib so wasm consumers can still depend on them from commonMain. No iosX64 (dropped in 3.0; Compose Multiplatform 1.11+ does not ship it).
 
@@ -26,7 +28,7 @@ Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared b
 
 - `build-logic/` included build hosts the `kmpauth.kmp.library` convention plugin: applies KMP + `com.android.kotlin.multiplatform.library` (AGP 9) + vanniktech publishing, target set, explicit API, JVM 17, namespace derived from module name, shared kotlin-test dep, common POM. Modules keep only: iOS framework name, `swiftPMDependencies {}`, dependencies (and firebase modules their `nonWasmMain` wiring — custom dependsOn edges require re-applying `applyDefaultHierarchyTemplate()`).
 - **iOS dependencies via SwiftPM** (`swiftPMDependencies {}` DSL, Kotlin 2.4+): GoogleSignIn-iOS (google), facebook-ios-sdk products `FacebookCore`/`FacebookLogin` (facebook), firebase-ios-sdk pinned to GitLive's build version (firebase). No CocoaPods anywhere. `cocoapods.FirebaseAuth.*` imports in kmpauth-firebase iosMain are GitLive's **bundled cinterop** — never rewrite them.
-- **No Koin.** Manual constructor injection: internal `ServiceLocator` (core), `internal expect fun createGoogleAuthProvider(...)` (google), androidx.startup `KMPAuthContextInitializer` captures the Android context.
+- **No Koin.** Manual constructor injection: internal `ServiceLocator` (core), `internal expect fun createGoogleAuthProvider(...)` (google), androidx.startup `KMPAuthContextInitializer` captures the Android context. SPM cinterop import namespaces derive from the full gradle path (e.g. `swiftPMImport.io.github.mirzemehdi.providers.kmpauth.google.*`) — moving a module changes its imports.
 - **Binary compatibility validator enforced** (JVM `.api` + `.klib.api` dumps under `<module>/api/`; android-specific dumps are not generated under AGP 9). Any public API change requires `./gradlew apiDump` with the diff reviewed — CI runs `apiCheck`. Never hand-edit dumps except deliberate, approved removals.
 - Deprecation style: `@Deprecated(message = "...migration hint...", replaceWith = ReplaceWith(...))`, old path stays functional; removal one major version later.
 - Explicit API mode on library modules; public API needs KDoc.

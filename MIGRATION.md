@@ -96,7 +96,20 @@ Android BoM constraint (`api(platform(firebase-bom))`), so Firebase artifact
 versions are pinned automatically. If you were pinning Firebase versions
 yourself to work around resolution errors, you can remove those pins.
 
-## 4. Pluggable auth backends
+## 4. Granular Firebase artifacts (optional)
+
+`kmpauth-firebase` still works exactly as in 2.x — same coordinates, now
+published as an aggregator of the granular artifacts (its module lives
+under `deprecated/` in the repository as a compatibility shim). Optionally slim your dependency tree:
+
+| You use | Depend on |
+|---|---|
+| Everything (as in 2.x) | `kmpauth-firebase` (unchanged) |
+| Apple/GitHub/OAuth + backend only | `kmpauth-firebase-core` |
+| Google + Firebase | `kmpauth-firebase-google` (+ `kmpauth-google`) |
+| Facebook + Firebase | `kmpauth-firebase-facebook` |
+
+## 4b. Pluggable auth backends
 
 3.0 introduces `com.mmk.kmpauth.core.auth.AuthProviderBackend` with a
 backend-agnostic credential/user model (`AuthCredential`, `KMPAuthUser`).

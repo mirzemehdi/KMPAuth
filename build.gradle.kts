@@ -22,6 +22,10 @@ apiValidation {
     ignoredProjects += "sampleApp"
     ignoredProjects += "composeApp"
     ignoredProjects += "androidApp"
+    ignoredProjects += "providers"
+    ignoredProjects += "backends"
+    ignoredProjects += "firebase"
+    ignoredProjects += "deprecated"
 }
 
 
@@ -31,7 +35,10 @@ allprojects {
     group = "io.github.mirzemehdi"
     version = project.properties["kmpAuthVersion"] as String
 
-    val excludedModules = listOf(":sampleApp:composeApp", ":sampleApp:androidApp", ":sampleApp")
+    val excludedModules = listOf(
+        ":sampleApp:composeApp", ":sampleApp:androidApp", ":sampleApp",
+        ":providers", ":backends", ":backends:firebase", ":deprecated",
+    )
     if (project.path in excludedModules) return@allprojects
 
     apply(plugin = "org.jetbrains.dokka")
@@ -45,9 +52,10 @@ allprojects {
 // :dokkaGeneratePublicationHtml to GitHub Pages.
 dependencies {
     dokka(project(":kmpauth-core"))
-    dokka(project(":kmpauth-google"))
-    dokka(project(":kmpauth-facebook"))
-    dokka(project(":kmpauth-firebase"))
-    dokka(project(":kmpauth-firebase-facebook"))
+    dokka(project(":providers:kmpauth-google"))
+    dokka(project(":providers:kmpauth-facebook"))
+    dokka(project(":backends:firebase:kmpauth-firebase-core"))
+    dokka(project(":backends:firebase:kmpauth-firebase-google"))
+    dokka(project(":backends:firebase:kmpauth-firebase-facebook"))
     dokka(project(":kmpauth-uihelper"))
 }

@@ -20,10 +20,20 @@ dependencyResolutionManagement {
 }
 
 include(":kmpauth-core")
-include(":kmpauth-google")
-include(":kmpauth-facebook")
-include(":kmpauth-firebase")
-include(":kmpauth-firebase-facebook")
 include(":kmpauth-uihelper")
+
+// Identity providers (credential sources, no backend dependencies)
+include(":providers:kmpauth-google")
+include(":providers:kmpauth-facebook")
+
+// Session backends
+include(":backends:firebase:kmpauth-firebase-core")
+include(":backends:firebase:kmpauth-firebase-google")
+include(":backends:firebase:kmpauth-firebase-facebook")
+
+// Backward-compatibility aggregators for 2.x artifacts (folder signals
+// legacy status; artifact ids and coordinates are unchanged)
+include(":deprecated:kmpauth-firebase")
+
 include(":sampleApp:composeApp")
 include(":sampleApp:androidApp")

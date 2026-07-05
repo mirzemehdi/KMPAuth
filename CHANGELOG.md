@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
 
 ### Added
+- **Granular Firebase artifacts.** `kmpauth-firebase` is split into
+  `kmpauth-firebase-core` (FirebaseAuthBackend + Apple/GitHub/OAuth
+  containers) and `kmpauth-firebase-google` (Google + Firebase container).
+  The `kmpauth-firebase` artifact remains published as an aggregator of
+  both (its module lives under `deprecated/` in the repo), so existing
+  dependency declarations keep working; depend on the granular artifacts
+  to avoid pulling the Google Sign-In stack into apps that don't use it.
 - **wasmJs on every module.** `kmpauth-firebase` and
   `kmpauth-firebase-facebook` now compile for wasmJs too, so a wasm-targeting
   app can keep them in `commonMain` dependencies. Their Firebase API surface
