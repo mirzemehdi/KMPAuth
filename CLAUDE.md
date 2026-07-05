@@ -12,11 +12,11 @@ Layout: identity **providers** (credential sources) live under `providers/`; ses
 
 | Module (gradle path) | Purpose | Depends on |
 |---|---|---|
-| `:kmpauth-core` | Base infrastructure: logging, `UiContainerScope`, HTTP client factory, `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`) | — |
+| `:kmpauth-core` | Base infrastructure: logging, `SignInState`/`LaunchingSignInState`, HTTP client factory, `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`) | — |
 | `:providers:kmpauth-google` | Google Sign-In (Credential Manager on Android, GoogleSignIn SDK on iOS, OAuth loopback on JVM) | core |
 | `:providers:kmpauth-facebook` | Facebook Login via Facebook SDK (no Firebase) | core |
-| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/OAuth web-flow containers (GitLive firebase-auth) | core |
-| `:backends:firebase:kmpauth-firebase-google` | `GoogleButtonUiContainerFirebase` + sign-in handler | firebase-core, google |
+| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/OAuth `rememberXxxSignInState` flows (GitLive firebase-auth) | core |
+| `:backends:firebase:kmpauth-firebase-google` | `rememberFirebaseGoogleSignInState` + sign-in handler | firebase-core, google |
 | `:backends:firebase:kmpauth-firebase-facebook` | Facebook + Firebase combo container | firebase-core, facebook |
 | `:deprecated:kmpauth-firebase` | Backward-compat **aggregator** artifact: `api(firebase-core, firebase-google)` — keeps 2.x dependency blocks working | firebase-core, firebase-google |
 | `:kmpauth-uihelper` | Pre-styled Compose sign-in buttons (Google/Apple/Facebook) | core |
