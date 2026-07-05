@@ -41,8 +41,21 @@ KMPAuth no longer uses (or ships) Koin. Details land with the DI PRs.
 |---|---|---|
 | iOS deployment target | 11.0–12.0 | 16.0 _(pending)_ |
 | Xcode | 15+ | 16.4+ _(pending)_ |
-| JVM bytecode | 1.8 | 17 _(pending)_ |
-| Android debug variant artifact | published | no longer published (single-variant; debug builds resolve the release variant automatically) _(pending)_ |
+| JVM bytecode | 1.8 | 17 |
+| Android debug variant artifact | published | no longer published (single-variant; debug builds resolve the release variant automatically) |
+
+**JVM 17:** the `kmpauth-*` android and jvm artifacts now contain JVM 17
+bytecode. Android builds are unaffected (AGP 9 requires JDK 17 anyway);
+desktop/JVM apps must run on Java 17+.
+
+**Single-variant Android artifacts:** if your build explicitly pinned the
+`-debug` artifact (rare), drop the suffix — Gradle resolves the single
+published variant for all build types automatically.
+
+**Firebase BoM on Android:** `kmpauth-firebase` now exposes the Firebase
+Android BoM constraint (`api(platform(firebase-bom))`), so Firebase artifact
+versions are pinned automatically. If you were pinning Firebase versions
+yourself to work around resolution errors, you can remove those pins.
 
 ## 4. Pluggable auth backends _(pending)_
 

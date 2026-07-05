@@ -6,8 +6,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
  * Convention plugin shared by every published kmpauth-* library module.
  *
  * Centralizes: target set (android/jvm/js/ios), explicit API mode, Android
- * library configuration (namespace derived from the module name), the shared
- * kotlin-test dependency, and Maven Central publishing with the common POM.
+ * library configuration via the AGP 9 KMP library plugin (namespace derived
+ * from the module name), the shared kotlin-test dependency, and Maven Central
+ * publishing with the common POM.
  *
  * Modules keep only what genuinely differs: the wasmJs target (not all
  * modules support it), the cocoapods block (framework name, deployment
@@ -16,7 +17,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("org.jetbrains.kotlin.native.cocoapods")
     id("com.vanniktech.maven.publish")
 }
@@ -29,48 +30,42 @@ val moduleNamespace = "com.mmk.kmpauth." +
 
 kotlin {
     explicitApi()
-    androidTarget {
-        publishLibraryVariants("release", "debug")
+
+    android {
+        namespace = moduleNamespace
+        compileSdk = libs.findVersion("android-compileSdk").get().requiredVersion.toInt()
+        minSdk = libs.findVersion("android-minSdk").get().requiredVersion.toInt()
+
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+
+        withHostTest { }
+
+        packaging {
+            resources {
+                excludes.add("/META-INF/AL2.0")
+                excludes.add("/META-INF/LGPL2.1")
+            }
         }
     }
+
     js(IR) {
         nodejs()
         browser()
         binaries.library()
     }
-    jvm()
+    jvm {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
     iosX64()
     iosArm64()
     iosSimulatorArm64()
 
     sourceSets.commonTest.dependencies {
         implementation(libs.findLibrary("kotlin-test").get().get())
-    }
-}
-
-android {
-    namespace = moduleNamespace
-    compileSdk = libs.findVersion("android-compileSdk").get().requiredVersion.toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    defaultConfig {
-        minSdk = libs.findVersion("android-minSdk").get().requiredVersion.toInt()
-        targetSdk = libs.findVersion("android-targetSdk").get().requiredVersion.toInt()
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 

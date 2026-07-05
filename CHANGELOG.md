@@ -14,7 +14,15 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   `GoogleAuthProvider` entry points, sign-in overload defaults, public model shapes).
 
 ### Changed
-- _(pending)_ Build toolchain: AGP 9, Gradle 9.4, Kotlin 2.4, JVM target 17.
+- Build toolchain: Android Gradle Plugin 9.2 (`com.android.kotlin.multiplatform.library`),
+  Gradle 9.4.1. **JVM target raised from 1.8 to 17** for the android and jvm
+  artifacts — consumers need a Java 17+ runtime for desktop/JVM apps.
+- Android artifacts are now published as a **single variant**; the separate
+  `debug` variant is no longer published. Debug builds resolve the release
+  variant automatically.
+- Android host (unit) test task is now `testAndroid` (was
+  `testDebugUnitTest`/`testReleaseUnitTest`).
+- _(pending)_ Kotlin 2.4, remaining dependency bumps.
 - _(pending)_ iOS dependencies distributed via Swift Package Manager instead of
   CocoaPods; iOS minimum deployment target raised to 16.0.
 
