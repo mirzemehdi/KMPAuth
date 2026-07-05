@@ -35,6 +35,10 @@ allprojects {
     group = "io.github.mirzemehdi"
     version = project.properties["kmpAuthVersion"] as String
 
+    // Sample modules plus the synthetic grouping projects created by nested
+    // include() paths. The real modules inside them (e.g.
+    // :deprecated:kmpauth-firebase) DO publish - the deprecated aggregator
+    // must stay on Maven Central for 2.x consumers.
     val excludedModules = listOf(
         ":sampleApp:composeApp", ":sampleApp:androidApp", ":sampleApp",
         ":providers", ":backends", ":backends:firebase", ":deprecated",
