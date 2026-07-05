@@ -1,7 +1,7 @@
 package com.mmk.kmpauth.google
 
 import androidx.compose.runtime.Composable
-import cocoapods.GoogleSignIn.GIDSignIn
+import swiftPMImport.io.github.mirzemehdi.kmpauth.google.GIDSignIn
 import kotlinx.cinterop.ExperimentalForeignApi
 
 internal class GoogleAuthProviderImpl :

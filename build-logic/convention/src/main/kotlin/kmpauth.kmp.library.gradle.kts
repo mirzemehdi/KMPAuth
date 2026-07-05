@@ -11,14 +11,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
  * publishing with the common POM.
  *
  * Modules keep only what genuinely differs: the wasmJs target (not all
- * modules support it), the cocoapods block (framework name, deployment
- * target, pods), and their dependencies.
+ * modules support it), the iOS framework name, the swiftPMDependencies
+ * block (external Apple frameworks), and their dependencies.
  */
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("com.android.kotlin.multiplatform.library")
-    id("org.jetbrains.kotlin.native.cocoapods")
     id("com.vanniktech.maven.publish")
 }
 

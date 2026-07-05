@@ -11,13 +11,11 @@ kotlin {
         browser()
     }
 
-    cocoapods {
-        ios.deploymentTarget = "11.0"
-        framework {
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = "KMPAuthCore"
             isStatic = true
         }
-        noPodspec()
     }
 
     sourceSets {

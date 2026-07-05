@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -12,13 +14,20 @@ kotlin {
         browser()
     }
 
-    cocoapods {
-        ios.deploymentTarget = "11.0"
-        framework {
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = "KMPAuthGoogle"
             isStatic = true
         }
-        pod("GoogleSignIn")
+    }
+
+    swiftPMDependencies {
+        iosMinimumDeploymentTarget = "16.0"
+        swiftPackage(
+            url = "https://github.com/google/GoogleSignIn-iOS.git",
+            version = libs.versions.googleSignInIos.get(),
+            products = listOf("GoogleSignIn")
+        )
     }
 
     sourceSets {

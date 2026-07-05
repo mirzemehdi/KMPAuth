@@ -12,13 +12,11 @@ kotlin {
         browser()
     }
 
-    cocoapods {
-        ios.deploymentTarget = "11.0"
-        framework {
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = "KMPAuthUiHelper"
             isStatic = true
         }
-        noPodspec()
     }
 
     sourceSets {

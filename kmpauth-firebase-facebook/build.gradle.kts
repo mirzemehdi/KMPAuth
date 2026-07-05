@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+
 plugins {
     id("kmpauth.kmp.library")
     alias(libs.plugins.jetbrainsCompose)
@@ -5,12 +7,29 @@ plugins {
 }
 
 kotlin {
-    cocoapods {
-        ios.deploymentTarget = "12.0"
-        framework {
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = "KMPAuthFirebaseFacebook"
             isStatic = true
         }
+    }
+
+    swiftPMDependencies {
+        iosMinimumDeploymentTarget = "16.0"
+        // Link-time closure of this module's binaries: GitLive Firebase
+        // cinterop and kmpauth-facebook's FBSDK cinterop (GoogleSignIn is
+        // not referenced by anything this module links beyond what
+        // kmpauth-firebase already declares).
+        swiftPackage(
+            url = "https://github.com/firebase/firebase-ios-sdk.git",
+            version = libs.versions.firebaseIosSdk.get(),
+            products = listOf("FirebaseAuth", "FirebaseCore")
+        )
+        swiftPackage(
+            url = "https://github.com/facebook/facebook-ios-sdk.git",
+            version = libs.versions.facebookAuthIos.get(),
+            products = listOf("FacebookCore", "FacebookLogin")
+        )
     }
 
     sourceSets {

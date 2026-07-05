@@ -1,6 +1,6 @@
 package com.mmk.kmpauth.google
 
-import cocoapods.GoogleSignIn.GIDSignIn
+import swiftPMImport.io.github.mirzemehdi.kmpauth.google.GIDSignIn
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.cinterop.ExperimentalForeignApi

@@ -29,8 +29,12 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   Dokka 2.2.0, vanniktech maven-publish 0.37.0, Firebase Android BoM 34.15.0.
 - Android `compileSdk` raised to 37 (required by androidx.core 1.19);
   `targetSdk`/`minSdk` unchanged (36/24).
-- _(pending)_ iOS dependencies distributed via Swift Package Manager instead of
-  CocoaPods; iOS minimum deployment target raised to 16.0.
+- **iOS dependencies now integrate via Swift Package Manager instead of
+  CocoaPods.** The `kmpauth_*.podspec` files are no longer published; add
+  GoogleSignIn-iOS / firebase-ios-sdk / facebook-ios-sdk as SPM packages in
+  your Xcode project instead (see MIGRATION.md). iOS minimum deployment
+  target raised from 12.0 to **16.0**; building the library requires
+  Xcode 16.4+.
 
 ### Deprecated
 - _(pending)_ Legacy overloads slated for removal in 4.0 carry
