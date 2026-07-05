@@ -19,6 +19,7 @@ kotlinx-binary-validator = "0.18.1"
 dokka = "2.2.0"
 androidxCredential = "1.6.0"
 googleIdIdentity = "1.2.0"
+javaJwt = "4.5.2"
 googleServices = "4.4.4"
 facebookAuthAndroid = "18.3.0"
 facebookAuthIos = "18.0.0"
@@ -64,6 +65,7 @@ androidx-credentials = { module = "androidx.credentials:credentials", version.re
 androidx-credentials-playServicesAuth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidxCredential" }
 android-legacy-playServicesAuth = { module = "com.google.android.gms:play-services-auth", version.ref = "androidLegacyPlayServices" }
 googleIdIdentity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleIdIdentity" }
+java-jwt = { module = "com.auth0:java-jwt", version.ref = "javaJwt" }
 
 #Firebase
 firebase-gitlive-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveAuth" }

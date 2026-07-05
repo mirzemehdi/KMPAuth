@@ -41,10 +41,10 @@ public interface GoogleAuthProvider {
 }
 
 /**
- * Process-wide holder replacing the former Koin container. Mirrors the 2.x
- * initialization contract: the first create() wins (subsequent calls are
- * no-ops returning the existing provider), and get() before create() fails
- * with the documented error message.
+ * Process-wide provider holder. Contract (locked by characterization
+ * tests): the first create() wins - subsequent calls are no-ops returning
+ * the existing provider - and get() before create() fails with the
+ * documented error message.
  */
 private object GoogleAuthProviderHolder {
 
