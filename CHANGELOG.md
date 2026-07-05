@@ -28,8 +28,7 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   variant automatically.
 - Android host (unit) test task is now `testAndroid` (was
   `testDebugUnitTest`/`testReleaseUnitTest`).
-- Kotlin 2.2.21 → **2.4.0**; Compose Multiplatform plugin 1.9.3 → 1.10.3
-  (1.11+ drops the `iosX64` target this library still publishes); Ktor 3.5.1,
+- Kotlin 2.2.21 → **2.4.0**; Compose Multiplatform plugin 1.9.3 → 1.11.1; Ktor 3.5.1,
   kotlinx-serialization 1.11.0, kotlinx-coroutines 1.11.0,
   Facebook Android SDK 18.3.0, androidx.credentials 1.6.0, googleid 1.2.0,
   Dokka 2.2.0, vanniktech maven-publish 0.37.0, Firebase Android BoM 34.15.0.
@@ -57,6 +56,9 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   composables) are unchanged — internal wiring is now plain constructor
   injection. Only code that referenced those two internal-API types directly
   is affected (see MIGRATION.md).
+- **`iosX64` target.** Dropped from all modules (Compose Multiplatform 1.11+
+  no longer ships iosX64 artifacts; Intel-Mac simulators can use Rosetta
+  with the arm64 simulator target). It was briefly re-added in 2.5.0-alpha01.
 - Stale `api/android/*.api` compatibility dumps (no longer generated or
   validated under AGP 9's KMP library plugin; the klib and JVM dumps remain
   the source of truth).

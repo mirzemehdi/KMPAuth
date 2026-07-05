@@ -20,7 +20,7 @@ KMPAuth — a Kotlin Multiplatform authentication library (Google, Apple, GitHub
 | `sampleApp/androidApp` | Android demo app entry point (AGP 9 split) | composeApp |
 | `sampleApp/iosApp` | iOS demo app (Xcode project, SPM packages, embedAndSign + linkage package) | composeApp |
 
-Targets: android, iosX64/iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — except firebase modules (no js/wasm; GitLive limitation). Compose Multiplatform is pinned ≤1.10.x: 1.11+ drops iosX64.
+Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — except firebase modules (no js/wasm; GitLive limitation). No iosX64 (dropped in 3.0; Compose Multiplatform 1.11+ does not ship it).
 
 ## Build conventions
 

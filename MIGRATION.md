@@ -81,6 +81,7 @@ modules need removing from your setup.
 | Xcode | 15+ | 16.4+ |
 | JVM bytecode | 1.8 | 17 |
 | Android debug variant artifact | published | no longer published (single-variant; debug builds resolve the release variant automatically) |
+| `iosX64` (Intel simulator) target | published | removed — use the arm64 simulator (Rosetta on Intel Macs) |
 
 **JVM 17:** the `kmpauth-*` android and jvm artifacts now contain JVM 17
 bytecode. Android builds are unaffected (AGP 9 requires JDK 17 anyway);
