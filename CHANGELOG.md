@@ -22,7 +22,13 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   variant automatically.
 - Android host (unit) test task is now `testAndroid` (was
   `testDebugUnitTest`/`testReleaseUnitTest`).
-- _(pending)_ Kotlin 2.4, remaining dependency bumps.
+- Kotlin 2.2.21 → **2.4.0**; Compose Multiplatform plugin 1.9.3 → 1.10.3
+  (1.11+ drops the `iosX64` target this library still publishes); Ktor 3.5.1,
+  kotlinx-serialization 1.11.0, kotlinx-coroutines 1.11.0, Koin 4.2.2 (stable),
+  Facebook Android SDK 18.3.0, androidx.credentials 1.6.0, googleid 1.2.0,
+  Dokka 2.2.0, vanniktech maven-publish 0.37.0, Firebase Android BoM 34.15.0.
+- Android `compileSdk` raised to 37 (required by androidx.core 1.19);
+  `targetSdk`/`minSdk` unchanged (36/24).
 - _(pending)_ iOS dependencies distributed via Swift Package Manager instead of
   CocoaPods; iOS minimum deployment target raised to 16.0.
 
