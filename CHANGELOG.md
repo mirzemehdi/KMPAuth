@@ -40,6 +40,9 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   `GoogleAuthProvider` entry points, sign-in overload defaults, public model shapes).
 
 ### Changed
+- Sample restructured into `sampleApp/shared` plus per-platform entry
+  modules (`androidApp`, `desktopApp`, `webApp`, `iosApp`) per the AGP 9
+  layout; the iOS framework is now named `shared`. A web sample (js) is new.
 - Build toolchain: Android Gradle Plugin 9.2 (`com.android.kotlin.multiplatform.library`),
   Gradle 9.4.1. **JVM target raised from 1.8 to 17** for the android and jvm
   artifacts — consumers need a Java 17+ runtime for desktop/JVM apps.

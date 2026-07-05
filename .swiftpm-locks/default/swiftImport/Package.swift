@@ -24,7 +24,7 @@ let package = Package(
     .package(path: "subpackages/_providers_kmpauth-google"),
     .package(path: "subpackages/_providers_kmpauth_facebook"),
     .package(path: "subpackages/_providers_kmpauth_google"),
-    .package(path: "subpackages/_sampleApp_composeApp")
+    .package(path: "subpackages/_sampleApp_shared")
   ],
   targets: [
     .target(
@@ -41,7 +41,7 @@ let package = Package(
         .product(name: "_providers_kmpauth-google", package: "_providers_kmpauth-google"),
         .product(name: "_providers_kmpauth_facebook", package: "_providers_kmpauth_facebook"),
         .product(name: "_providers_kmpauth_google", package: "_providers_kmpauth_google"),
-        .product(name: "_sampleApp_composeApp", package: "_sampleApp_composeApp")
+        .product(name: "_sampleApp_shared", package: "_sampleApp_shared")
       ]
     )
   ]

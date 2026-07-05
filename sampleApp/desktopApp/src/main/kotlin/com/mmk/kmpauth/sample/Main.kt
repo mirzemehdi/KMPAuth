@@ -21,7 +21,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.logger.currentLogger
-import com.mmk.kmpauth.google.GoogleButtonUiContainer
+import com.mmk.kmpauth.google.rememberGoogleSignInState
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 
 @OptIn(KMPAuthInternalApi::class)
@@ -32,7 +32,6 @@ fun main() = application {
         title = "KMPAuth Desktop",
     ) {
         currentLogger.log("Desktop app is started")
-//        App()
 
         Column(
             Modifier.fillMaxSize().padding(20.dp),
@@ -47,14 +46,15 @@ fun main() = application {
                 textAlign = TextAlign.Start,
             )
 
-            //Google Sign-In with Custom Button and authentication without Firebase
-            GoogleButtonUiContainer(onGoogleSignInResult = { googleUser ->
+            //Google Sign-In with pre-styled button and authentication without Firebase
+            val googleSignIn = rememberGoogleSignInState(onResult = { googleUser ->
                 val idToken = googleUser?.idToken // Send this idToken to your backend to verify
                 signedInUserName = googleUser?.displayName ?: "Null User"
-            }) {
-                GoogleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp), fontSize = 19.sp) { this.onClick() }
-            }
-
+            })
+            GoogleSignInButton(
+                modifier = Modifier.fillMaxWidth().height(44.dp),
+                fontSize = 19.sp
+            ) { googleSignIn.launch() }
 
         }
 

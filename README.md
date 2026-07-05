@@ -56,7 +56,7 @@ composables still work but are deprecated (removal planned for 4.0).
   
 
 
-You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob/main/sampleApp/composeApp/src/commonMain/kotlin/com/mmk/kmpauth/sample/App.kt) here.
+You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob/main/sampleApp/shared/src/commonMain/kotlin/com/mmk/kmpauth/sample/App.kt) here.
 
 ## Features
 - ✅ Google One Tap Sign-In (without Firebase)
