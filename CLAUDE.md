@@ -71,6 +71,16 @@ read at launch time through `rememberUpdatedState`. The 2.x `*UiContainer`
 composables are deprecated thin wrappers over these states — keep them
 delegating, never reimplement logic in them.
 
+## Future consideration (when Supabase lands)
+
+A backend-agnostic `rememberSignInState(...)` returning `KMPAuthUser` — one
+generic entry point over the `AuthProviderBackend` abstraction, likely a
+sealed "contract" payload per provider (mirroring
+`rememberLauncherForActivityResult(contract)`). Deliberately NOT done at the
+Firebase layer: providers have disjoint parameter shapes, and a unified
+function would need visibility of all provider modules, undoing the granular
+`kmpauth-firebase-*` split. Revisit when `backends/supabase/` is added.
+
 ## Auth backend architecture (3.0)
 
 `KMPAuthBackend` registry holds one `AuthProviderBackend`. `kmpauth-firebase` self-registers `FirebaseAuthBackend` lazily on first container use; an app-supplied backend (e.g. future Supabase) registered at startup always wins (first registration wins; `replace = true` to swap). Token credentials (`AuthCredential.IdToken`) flow through the backend; web-flow providers (Apple-on-Android, GitHub, generic OAuth) are driven by their platform container composables.
