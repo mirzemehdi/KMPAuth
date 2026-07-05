@@ -25,35 +25,33 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
     modifier: Modifier = Modifier,
     onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
 ) {
-    Column(modifier = modifier,verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
         //Google Sign-In Button and authentication with Firebase
-        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
-            GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
-        }
+        val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+        GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { googleSignIn.launch() }
 
         //Apple Sign-In Button and authentication with Firebase
-        AppleButtonUiContainer(onResult = onFirebaseResult) {
-            AppleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
-        }
+        val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+        AppleSignInButton(modifier = Modifier.fillMaxWidth()) { appleSignIn.launch() }
 
         //Facebook Sign-In Button and authentication with Firebase
-        FacebookButtonUiContainer(
-            onResult = { result -> /* handle FirebaseUser result or error */ },
-            linkAccount = false
-        ) {
-            FacebookSignInButton(onClick = { this.onClick() })
-        }
+        val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
+        FacebookSignInButton(onClick = { facebookSignIn.launch() })
 
         //Github Sign-In with Custom Button and authentication with Firebase
-        GithubButtonUiContainer(onResult = onFirebaseResult) {
-            Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
-        }
+        val githubSignIn = rememberFirebaseGithubSignInState(onResult = onFirebaseResult)
+        Button(onClick = { githubSignIn.launch() }) { Text("Github Sign-In (Custom Design)") }
 
     }
 }
-
 ```
+
+Every `rememberXxxSignInState` returns a `SignInState` with `launch()` and an
+observable `isInProgress` — wire it to any clickable and drive loading UI from
+it. Parameters (e.g. `linkAccount`) are read at launch time, so toggling them
+via recomposition just works. The 2.x `*UiContainer { this.onClick() }`
+composables still work but are deprecated (removal planned for 4.0).
 
   
 

@@ -12,6 +12,7 @@ abstract interface com.mmk.kmpauth.google/GoogleAuthProvider { // com.mmk.kmpaut
 
     final object Companion { // com.mmk.kmpauth.google/GoogleAuthProvider.Companion|null[0]
         final fun create(com.mmk.kmpauth.google/GoogleAuthCredentials): com.mmk.kmpauth.google/GoogleAuthProvider // com.mmk.kmpauth.google/GoogleAuthProvider.Companion.create|create(com.mmk.kmpauth.google.GoogleAuthCredentials){}[0]
+        final fun get(): com.mmk.kmpauth.google/GoogleAuthProvider // com.mmk.kmpauth.google/GoogleAuthProvider.Companion.get|get(){}[0]
     }
 }
 
@@ -70,3 +71,4 @@ final val com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleUser$stableprop //
 final fun com.mmk.kmpauth.google/GoogleButtonUiContainer(androidx.compose.ui/Modifier?, kotlin/Boolean, kotlin/Boolean, kotlin.collections/List<kotlin/String>?, kotlin/Function1<com.mmk.kmpauth.google/GoogleUser?, kotlin/Unit>, kotlin/Function3<com.mmk.kmpauth.core/UiContainerScope, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.google/GoogleButtonUiContainer|GoogleButtonUiContainer(androidx.compose.ui.Modifier?;kotlin.Boolean;kotlin.Boolean;kotlin.collections.List<kotlin.String>?;kotlin.Function1<com.mmk.kmpauth.google.GoogleUser?,kotlin.Unit>;kotlin.Function3<com.mmk.kmpauth.core.UiContainerScope,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop_getter|com_mmk_kmpauth_google_GoogleAuthCredentials$stableprop_getter(){}[0]
 final fun com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleUser$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.google/com_mmk_kmpauth_google_GoogleUser$stableprop_getter|com_mmk_kmpauth_google_GoogleUser$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.google/rememberGoogleSignInState(kotlin/Boolean, kotlin/Boolean, kotlin.collections/List<kotlin/String>?, kotlin/Function1<com.mmk.kmpauth.google/GoogleUser?, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.google/rememberGoogleSignInState|rememberGoogleSignInState(kotlin.Boolean;kotlin.Boolean;kotlin.collections.List<kotlin.String>?;kotlin.Function1<com.mmk.kmpauth.google.GoogleUser?,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]

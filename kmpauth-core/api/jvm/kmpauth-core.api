@@ -6,6 +6,17 @@ public final class com/mmk/kmpauth/core/KMPAuth {
 public abstract interface annotation class com/mmk/kmpauth/core/KMPAuthInternalApi : java/lang/annotation/Annotation {
 }
 
+public final class com/mmk/kmpauth/core/LaunchingSignInState : com/mmk/kmpauth/core/SignInState {
+	public fun <init> (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;)V
+	public fun isInProgress ()Z
+	public fun launch ()V
+}
+
+public abstract interface class com/mmk/kmpauth/core/SignInState {
+	public abstract fun isInProgress ()Z
+	public abstract fun launch ()V
+}
+
 public abstract interface class com/mmk/kmpauth/core/UiContainerScope {
 	public abstract fun onClick ()V
 }

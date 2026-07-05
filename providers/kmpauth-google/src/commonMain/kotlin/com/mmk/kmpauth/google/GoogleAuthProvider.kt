@@ -20,7 +20,11 @@ public interface GoogleAuthProvider {
             return GoogleAuthProviderHolder.create(credentials)
         }
 
-        internal fun get(): GoogleAuthProvider {
+        /**
+         * Returns the [GoogleAuthProvider] created by [create].
+         * @throws IllegalArgumentException when [create] has not been called yet.
+         */
+        public fun get(): GoogleAuthProvider {
             return GoogleAuthProviderHolder.get()
         }
     }

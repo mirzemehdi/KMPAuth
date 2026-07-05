@@ -35,6 +35,13 @@ abstract interface com.mmk.kmpauth.core.auth/KMPAuthUser { // com.mmk.kmpauth.co
         abstract fun <get-uid>(): kotlin/String // com.mmk.kmpauth.core.auth/KMPAuthUser.uid.<get-uid>|<get-uid>(){}[0]
 }
 
+abstract interface com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.core/SignInState|null[0]
+    abstract val isInProgress // com.mmk.kmpauth.core/SignInState.isInProgress|{}isInProgress[0]
+        abstract fun <get-isInProgress>(): kotlin/Boolean // com.mmk.kmpauth.core/SignInState.isInProgress.<get-isInProgress>|<get-isInProgress>(){}[0]
+
+    abstract fun launch() // com.mmk.kmpauth.core/SignInState.launch|launch(){}[0]
+}
+
 abstract interface com.mmk.kmpauth.core/UiContainerScope { // com.mmk.kmpauth.core/UiContainerScope|null[0]
     abstract fun onClick() // com.mmk.kmpauth.core/UiContainerScope.onClick|onClick(){}[0]
 }
@@ -83,6 +90,15 @@ sealed interface com.mmk.kmpauth.core.auth/AuthCredential { // com.mmk.kmpauth.c
         final fun hashCode(): kotlin/Int // com.mmk.kmpauth.core.auth/AuthCredential.OAuthWebFlow.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.mmk.kmpauth.core.auth/AuthCredential.OAuthWebFlow.toString|toString(){}[0]
     }
+}
+
+final class com.mmk.kmpauth.core/LaunchingSignInState : com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.core/LaunchingSignInState|null[0]
+    constructor <init>(kotlinx.coroutines/CoroutineScope, kotlin.coroutines/SuspendFunction0<kotlin/Unit>) // com.mmk.kmpauth.core/LaunchingSignInState.<init>|<init>(kotlinx.coroutines.CoroutineScope;kotlin.coroutines.SuspendFunction0<kotlin.Unit>){}[0]
+
+    final var isInProgress // com.mmk.kmpauth.core/LaunchingSignInState.isInProgress|{}isInProgress[0]
+        final fun <get-isInProgress>(): kotlin/Boolean // com.mmk.kmpauth.core/LaunchingSignInState.isInProgress.<get-isInProgress>|<get-isInProgress>(){}[0]
+
+    final fun launch() // com.mmk.kmpauth.core/LaunchingSignInState.launch|launch(){}[0]
 }
 
 final object com.mmk.kmpauth.core.auth/AuthProviderIds { // com.mmk.kmpauth.core.auth/AuthProviderIds|null[0]

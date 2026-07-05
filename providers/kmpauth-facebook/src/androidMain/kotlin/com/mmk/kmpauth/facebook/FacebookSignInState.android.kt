@@ -2,14 +2,12 @@ package com.mmk.kmpauth.facebook
 
 import android.app.Activity
 import android.content.Intent
-import androidx.compose.foundation.layout.Box
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -18,10 +16,12 @@ import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.mmk.kmpauth.core.KMPAuth
 import com.mmk.kmpauth.core.KMPAuthInternalApi
-import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.LaunchingSignInState
+import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.getActivity
 import com.mmk.kmpauth.core.logger.currentLogger
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 
 /**
@@ -46,53 +46,53 @@ private val loginManager: LoginManager by lazy { LoginManager.getInstance() }
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun FacebookButtonUiContainer(
-    modifier: Modifier,
+public actual fun rememberFacebookSignInState(
     requestScopes: List<FacebookSignInRequestScope>,
-    onResult: (Result<FacebookUser>) -> Unit,
     linkAccount: Boolean,
-    content: @Composable (UiContainerScope.() -> Unit)
-) {
-    val updatedOnResult by rememberUpdatedState(onResult)
-    val coroutineScope = rememberCoroutineScope()
+    onResult: (Result<FacebookUser>) -> Unit,
+): SignInState {
+    val scope = rememberCoroutineScope()
     val activity = LocalContext.current.getActivity()
+    val currentRequestScopes by rememberUpdatedState(requestScopes)
+    val currentOnResult by rememberUpdatedState(onResult)
 
-    DisposableEffect(Unit) {
-        loginManager.registerCallback(
-            facebookLoginCallbackManager,
-            facebookSignInCallback(coroutineScope, linkAccount, updatedOnResult)
-        )
-
-        onDispose {
-            loginManager.unregisterCallback(facebookLoginCallbackManager)
-        }
-    }
-
-    val permissions: List<String> = requestScopes.map {
-        when (it) {
-            FacebookSignInRequestScope.Email -> "email"
-            FacebookSignInRequestScope.PublicProfile -> "public_profile"
-        }
-    }
-
-    val uiContainerScope = remember {
-        object : UiContainerScope {
-            override fun onClick() {
-                if (activity == null) {
-                    updatedOnResult(Result.failure(IllegalStateException("Activity is null")))
-                    return
+    return remember {
+        LaunchingSignInState(scope) {
+            val permissions: List<String> = currentRequestScopes.map {
+                when (it) {
+                    FacebookSignInRequestScope.Email -> "email"
+                    FacebookSignInRequestScope.PublicProfile -> "public_profile"
                 }
-                loginManager.logInWithReadPermissions(activity as Activity, permissions)
             }
+            currentOnResult(signIn(activity, permissions))
         }
     }
-    Box(modifier = modifier) { uiContainerScope.content() }
+}
+
+private suspend fun signIn(
+    activity: ComponentActivity?,
+    permissions: List<String>,
+): Result<FacebookUser> {
+    if (activity == null) {
+        return Result.failure(IllegalStateException("Activity is null"))
+    }
+    return try {
+        suspendCancellableCoroutine { continuation ->
+            loginManager.registerCallback(
+                facebookLoginCallbackManager,
+                facebookSignInCallback { result ->
+                    if (continuation.isActive) continuation.resume(result)
+                }
+            )
+            loginManager.logInWithReadPermissions(activity as Activity, permissions)
+        }
+    } finally {
+        loginManager.unregisterCallback(facebookLoginCallbackManager)
+    }
 }
 
 @OptIn(KMPAuthInternalApi::class)
 private fun facebookSignInCallback(
-    coroutineScope: CoroutineScope,
-    linkAccount: Boolean,
     updatedOnResult: (Result<FacebookUser>) -> Unit
 ): FacebookCallback<LoginResult> = object : FacebookCallback<LoginResult> {
     override fun onSuccess(result: LoginResult) {

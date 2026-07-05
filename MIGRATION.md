@@ -96,7 +96,34 @@ Android BoM constraint (`api(platform(firebase-bom))`), so Firebase artifact
 versions are pinned automatically. If you were pinning Firebase versions
 yourself to work around resolution errors, you can remove those pins.
 
-## 4. Granular Firebase artifacts (optional)
+## 4. SignInState instead of UiContainer composables (recommended)
+
+The `*UiContainer { this.onClick() }` pattern is deprecated. The 3.0 way:
+
+```kotlin
+// 2.x (still works, deprecated):
+GoogleButtonUiContainerFirebase(linkAccount = false, onResult = onFirebaseResult) {
+    GoogleSignInButton { this.onClick() }
+}
+
+// 3.0:
+val googleSignIn = rememberFirebaseGoogleSignInState(
+    linkAccount = false,
+    onResult = onFirebaseResult,
+)
+GoogleSignInButton(onClick = { googleSignIn.launch() })
+```
+
+Notes:
+- `SignInState.isInProgress` is observable — drive spinners/disabled state.
+- Parameters are read at launch time (backed by `rememberUpdatedState`), so
+  recomposing with a different `linkAccount` (e.g. a sign-in/sign-up toggle)
+  affects the next `launch()` without recreating the state.
+- `launch()` while a flow is running is ignored (no double-launch).
+- One state per provider per screen; no wrapping container, the button is
+  entirely yours.
+
+## 4b. Granular Firebase artifacts (optional)
 
 `kmpauth-firebase` still works exactly as in 2.x — same coordinates, now
 published as an aggregator of the granular artifacts (its module lives
@@ -109,7 +136,7 @@ under `deprecated/` in the repository as a compatibility shim). Optionally slim 
 | Google + Firebase | `kmpauth-firebase-google` (+ `kmpauth-google`) |
 | Facebook + Firebase | `kmpauth-firebase-facebook` |
 
-## 4b. Pluggable auth backends
+## 4c. Pluggable auth backends
 
 3.0 introduces `com.mmk.kmpauth.core.auth.AuthProviderBackend` with a
 backend-agnostic credential/user model (`AuthCredential`, `KMPAuthUser`).

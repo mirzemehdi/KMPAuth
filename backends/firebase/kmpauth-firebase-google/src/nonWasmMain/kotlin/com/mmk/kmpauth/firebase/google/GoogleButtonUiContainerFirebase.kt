@@ -1,38 +1,27 @@
 package com.mmk.kmpauth.firebase.google
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
-import com.mmk.kmpauth.core.auth.KMPAuthBackend
-import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
-import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import dev.gitlive.firebase.auth.FirebaseUser
-import kotlinx.coroutines.launch
 
 /**
- * GoogleSignInButton Ui Container Composable that handles all sign-in functionality for Google.
- * Child of this Composable can be any view or Composable function.
- * You need to call [UiContainerScope.onClick] function on your child view's click function.
- *
- * @param linkAccount Default value is false
- * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
- * @param scopes Custom scopes to retrieve more information. Default value listOf("email", "profile")
- * [onResult] callback will return [Result] with [FirebaseUser] type.
- *
- * Example Usage:
- * ```
- * //Github Sign-In with Custom Button and authentication with Firebase
- * GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
- *     Button(onClick = { this.onClick() }) { Text("Google Sign-In (Custom Design)") }
- * }
- *
- * ```
- *
+ * Legacy container API for Google Sign-In with Firebase. Superseded by
+ * [rememberFirebaseGoogleSignInState], which returns a
+ * [com.mmk.kmpauth.core.SignInState] you can wire to any clickable without
+ * the receiver-scope indirection.
  */
+@Deprecated(
+    "Use rememberFirebaseGoogleSignInState(...) and call launch() from your own button's onClick. " +
+        "Scheduled for removal in 4.0.",
+    ReplaceWith(
+        "rememberFirebaseGoogleSignInState(linkAccount, filterByAuthorizedAccounts, isAutoSelectEnabled, scopes, onResult)",
+        "com.mmk.kmpauth.firebase.google.rememberFirebaseGoogleSignInState"
+    ),
+    DeprecationLevel.WARNING
+)
 @Composable
 public fun GoogleButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
@@ -43,33 +32,28 @@ public fun GoogleButtonUiContainerFirebase(
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
-
-    val updatedOnResult by rememberUpdatedState(onResult)
-    val coroutineScope = rememberCoroutineScope()
-    val signInHandler = remember {
-        // Lazy default registration: no-op when the app already registered
-        // a backend at startup (first registration wins).
-        KMPAuthBackend.register(FirebaseAuthBackend)
-        GoogleFirebaseSignInHandler(backend = KMPAuthBackend.require())
-    }
-    GoogleButtonUiContainer(
-        modifier = modifier,
+    val signInState = rememberFirebaseGoogleSignInState(
+        linkAccount = linkAccount,
         filterByAuthorizedAccounts = filterByAuthorizedAccounts,
         isAutoSelectEnabled = isAutoSelectEnabled,
         scopes = scopes,
-        onGoogleSignInResult = { googleUser ->
-            coroutineScope.launch {
-                updatedOnResult(signInHandler.signIn(googleUser, linkAccount))
-            }
-        },
-        content = content
+        onResult = onResult,
     )
-
+    val uiContainerScope = remember(signInState) {
+        object : UiContainerScope {
+            override fun onClick() = signInState.launch()
+        }
+    }
+    Box(modifier = modifier) { uiContainerScope.content() }
 }
 
 @Deprecated(
-    "Use GoogleButtonUiContainerFirebase with linkAccount and filterByAuthorizedAccounts parameters, which defaults to false",
-    ReplaceWith(""),
+    "Use rememberFirebaseGoogleSignInState(...) and call launch() from your own button's onClick. " +
+        "Scheduled for removal in 4.0.",
+    ReplaceWith(
+        "rememberFirebaseGoogleSignInState(onResult = onResult)",
+        "com.mmk.kmpauth.firebase.google.rememberFirebaseGoogleSignInState"
+    ),
     DeprecationLevel.WARNING
 )
 @Composable
@@ -78,6 +62,7 @@ public fun GoogleButtonUiContainerFirebase(
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
+    @Suppress("DEPRECATION")
     GoogleButtonUiContainerFirebase(
         modifier = modifier,
         linkAccount = false,
@@ -86,4 +71,3 @@ public fun GoogleButtonUiContainerFirebase(
         content = content
     )
 }
-

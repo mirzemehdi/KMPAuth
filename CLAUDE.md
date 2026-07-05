@@ -62,6 +62,15 @@ Sample app: `./gradlew :sampleApp:composeApp:run` (desktop), `:sampleApp:android
 
 Release flow: bump `kmpAuthVersion` in `gradle.properties`, merge to `main`, tag `vX.Y.Z`.
 
+## Sign-in API (3.0)
+
+Primary API: `rememberXxxSignInState(...)` composables returning
+`com.mmk.kmpauth.core.SignInState` (`launch()`, observable `isInProgress`,
+double-launch guard via internal `LaunchingSignInState`). All parameters are
+read at launch time through `rememberUpdatedState`. The 2.x `*UiContainer`
+composables are deprecated thin wrappers over these states — keep them
+delegating, never reimplement logic in them.
+
 ## Auth backend architecture (3.0)
 
 `KMPAuthBackend` registry holds one `AuthProviderBackend`. `kmpauth-firebase` self-registers `FirebaseAuthBackend` lazily on first container use; an app-supplied backend (e.g. future Supabase) registered at startup always wins (first registration wins; `replace = true` to swap). Token credentials (`AuthCredential.IdToken`) flow through the backend; web-flow providers (Apple-on-Android, GitHub, generic OAuth) are driven by their platform container composables.

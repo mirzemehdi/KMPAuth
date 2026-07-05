@@ -1,33 +1,30 @@
 package com.mmk.kmpauth.firebase.facebook
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
 import com.mmk.kmpauth.facebook.FacebookSignInRequestScope
 import dev.gitlive.firebase.auth.FirebaseUser
 
 /**
- * FacebookButton Ui Container Composable that handles all sign-in functionality for Facebook.
- * Child of this Composable can be any view or Composable function.
- * You need to call [UiContainerScope.onClick] function on your child view's click function.
- *
- * [onResult] callback will return [Result] with [FirebaseUser] type.
- * @param requestScopes Request Scopes that is provided in Facebook OAuth. By Default, user's email
- * and public profile info is requested.
- * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
- *
- * Example Usage:
- * ```
- * //Facebook Sign-In with Custom Button and authentication with Firebase
- * FacebookButtonUiContainer(onResult = onFirebaseResult) {
- *     Button(onClick = { this.onClick() }) { Text("Facebook Sign-In (Custom Design)") }
- * }
- *
- * ```
- *
+ * Legacy container API for Facebook Sign-In with Firebase. Superseded by
+ * [rememberFirebaseFacebookSignInState], which returns a
+ * [com.mmk.kmpauth.core.SignInState] you can wire to any clickable without
+ * the receiver-scope indirection.
  */
+@Deprecated(
+    "Use rememberFirebaseFacebookSignInState(...) and call launch() from your own button's onClick. " +
+        "Scheduled for removal in 4.0.",
+    ReplaceWith(
+        "rememberFirebaseFacebookSignInState(requestScopes, linkAccount, onResult)",
+        "com.mmk.kmpauth.firebase.facebook.rememberFirebaseFacebookSignInState"
+    ),
+    DeprecationLevel.WARNING
+)
 @Composable
-public expect fun FacebookButtonUiContainerFirebase(
+public fun FacebookButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
     requestScopes: List<FacebookSignInRequestScope> = listOf(
         FacebookSignInRequestScope.PublicProfile,
@@ -36,4 +33,16 @@ public expect fun FacebookButtonUiContainerFirebase(
     onResult: (Result<FirebaseUser?>) -> Unit,
     linkAccount: Boolean = false,
     content: @Composable UiContainerScope.() -> Unit,
-)
+) {
+    val signInState = rememberFirebaseFacebookSignInState(
+        requestScopes = requestScopes,
+        linkAccount = linkAccount,
+        onResult = onResult,
+    )
+    val uiContainerScope = remember(signInState) {
+        object : UiContainerScope {
+            override fun onClick() = signInState.launch()
+        }
+    }
+    Box(modifier = modifier) { uiContainerScope.content() }
+}

@@ -23,12 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mmk.kmpauth.core.KMPAuthInternalApi
-import com.mmk.kmpauth.firebase.apple.AppleButtonUiContainer
-import com.mmk.kmpauth.firebase.facebook.FacebookButtonUiContainerFirebase
-import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
-import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
-import com.mmk.kmpauth.google.GoogleButtonUiContainer
+import com.mmk.kmpauth.firebase.apple.rememberFirebaseAppleSignInState
+import com.mmk.kmpauth.firebase.facebook.rememberFirebaseFacebookSignInState
+import com.mmk.kmpauth.firebase.github.rememberFirebaseGithubSignInState
+import com.mmk.kmpauth.firebase.google.rememberFirebaseGoogleSignInState
+import com.mmk.kmpauth.google.rememberGoogleSignInState
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButton
@@ -37,7 +36,6 @@ import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButtonIconOnly
 import dev.gitlive.firebase.auth.FirebaseUser
 
-@OptIn(KMPAuthInternalApi::class)
 @Composable
 fun App() {
 
@@ -67,27 +65,23 @@ fun App() {
             )
 
             //Google Sign-In with Custom Button and authentication without Firebase
-            GoogleButtonUiContainer(onGoogleSignInResult = { googleUser ->
+            val googleSignIn = rememberGoogleSignInState(onResult = { googleUser ->
                 val idToken = googleUser?.idToken // Send this idToken to your backend to verify
                 signedInUserName = googleUser?.displayName ?: "Null User"
-            }) {
-                Button(onClick = { this.onClick() }) { Text("Google Sign-In(Custom Design)") }
-            }
+            })
+            Button(onClick = { googleSignIn.launch() }) { Text("Google Sign-In(Custom Design)") }
 
             //Apple Sign-In with Custom Button and authentication with Firebase
-            AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
-                Button(onClick = { this.onClick() }) { Text("Apple Sign-In (Custom Design)") }
-            }
+            val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+            Button(onClick = { appleSignIn.launch() }) { Text("Apple Sign-In (Custom Design)") }
 
             //Github Sign-In with Custom Button and authentication with Firebase
-            GithubButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
-                Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
-            }
+            val githubSignIn = rememberFirebaseGithubSignInState(onResult = onFirebaseResult)
+            Button(onClick = { githubSignIn.launch() }) { Text("Github Sign-In (Custom Design)") }
 
             //Facebook Sign-In with Custom Button and authentication with Firebase
-            FacebookButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
-                Button(onClick = { this.onClick() }) { Text("Facebook Sign-In (Custom Design)") }
-            }
+            val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
+            Button(onClick = { facebookSignIn.launch() }) { Text("Facebook Sign-In (Custom Design)") }
 
             // ************************** UiHelper Text Buttons *************
             Divider(modifier = Modifier.fillMaxWidth().padding(16.dp))
@@ -118,25 +112,22 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
     ) {
 
         //Google Sign-In Button and authentication with Firebase
-        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
-            GoogleSignInButton(
-                modifier = Modifier.fillMaxWidth().height(44.dp),
-                fontSize = 19.sp
-            ) { this.onClick() }
-        }
+        val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+        GoogleSignInButton(
+            modifier = Modifier.fillMaxWidth().height(44.dp),
+            fontSize = 19.sp
+        ) { googleSignIn.launch() }
 
         //Apple Sign-In Button and authentication with Firebase
-        AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
-            AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { this.onClick() }
-        }
+        val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+        AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { appleSignIn.launch() }
 
-
-        FacebookButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
-            FacebookSignInButton(
-                modifier = Modifier.fillMaxWidth().height(44.dp),
-                fontSize = 19.sp
-            ) { this.onClick() }
-        }
+        //Facebook Sign-In Button and authentication with Firebase
+        val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
+        FacebookSignInButton(
+            modifier = Modifier.fillMaxWidth().height(44.dp),
+            fontSize = 19.sp
+        ) { facebookSignIn.launch() }
 
     }
 }
@@ -152,18 +143,15 @@ fun IconOnlyButtonsAndFirebaseAuth(
     ) {
 
         //Google Sign-In IconOnly Button and authentication with Firebase
-        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
-            GoogleSignInButtonIconOnly(onClick = { this.onClick() })
-        }
+        val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+        GoogleSignInButtonIconOnly(onClick = { googleSignIn.launch() })
 
         //Apple Sign-In IconOnly Button and authentication with Firebase
-        AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
-            AppleSignInButtonIconOnly(onClick = { this.onClick() })
-        }
+        val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+        AppleSignInButtonIconOnly(onClick = { appleSignIn.launch() })
 
         //Facebook Sign-In IconOnly Button and authentication with Firebase
-        FacebookButtonUiContainerFirebase(onResult = onFirebaseResult, linkAccount = false) {
-            FacebookSignInButtonIconOnly(onClick = { this.onClick() })
-        }
+        val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
+        FacebookSignInButtonIconOnly(onClick = { facebookSignIn.launch() })
     }
 }
