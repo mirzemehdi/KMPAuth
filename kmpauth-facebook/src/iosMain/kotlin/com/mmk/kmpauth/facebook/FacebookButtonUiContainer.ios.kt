@@ -7,9 +7,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import cocoapods.FBSDKLoginKit.FBSDKLoginConfiguration
-import cocoapods.FBSDKLoginKit.FBSDKLoginManager
-import cocoapods.FBSDKLoginKit.FBSDKLoginTrackingLimited
+import swiftPMImport.io.github.mirzemehdi.kmpauth.facebook.FBSDKLoginConfiguration
+import swiftPMImport.io.github.mirzemehdi.kmpauth.facebook.FBSDKLoginManager
+import swiftPMImport.io.github.mirzemehdi.kmpauth.facebook.FBSDKLoginTrackingLimited
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.UiContainerScope
 import com.mmk.kmpauth.core.logger.currentLogger

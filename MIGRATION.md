@@ -27,9 +27,30 @@ the corresponding 3.0 changes land on the `rel_3.0.0` integration branch.
   request-scope types.
 - Maven coordinates (`io.github.mirzemehdi:kmpauth-*`).
 
-## 1. iOS: CocoaPods → Swift Package Manager _(pending)_
+## 1. iOS: CocoaPods → Swift Package Manager
 
-_Instructions land with the SPM migration PR._
+KMPAuth 3.0 no longer ships `kmpauth_*.podspec` files and no longer uses the
+`kotlin("native.cocoapods")` plugin. The library declares its Apple
+frameworks through the Kotlin `swiftPMDependencies {}` DSL (Kotlin 2.4+).
+
+**In your iOS app (Xcode):**
+1. Remove the KMPAuth-related pods from your `Podfile` (`kmpauth_google`,
+   `kmpauth_firebase`, `kmpauth_facebook`, `kmpauth_firebase_facebook`) and
+   run `pod install`; if KMPAuth was your only pod, deintegrate CocoaPods
+   entirely (`pod deintegrate`).
+2. Add the native SDKs your setup uses via **File → Add Package
+   Dependencies…**:
+   - Google Sign-In: `https://github.com/google/GoogleSignIn-iOS` (product `GoogleSignIn`), 9.1.0+
+   - Firebase: `https://github.com/firebase/firebase-ios-sdk` (products `FirebaseAuth`, `FirebaseCore`), 11.8.0+
+   - Facebook: `https://github.com/facebook/facebook-ios-sdk` (products `FacebookCore`, `FacebookLogin`), 18.0.0+
+3. Set your app's iOS deployment target to **16.0+** and use **Xcode 16.4+**.
+4. Keep integrating your shared framework the same way as before
+   (`embedAndSignAppleFrameworkForXcode` build phase or XCFramework).
+
+**In your shared KMP module:** if you consume KMPAuth from a KMP project
+that itself builds the iOS framework, no Kotlin code changes are needed —
+the `cocoapods.FirebaseAuth.*` bindings inside `kmpauth-firebase` come from
+GitLive's bundled cinterop and keep working.
 
 ## 2. Koin removal _(pending)_
 

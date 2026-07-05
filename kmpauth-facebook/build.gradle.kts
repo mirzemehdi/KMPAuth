@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -12,20 +14,20 @@ kotlin {
         browser()
     }
 
-    cocoapods {
-        ios.deploymentTarget = "12.0"
-        framework {
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = "KMPAuthFacebook"
             isStatic = true
         }
-        pod("FBSDKCoreKit") {
-            extraOpts += listOf("-compiler-option", "-fmodules")
-            version = libs.versions.facebookAuthIos.get()
-        }
-        pod("FBSDKLoginKit") {
-            extraOpts += listOf("-compiler-option", "-fmodules")
-            version = libs.versions.facebookAuthIos.get()
-        }
+    }
+
+    swiftPMDependencies {
+        iosMinimumDeploymentTarget = "16.0"
+        swiftPackage(
+            url = "https://github.com/facebook/facebook-ios-sdk.git",
+            version = libs.versions.facebookAuthIos.get(),
+            products = listOf("FacebookCore", "FacebookLogin")
+        )
     }
 
     sourceSets {
