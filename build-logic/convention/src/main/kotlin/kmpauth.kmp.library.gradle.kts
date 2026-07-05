@@ -54,6 +54,10 @@ kotlin {
         browser()
         binaries.library()
     }
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
     jvm {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)

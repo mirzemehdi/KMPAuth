@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
 
 ### Added
+- **wasmJs on every module.** `kmpauth-firebase` and
+  `kmpauth-firebase-facebook` now compile for wasmJs too, so a wasm-targeting
+  app can keep them in `commonMain` dependencies. Their Firebase API surface
+  exists on android/ios/jvm/js only (GitLive has no wasm target); on wasm the
+  modules resolve as empty artifacts.
 - **Pluggable auth backends.** New `com.mmk.kmpauth.core.auth` API in
   `kmpauth-core`: `AuthProviderBackend` (sign-in/sign-out/current-user over
   a backend-agnostic `AuthCredential` + `KMPAuthUser` model) and the
