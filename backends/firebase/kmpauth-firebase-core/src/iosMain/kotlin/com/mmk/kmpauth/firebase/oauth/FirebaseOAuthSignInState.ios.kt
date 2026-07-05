@@ -1,14 +1,15 @@
 package com.mmk.kmpauth.firebase.oauth
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Modifier
 import cocoapods.FirebaseAuth.FIRAuthCredential
 import cocoapods.FirebaseAuth.FIRAuthDataResult
-import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.LaunchingSignInState
+import com.mmk.kmpauth.core.SignInState
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -16,56 +17,34 @@ import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.auth.ios
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import platform.Foundation.NSError
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import dev.gitlive.firebase.auth.ios
 
 //On iOS this is needed for some reason, app is recomposed again when navigate to OAuth Screen.
 // rememberUpdatedState doesn't solve the problem
 private var mOnResult: ((Result<FirebaseUser?>) -> Unit)? = null
 
+@OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun OAuthContainer(
-    modifier: Modifier,
+public actual fun rememberFirebaseOAuthSignInState(
     oAuthProvider: OAuthProvider,
-    onResult: (Result<FirebaseUser?>) -> Unit,
     linkAccount: Boolean,
-    content: @Composable UiContainerScope.() -> Unit,
-) {
+    onResult: (Result<FirebaseUser?>) -> Unit,
+): SignInState {
+    val scope = rememberCoroutineScope()
+    val currentOAuthProvider by rememberUpdatedState(oAuthProvider)
+    val currentLinkAccount by rememberUpdatedState(linkAccount)
     val updatedOnResultFunc by rememberUpdatedState(onResult)
     mOnResult = updatedOnResultFunc
-    val coroutineScope = MainScope()
-    val uiContainerScope = remember {
-        object : UiContainerScope {
-            override fun onClick() {
-                coroutineScope.launch {
-                    val result = onClickSignIn(oAuthProvider, linkAccount)
-                    mOnResult?.invoke(result)
-                    mOnResult = null
-                }
-            }
 
+    return remember {
+        LaunchingSignInState(scope) {
+            val result = onClickSignIn(currentOAuthProvider, currentLinkAccount)
+            mOnResult?.invoke(result)
+            mOnResult = null
         }
     }
-    Box(modifier = modifier) { uiContainerScope.content() }
-}
-
-@Deprecated(
-    "Use OAuthContainer with linkAccount parameter, which defaults to false",
-    ReplaceWith(""),
-    DeprecationLevel.WARNING
-)
-@Composable
-public actual fun OAuthContainer(
-    modifier: Modifier,
-    oAuthProvider: OAuthProvider,
-    onResult: (Result<FirebaseUser?>) -> Unit,
-    content: @Composable UiContainerScope.() -> Unit,
-) {
-    OAuthContainer(modifier, oAuthProvider, onResult, false, content)
 }
 
 @OptIn(ExperimentalForeignApi::class)

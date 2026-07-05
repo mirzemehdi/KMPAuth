@@ -12,11 +12,11 @@ Layout: identity **providers** (credential sources) live under `providers/`; ses
 
 | Module (gradle path) | Purpose | Depends on |
 |---|---|---|
-| `:kmpauth-core` | Base infrastructure: logging, `UiContainerScope`, HTTP client factory, `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`) | — |
+| `:kmpauth-core` | Base infrastructure: logging, `SignInState`/`LaunchingSignInState`, HTTP client factory, `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`) | — |
 | `:providers:kmpauth-google` | Google Sign-In (Credential Manager on Android, GoogleSignIn SDK on iOS, OAuth loopback on JVM) | core |
 | `:providers:kmpauth-facebook` | Facebook Login via Facebook SDK (no Firebase) | core |
-| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/OAuth web-flow containers (GitLive firebase-auth) | core |
-| `:backends:firebase:kmpauth-firebase-google` | `GoogleButtonUiContainerFirebase` + sign-in handler | firebase-core, google |
+| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/OAuth `rememberXxxSignInState` flows (GitLive firebase-auth) | core |
+| `:backends:firebase:kmpauth-firebase-google` | `rememberFirebaseGoogleSignInState` + sign-in handler | firebase-core, google |
 | `:backends:firebase:kmpauth-firebase-facebook` | Facebook + Firebase combo container | firebase-core, facebook |
 | `:deprecated:kmpauth-firebase` | Backward-compat **aggregator** artifact: `api(firebase-core, firebase-google)` — keeps 2.x dependency blocks working | firebase-core, firebase-google |
 | `:kmpauth-uihelper` | Pre-styled Compose sign-in buttons (Google/Apple/Facebook) | core |
@@ -61,6 +61,25 @@ Sample app: `./gradlew :sampleApp:composeApp:run` (desktop), `:sampleApp:android
 `.github/workflows/build_and_publish.yml`: apiCheck → `testAndroid jvmTest` + androidApp APK (ubuntu) and `iosSimulatorArm64Test` (macOS) → on `v*` tag: Dokka docs to GitHub Pages + `publishAndReleaseToMavenCentral` (vanniktech, GPG-signed) + GitHub release. PR builds trigger for PRs targeting `main` and `rel_3.0.0`.
 
 Release flow: bump `kmpAuthVersion` in `gradle.properties`, merge to `main`, tag `vX.Y.Z`.
+
+## Sign-in API (3.0)
+
+Primary API: `rememberXxxSignInState(...)` composables returning
+`com.mmk.kmpauth.core.SignInState` (`launch()`, observable `isInProgress`,
+double-launch guard via internal `LaunchingSignInState`). All parameters are
+read at launch time through `rememberUpdatedState`. The 2.x `*UiContainer`
+composables are deprecated thin wrappers over these states — keep them
+delegating, never reimplement logic in them.
+
+## Future consideration (when Supabase lands)
+
+A backend-agnostic `rememberSignInState(...)` returning `KMPAuthUser` — one
+generic entry point over the `AuthProviderBackend` abstraction, likely a
+sealed "contract" payload per provider (mirroring
+`rememberLauncherForActivityResult(contract)`). Deliberately NOT done at the
+Firebase layer: providers have disjoint parameter shapes, and a unified
+function would need visibility of all provider modules, undoing the granular
+`kmpauth-firebase-*` split. Revisit when `backends/supabase/` is added.
 
 ## Auth backend architecture (3.0)
 

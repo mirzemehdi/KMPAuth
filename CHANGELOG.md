@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
 
 ### Added
+- **`SignInState` API.** New `rememberXxxSignInState(...)` composables
+  (`rememberGoogleSignInState`, `rememberFacebookSignInState`,
+  `rememberFirebaseGoogleSignInState`, `rememberFirebaseAppleSignInState`,
+  `rememberFirebaseGithubSignInState`, `rememberFirebaseOAuthSignInState`,
+  `rememberFirebaseFacebookSignInState`) return a `SignInState` handle with
+  `launch()` and an observable `isInProgress`. Wire `launch()` to any
+  clickable; parameters such as `linkAccount` are read at launch time, so
+  toggling them via recomposition works; double-taps cannot start two flows.
 - **Granular Firebase artifacts.** `kmpauth-firebase` is split into
   `kmpauth-firebase-core` (FirebaseAuthBackend + Apple/GitHub/OAuth
   containers) and `kmpauth-firebase-google` (Google + Firebase container).
@@ -54,6 +62,12 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   Xcode 16.4+.
 
 ### Deprecated
+- All `*UiContainer` composables (`GoogleButtonUiContainer`,
+  `GoogleButtonUiContainerFirebase`, `AppleButtonUiContainer`,
+  `GithubButtonUiContainer`, `OAuthContainer`, `FacebookButtonUiContainer`,
+  `FacebookButtonUiContainerFirebase`) in favor of the `SignInState` API.
+  They keep working as thin wrappers over the new implementation and are
+  slated for removal in 4.0.
 - The parameter-less legacy overloads of `GoogleButtonUiContainerFirebase`,
   `AppleButtonUiContainer`, `GithubButtonUiContainer` and `OAuthContainer`
   (deprecated since 2.x in favor of the `linkAccount`/

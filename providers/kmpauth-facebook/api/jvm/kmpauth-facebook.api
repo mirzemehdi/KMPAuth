@@ -1,4 +1,4 @@
-public final class com/mmk/kmpauth/facebook/FacebookButtonUiContainer_jvmKt {
+public final class com/mmk/kmpauth/facebook/FacebookButtonUiContainerKt {
 	public static final fun FacebookButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
@@ -19,6 +19,10 @@ public final class com/mmk/kmpauth/facebook/FacebookSignInRequestScope$PublicPro
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/facebook/FacebookSignInState_jvmKt {
+	public static final fun rememberFacebookSignInState (Ljava/util/List;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/facebook/FacebookUser {

@@ -1,16 +1,16 @@
 package com.mmk.kmpauth.firebase.apple
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Modifier
 import cocoapods.FirebaseAuth.FIRAuth
 import cocoapods.FirebaseAuth.FIRAuthDataResult
 import cocoapods.FirebaseAuth.FIROAuthProvider
 import com.mmk.kmpauth.core.KMPAuthInternalApi
-import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.LaunchingSignInState
+import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.logger.currentLogger
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -25,6 +25,7 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.refTo
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.AuthenticationServices.ASAuthorization
 import platform.AuthenticationServices.ASAuthorizationAppleIDCredential
 import platform.AuthenticationServices.ASAuthorizationAppleIDProvider
@@ -45,69 +46,53 @@ import platform.Security.errSecSuccess
 import platform.Security.kSecRandomDefault
 import platform.UIKit.UIApplication
 import platform.darwin.NSObject
+import kotlin.coroutines.resume
 
 private var currentNonce: String? = null
 
-/**
- * AppleButton Ui Container Composable that handles all sign-in functionality for Apple.
- * Child of this Composable can be any view or Composable function.
- * You need to call [UiContainerScope.onClick] function on your child view's click function.
- *
- * [onResult] callback will return [Result] with [FirebaseUser] type.
- * @param requestScopes list of request scopes type of [AppleSignInRequestScope].
- * @param linkAccount if true, it will link the account with the current user. Default value is false
- * Example Usage:
- * ```
- * //Apple Sign-In with Custom Button and authentication with Firebase
- * AppleButtonUiContainer(onResult = onFirebaseResult) {
- *     Button(onClick = { this.onClick() }) { Text("Apple Sign-In (Custom Design)") }
- * }
- *
- * ```
- *
- */
+// ASAuthorizationController keeps only weak references to its delegate and
+// presentation context provider, so hold strong references while a sign-in
+// flow is in flight.
+private var inFlightAuthorizationDelegate: ASAuthorizationControllerDelegate? = null
+private var inFlightPresentationContextProvider: PresentationContextProvider? = null
+
+@OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun AppleButtonUiContainer(
-    modifier: Modifier,
+public actual fun rememberFirebaseAppleSignInState(
     requestScopes: List<AppleSignInRequestScope>,
-    onResult: (Result<FirebaseUser?>) -> Unit,
     linkAccount: Boolean,
-    content: @Composable UiContainerScope.() -> Unit,
-) {
-    val updatedOnResultFunc by rememberUpdatedState(onResult)
-    val presentationContextProvider = PresentationContextProvider()
-    val asAuthorizationControllerDelegate =
-        ASAuthorizationControllerDelegate(linkAccount, updatedOnResultFunc)
+    onResult: (Result<FirebaseUser?>) -> Unit,
+): SignInState {
+    val scope = rememberCoroutineScope()
+    val currentRequestScopes by rememberUpdatedState(requestScopes)
+    val currentLinkAccount by rememberUpdatedState(linkAccount)
+    val currentOnResult by rememberUpdatedState(onResult)
 
-    val uiContainerScope = remember {
-        object : UiContainerScope {
-            override fun onClick() {
-                signIn(
-                    requestScopes = requestScopes,
-                    authorizationController = asAuthorizationControllerDelegate,
-                    presentationContextProvider = presentationContextProvider
-                )
-            }
-
+    return remember {
+        LaunchingSignInState(scope) {
+            currentOnResult(signInWithApple(currentRequestScopes, currentLinkAccount))
         }
     }
-    Box(modifier = modifier) { uiContainerScope.content() }
-
 }
 
-@Deprecated(
-    "Use AppleButtonUiContainer with the linkAccount parameter, which defaults to false.",
-    ReplaceWith(""),
-    DeprecationLevel.WARNING
-)
-@Composable
-public actual fun AppleButtonUiContainer(
-    modifier: Modifier,
+private suspend fun signInWithApple(
     requestScopes: List<AppleSignInRequestScope>,
-    onResult: (Result<FirebaseUser?>) -> Unit,
-    content: @Composable UiContainerScope.() -> Unit,
-) {
-    AppleButtonUiContainer(modifier, requestScopes, onResult, false, content)
+    linkAccount: Boolean,
+): Result<FirebaseUser?> = suspendCancellableCoroutine { continuation ->
+    val presentationContextProvider = PresentationContextProvider()
+    val authorizationControllerDelegate =
+        ASAuthorizationControllerDelegate(linkAccount) { signInResult ->
+            inFlightAuthorizationDelegate = null
+            inFlightPresentationContextProvider = null
+            if (continuation.isActive) continuation.resume(signInResult)
+        }
+    inFlightAuthorizationDelegate = authorizationControllerDelegate
+    inFlightPresentationContextProvider = presentationContextProvider
+    signIn(
+        requestScopes = requestScopes,
+        authorizationController = authorizationControllerDelegate,
+        presentationContextProvider = presentationContextProvider,
+    )
 }
 
 private fun signIn(
@@ -239,5 +224,3 @@ private class ASAuthorizationControllerDelegate(
 
 
 }
-
-

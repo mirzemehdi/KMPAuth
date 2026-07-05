@@ -66,6 +66,7 @@ androidx-credentials-playServicesAuth = { module = "androidx.credentials:credent
 android-legacy-playServicesAuth = { module = "com.google.android.gms:play-services-auth", version.ref = "androidLegacyPlayServices" }
 googleIdIdentity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleIdIdentity" }
 java-jwt = { module = "com.auth0:java-jwt", version.ref = "javaJwt" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-plugin" }
 
 #Firebase
 firebase-gitlive-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveAuth" }
