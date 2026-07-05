@@ -1,6 +1,6 @@
 # KMPAuth - Kotlin Multiplatform Authentication Library
 [![Build](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build_and_publish.yml/badge.svg)](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build_and_publish.yml)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.2.0-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.4.0-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.mirzemehdi/kmpauth-google?color=blue)](https://search.maven.org/search?q=g:io.github.mirzemehdi+kmpauth)
 
 ![badge-android](http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat)
@@ -90,7 +90,22 @@ sourceSets {
   }
 }
 ```
-**_You will also need to include Google Sign-In and/or FirebaseAuth library to your ios app using Swift Package Manager or Cocoapods._**   
+**_You will also need to add the native SDKs to your iOS app via Swift Package Manager_** (CocoaPods is no longer supported as of 3.0 — see [MIGRATION.md](MIGRATION.md)):
+- Google Sign-In: `https://github.com/google/GoogleSignIn-iOS` (product `GoogleSignIn`)
+- Firebase: `https://github.com/firebase/firebase-ios-sdk` (products `FirebaseAuth`, `FirebaseCore`)
+- Facebook: `https://github.com/facebook/facebook-ios-sdk` (products `FacebookCore`, `FacebookLogin`)
+
+#### Requirements (3.0+)
+
+| | Minimum |
+|---|---|
+| iOS deployment target | 16.0 |
+| Xcode | 16.4 |
+| JVM runtime (desktop apps) | 17 |
+| Android compileSdk | 37 |
+
+Upgrading from 2.x? Follow the step-by-step [MIGRATION.md](MIGRATION.md). All notable changes live in [CHANGELOG.md](CHANGELOG.md).
+
 
 **Note**: If in iOS you get `MissingResourceException`, I wrote solution in this [issue's comment section](https://github.com/mirzemehdi/KMPAuth/issues/2).
 

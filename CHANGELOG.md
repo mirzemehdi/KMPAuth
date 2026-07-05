@@ -30,7 +30,7 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   `testDebugUnitTest`/`testReleaseUnitTest`).
 - Kotlin 2.2.21 → **2.4.0**; Compose Multiplatform plugin 1.9.3 → 1.10.3
   (1.11+ drops the `iosX64` target this library still publishes); Ktor 3.5.1,
-  kotlinx-serialization 1.11.0, kotlinx-coroutines 1.11.0, Koin 4.2.2 (stable),
+  kotlinx-serialization 1.11.0, kotlinx-coroutines 1.11.0,
   Facebook Android SDK 18.3.0, androidx.credentials 1.6.0, googleid 1.2.0,
   Dokka 2.2.0, vanniktech maven-publish 0.37.0, Firebase Android BoM 34.15.0.
 - Android `compileSdk` raised to 37 (required by androidx.core 1.19);
@@ -43,8 +43,11 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   Xcode 16.4+.
 
 ### Deprecated
-- _(pending)_ Legacy overloads slated for removal in 4.0 carry
-  `@Deprecated(ReplaceWith(...))` with migration hints.
+- The parameter-less legacy overloads of `GoogleButtonUiContainerFirebase`,
+  `AppleButtonUiContainer`, `GithubButtonUiContainer` and `OAuthContainer`
+  (deprecated since 2.x in favor of the `linkAccount`/
+  `filterByAuthorizedAccounts` overloads) remain deprecated with warnings
+  and are slated for removal in 4.0.
 
 ### Removed
 - **Koin.** KMPAuth no longer uses or ships Koin. The `@KMPAuthInternalApi`

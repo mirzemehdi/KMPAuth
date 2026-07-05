@@ -15,7 +15,11 @@ public lateinit var applicationContext: Context
 public class KMPAuthContextInitializer : Initializer<Unit> {
     @OptIn(KMPAuthInternalApi::class)
     override fun create(context: Context) {
-        applicationContext = context.applicationContext
+        // Idempotent: androidx.startup runs this once, but direct calls from
+        // tests or manual initialization must not race or overwrite.
+        if (!::applicationContext.isInitialized) {
+            applicationContext = context.applicationContext
+        }
     }
 
     override fun dependencies(): List<Class<out Initializer<*>>> {
