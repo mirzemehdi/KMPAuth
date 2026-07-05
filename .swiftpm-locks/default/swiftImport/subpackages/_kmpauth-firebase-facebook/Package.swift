@@ -18,10 +18,6 @@ let package = Package(
       from: "11.8.0"
     ),
     .package(
-      url: "https://github.com/google/GoogleSignIn-iOS.git",
-      from: "9.1.0"
-    ),
-    .package(
       url: "https://github.com/facebook/facebook-ios-sdk.git",
       from: "18.0.0"
     )
@@ -37,10 +33,6 @@ let package = Package(
         .product(
           name: "FirebaseCore",
           package: "firebase-ios-sdk"
-        ),
-        .product(
-          name: "GoogleSignIn",
-          package: "GoogleSignIn-iOS"
         ),
         .product(
           name: "FacebookCore",
