@@ -54,12 +54,15 @@ kotlin {
         browser()
         binaries.library()
     }
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
     jvm {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -71,7 +74,8 @@ kotlin {
 mavenPublishing {
     configure(
         KotlinMultiplatform(
-            javadocJar = JavadocJar.Dokka("dokkaHtml"),
+            // Dokka 2.x (V2 mode) task name; the V1 dokkaHtml task no longer exists.
+            javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
             sourcesJar = true
         )
     )

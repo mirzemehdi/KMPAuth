@@ -1,7 +1,5 @@
 @file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-
 plugins {
     id("kmpauth.kmp.library")
     alias(libs.plugins.jetbrainsCompose)
@@ -9,12 +7,7 @@ plugins {
 }
 
 kotlin {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-    }
-
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+    listOf(iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "KMPAuthFacebook"
             isStatic = true
