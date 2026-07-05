@@ -43,8 +43,11 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   Xcode 16.4+.
 
 ### Deprecated
-- _(pending)_ Legacy overloads slated for removal in 4.0 carry
-  `@Deprecated(ReplaceWith(...))` with migration hints.
+- The parameter-less legacy overloads of `GoogleButtonUiContainerFirebase`,
+  `AppleButtonUiContainer`, `GithubButtonUiContainer` and `OAuthContainer`
+  (deprecated since 2.x in favor of the `linkAccount`/
+  `filterByAuthorizedAccounts` overloads) remain deprecated with warnings
+  and are slated for removal in 4.0.
 
 ### Removed
 - **Koin.** KMPAuth no longer uses or ships Koin. The `@KMPAuthInternalApi`
