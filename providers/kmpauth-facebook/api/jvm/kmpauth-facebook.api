@@ -1,5 +1,13 @@
 public final class com/mmk/kmpauth/facebook/FacebookButtonUiContainerKt {
-	public static final fun FacebookButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun FacebookButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLcom/mmk/kmpauth/facebook/FacebookLoginTracking;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mmk/kmpauth/facebook/FacebookLoginTracking : java/lang/Enum {
+	public static final field Enabled Lcom/mmk/kmpauth/facebook/FacebookLoginTracking;
+	public static final field Limited Lcom/mmk/kmpauth/facebook/FacebookLoginTracking;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mmk/kmpauth/facebook/FacebookLoginTracking;
+	public static fun values ()[Lcom/mmk/kmpauth/facebook/FacebookLoginTracking;
 }
 
 public abstract interface class com/mmk/kmpauth/facebook/FacebookSignInRequestScope {
@@ -22,7 +30,7 @@ public final class com/mmk/kmpauth/facebook/FacebookSignInRequestScope$PublicPro
 }
 
 public final class com/mmk/kmpauth/facebook/FacebookSignInState_jvmKt {
-	public static final fun rememberFacebookSignInState (Ljava/util/List;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberFacebookSignInState (Ljava/util/List;ZLcom/mmk/kmpauth/facebook/FacebookLoginTracking;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/facebook/FacebookUser {

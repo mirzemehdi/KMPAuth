@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.facebook.FacebookLoginTracking
 import com.mmk.kmpauth.facebook.FacebookSignInRequestScope
 import dev.gitlive.firebase.auth.FirebaseUser
 
@@ -32,11 +33,13 @@ public fun FacebookButtonUiContainerFirebase(
     ),
     onResult: (Result<FirebaseUser?>) -> Unit,
     linkAccount: Boolean = false,
+    loginTracking: FacebookLoginTracking = FacebookLoginTracking.Limited,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
     val signInState = rememberFirebaseFacebookSignInState(
         requestScopes = requestScopes,
         linkAccount = linkAccount,
+        loginTracking = loginTracking,
         onResult = onResult,
     )
     val uiContainerScope = remember(signInState) {

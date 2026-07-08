@@ -311,6 +311,23 @@ FacebookSignInButton(
 YourCustomButton(onClick = { facebookSignIn.launch() })
 ```
 
+##### Login tracking (token type)
+Facebook sign-in accepts a `loginTracking` parameter, consistent on Android and iOS:
+
+- `FacebookLoginTracking.Limited` (**default**) — privacy-friendly Limited Login;
+  returns an OIDC JWT + nonce (no iOS App Tracking Transparency prompt). Firebase
+  exchanges it through the OIDC OAuth provider.
+- `FacebookLoginTracking.Enabled` — classic login; returns a Graph-API access
+  token in `FacebookUser.accessToken`. Counts as tracking on iOS (handle ATT).
+
+If your own backend needs a Graph-API access token, request it explicitly:
+```kotlin
+val facebookSignIn = rememberFacebookSignInState(
+    loginTracking = FacebookLoginTracking.Enabled,
+    onResult = { result -> val accessToken = result.getOrNull()?.accessToken },
+)
+```
+
 #### Android Setup
 Add these to your `res/values/strings.xml`:
 ```xml

@@ -23,6 +23,7 @@ import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowScene
 import swiftPMImport.io.github.mirzemehdi.providers.kmpauth.facebook.FBSDKLoginConfiguration
 import swiftPMImport.io.github.mirzemehdi.providers.kmpauth.facebook.FBSDKLoginManager
+import swiftPMImport.io.github.mirzemehdi.providers.kmpauth.facebook.FBSDKLoginTrackingEnabled
 import swiftPMImport.io.github.mirzemehdi.providers.kmpauth.facebook.FBSDKLoginTrackingLimited
 import kotlin.coroutines.resume
 
@@ -31,10 +32,12 @@ import kotlin.coroutines.resume
 public actual fun rememberFacebookSignInState(
     requestScopes: List<FacebookSignInRequestScope>,
     linkAccount: Boolean,
+    loginTracking: FacebookLoginTracking,
     onResult: (Result<FacebookUser>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
     val currentRequestScopes by rememberUpdatedState(requestScopes)
+    val currentLoginTracking by rememberUpdatedState(loginTracking)
     val currentOnResult by rememberUpdatedState(onResult)
 
     return remember {
@@ -45,13 +48,16 @@ public actual fun rememberFacebookSignInState(
                     FacebookSignInRequestScope.PublicProfile -> "public_profile"
                 }
             }
-            currentOnResult(signIn(permissions))
+            currentOnResult(signIn(permissions, currentLoginTracking))
         }
     }
 }
 
 @OptIn(ExperimentalForeignApi::class, KMPAuthInternalApi::class)
-private suspend fun signIn(permissions: List<String>): Result<FacebookUser> {
+private suspend fun signIn(
+    permissions: List<String>,
+    loginTracking: FacebookLoginTracking,
+): Result<FacebookUser> {
     val loginManager = FBSDKLoginManager()
 
     val rootVCList = UIApplication.sharedApplication.connectedScenes.mapNotNull {
@@ -65,6 +71,10 @@ private suspend fun signIn(permissions: List<String>): Result<FacebookUser> {
     }
 
     val nonce = generateNonce()
+    val tracking = when (loginTracking) {
+        FacebookLoginTracking.Limited -> FBSDKLoginTrackingLimited
+        FacebookLoginTracking.Enabled -> FBSDKLoginTrackingEnabled
+    }
 
     return suspendCancellableCoroutine { continuation ->
         fun resumeOnce(result: Result<FacebookUser>) {
@@ -75,7 +85,7 @@ private suspend fun signIn(permissions: List<String>): Result<FacebookUser> {
             rootVC,
             FBSDKLoginConfiguration(
                 permissions = permissions,
-                tracking = FBSDKLoginTrackingLimited,
+                tracking = tracking,
                 nonce = sha256(nonce),
             ),
             completion = { result, error ->
@@ -89,10 +99,20 @@ private suspend fun signIn(permissions: List<String>): Result<FacebookUser> {
                     return@logInFromViewController
                 }
 
-                val facebookUser = FacebookUser(
-                    accessToken = result?.authenticationToken()?.tokenString() ?: "",
-                    nonce = nonce
-                )
+                // Limited Login returns an OIDC authentication token (JWT) plus
+                // the raw nonce for Firebase's OAuth provider; classic login
+                // returns a Graph-API access token and no nonce.
+                val facebookUser = when (loginTracking) {
+                    FacebookLoginTracking.Limited -> FacebookUser(
+                        accessToken = result?.authenticationToken()?.tokenString() ?: "",
+                        nonce = nonce,
+                    )
+
+                    FacebookLoginTracking.Enabled -> FacebookUser(
+                        accessToken = result?.token()?.tokenString() ?: "",
+                        nonce = null,
+                    )
+                }
                 resumeOnce(Result.success(facebookUser))
             }
         )

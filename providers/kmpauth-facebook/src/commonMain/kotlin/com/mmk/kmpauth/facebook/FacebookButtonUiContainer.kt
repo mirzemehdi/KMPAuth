@@ -30,11 +30,13 @@ public fun FacebookButtonUiContainer(
     ),
     onResult: (Result<FacebookUser>) -> Unit,
     linkAccount: Boolean = false,
+    loginTracking: FacebookLoginTracking = FacebookLoginTracking.Limited,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
     val signInState = rememberFacebookSignInState(
         requestScopes = requestScopes,
         linkAccount = linkAccount,
+        loginTracking = loginTracking,
         onResult = onResult,
     )
     val uiContainerScope = remember(signInState) {
