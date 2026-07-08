@@ -169,3 +169,37 @@ registered with Google, so sign-in often failed with `redirect_uri_mismatch`).
 - If the port is already in use, sign-in fails with a logged error (no silent
   random-port fallback); free the port or register another URI.
 - Desktop-only: `redirectUri` is ignored on Android, iOS, JS and wasmJs.
+
+## 8. Facebook login tracking (token type is now consistent)
+
+Facebook sign-in gained a `loginTracking: FacebookLoginTracking` parameter on
+`rememberFacebookSignInState`, `rememberFirebaseFacebookSignInState` and the
+Facebook containers. It controls which token the flow returns and is consistent
+across Android and iOS:
+
+- **`FacebookLoginTracking.Limited` (new default)** — privacy-friendly Limited
+  Login. Returns an OIDC **authentication token (JWT) + nonce** in
+  `FacebookUser` (`accessToken` holds the JWT). No App Tracking Transparency
+  prompt on iOS. With Firebase, exchanged through the OIDC `OAuthProvider`.
+- **`FacebookLoginTracking.Enabled`** — classic login. Returns a real
+  Graph-API **access token** in `FacebookUser.accessToken` (no nonce). Counts
+  as tracking on iOS (handle ATT). With Firebase, exchanged through
+  `FacebookAuthProvider`.
+
+**⚠️ Behavior change on Android.** In 2.x, iOS already used Limited Login (JWT)
+while **Android** used classic login (access token). The default is now
+`Limited` on **both** platforms, so **Android now returns an OIDC JWT by
+default instead of a Graph-API access token.** If your backend calls the
+Graph API with `FacebookUser.accessToken`, pass
+`loginTracking = FacebookLoginTracking.Enabled`:
+
+```kotlin
+val facebookSignIn = rememberFacebookSignInState(
+    loginTracking = FacebookLoginTracking.Enabled,
+    onResult = { result -> val accessToken = result.getOrNull()?.accessToken },
+)
+```
+
+Firebase-backed Facebook sign-in needs no change: the credential type is
+selected automatically from `loginTracking`, so the default `Limited` keeps
+working on both platforms.

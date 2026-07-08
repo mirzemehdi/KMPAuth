@@ -13,6 +13,7 @@ import com.mmk.kmpauth.core.logger.currentLogger
 public actual fun rememberFacebookSignInState(
     requestScopes: List<FacebookSignInRequestScope>,
     linkAccount: Boolean,
+    loginTracking: FacebookLoginTracking,
     onResult: (Result<FacebookUser>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()

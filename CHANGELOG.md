@@ -38,8 +38,24 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   plug in via `KMPAuthBackend.register(...)` without any changes to UI code.
 - Characterization test suite locking the public 2.x behavior (DI lifecycle,
   `GoogleAuthProvider` entry points, sign-in overload defaults, public model shapes).
+- **`FacebookLoginTracking` option.** `rememberFacebookSignInState`,
+  `rememberFirebaseFacebookSignInState` and the Facebook containers accept a
+  `loginTracking` parameter (default `Limited`). `Limited` uses Facebook's
+  privacy-friendly Limited Login (OIDC JWT + nonce; no App Tracking
+  Transparency prompt on iOS); `Enabled` uses classic login and returns a
+  Graph-API access token. The mode now determines the token type consistently
+  on **both** Android and iOS, and the Firebase exchange picks the matching
+  credential (`OAuthProvider` for Limited, `FacebookAuthProvider` for Enabled)
+  (#170).
 
 ### Changed
+- **Facebook iOS/Android token consistency.** `FacebookUser.accessToken` now
+  holds the same token type on both platforms for a given `loginTracking`
+  mode. Because the new default is `FacebookLoginTracking.Limited`, **Android
+  now returns an OIDC JWT + nonce by default instead of a Graph-API access
+  token** (iOS was already Limited). Apps that send `FacebookUser.accessToken`
+  to a backend expecting a Graph-API access token must pass
+  `loginTracking = FacebookLoginTracking.Enabled` (#170).
 - Sample restructured into `sampleApp/shared` plus per-platform entry
   modules (`androidApp`, `desktopApp`, `webApp`, `iosApp`) per the AGP 9
   layout; the iOS framework is now named `shared`. A web sample (js) is new.

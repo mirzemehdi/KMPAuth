@@ -21,6 +21,10 @@ import com.mmk.kmpauth.core.SignInState
  * @param requestScopes Request Scopes that is provided in Facebook OAuth. By Default, user's email
  * and public profile info is requested.
  * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
+ * @param loginTracking [FacebookLoginTracking] mode controlling which token is
+ * returned. Defaults to [FacebookLoginTracking.Limited] (privacy-friendly OIDC
+ * JWT + nonce); use [FacebookLoginTracking.Enabled] to receive a Graph-API
+ * access token. See [FacebookLoginTracking] for the trade-offs.
  * @param onResult receives the signed-in [FacebookUser] or the failure.
  */
 @Composable
@@ -30,5 +34,6 @@ public expect fun rememberFacebookSignInState(
         FacebookSignInRequestScope.Email
     ),
     linkAccount: Boolean = false,
+    loginTracking: FacebookLoginTracking = FacebookLoginTracking.Limited,
     onResult: (Result<FacebookUser>) -> Unit,
 ): SignInState
