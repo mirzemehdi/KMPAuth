@@ -25,13 +25,16 @@ abstract interface com.mmk.kmpauth.google/GoogleAuthUiProvider { // com.mmk.kmpa
 }
 
 final class com.mmk.kmpauth.google/GoogleAuthCredentials { // com.mmk.kmpauth.google/GoogleAuthCredentials|null[0]
-    constructor <init>(kotlin/String) // com.mmk.kmpauth.google/GoogleAuthCredentials.<init>|<init>(kotlin.String){}[0]
+    constructor <init>(kotlin/String, kotlin/String = ...) // com.mmk.kmpauth.google/GoogleAuthCredentials.<init>|<init>(kotlin.String;kotlin.String){}[0]
 
+    final val redirectUri // com.mmk.kmpauth.google/GoogleAuthCredentials.redirectUri|{}redirectUri[0]
+        final fun <get-redirectUri>(): kotlin/String // com.mmk.kmpauth.google/GoogleAuthCredentials.redirectUri.<get-redirectUri>|<get-redirectUri>(){}[0]
     final val serverId // com.mmk.kmpauth.google/GoogleAuthCredentials.serverId|{}serverId[0]
         final fun <get-serverId>(): kotlin/String // com.mmk.kmpauth.google/GoogleAuthCredentials.serverId.<get-serverId>|<get-serverId>(){}[0]
 
     final fun component1(): kotlin/String // com.mmk.kmpauth.google/GoogleAuthCredentials.component1|component1(){}[0]
-    final fun copy(kotlin/String = ...): com.mmk.kmpauth.google/GoogleAuthCredentials // com.mmk.kmpauth.google/GoogleAuthCredentials.copy|copy(kotlin.String){}[0]
+    final fun component2(): kotlin/String // com.mmk.kmpauth.google/GoogleAuthCredentials.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ...): com.mmk.kmpauth.google/GoogleAuthCredentials // com.mmk.kmpauth.google/GoogleAuthCredentials.copy|copy(kotlin.String;kotlin.String){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.google/GoogleAuthCredentials.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.mmk.kmpauth.google/GoogleAuthCredentials.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.mmk.kmpauth.google/GoogleAuthCredentials.toString|toString(){}[0]

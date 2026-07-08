@@ -208,6 +208,36 @@ struct iOSApp: App {
 
 </details>
 
+<details>
+  <summary>Desktop (JVM)</summary>
+
+##### Desktop Setup
+On desktop, Google Sign-In runs the OAuth flow in the system browser and
+receives the result on a localhost loopback server. Google requires the
+redirect URI to be **pre-registered** with a **fixed port**, so:
+
+1. In the Google Cloud console, add an **Authorized redirect URI** for your
+   OAuth client — e.g. `http://localhost:8080/callback`.
+2. Pass that exact URI as `redirectUri` when creating the credentials (it
+   defaults to `http://localhost:8080/callback`):
+
+```kotlin
+GoogleAuthProvider.create(
+    credentials = GoogleAuthCredentials(
+        serverId = WebClientId,
+        redirectUri = "http://localhost:8080/callback",
+    )
+)
+```
+
+Any `http` loopback host (`localhost` / `127.0.0.1`), port and path are
+allowed as long as the same URI is registered in the console. The port must be
+free when the user signs in; if it is already taken, sign-in fails with a
+logged error — free it or register a different URI. `redirectUri` is ignored
+on Android, iOS, JS and wasmJs.
+
+</details>
+
 #### Usage
 After configuring above steps this is how you can use:
 
