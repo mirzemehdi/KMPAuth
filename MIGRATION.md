@@ -153,3 +153,19 @@ backend-agnostic credential/user model (`AuthCredential`, `KMPAuthUser`).
 - Web-flow providers (Apple on Android, GitHub, generic OAuth) are executed
   by their dedicated container composables — a backend `signIn` call cannot
   drive a browser flow.
+
+## 7. Desktop (JVM) Google Sign-In redirect URI
+
+The desktop Google flow now uses a **fixed, configurable** loopback redirect
+URI instead of a random port (2.x picked a random port that could not be
+registered with Google, so sign-in often failed with `redirect_uri_mismatch`).
+
+- **Default:** `http://localhost:8080/callback`. Register that exact URI as an
+  Authorized redirect URI for your OAuth client in the Google Cloud console.
+- **Custom URI:** pass the one you registered when creating credentials —
+  `GoogleAuthCredentials(serverId = WebClientId, redirectUri = "http://127.0.0.1:9000/oauth2")`.
+  Any `http` loopback host (`localhost`/`127.0.0.1`), port and path are allowed;
+  the callback server binds the URI's port and serves its path.
+- If the port is already in use, sign-in fails with a logged error (no silent
+  random-port fallback); free the port or register another URI.
+- Desktop-only: `redirectUri` is ignored on Android, iOS, JS and wasmJs.

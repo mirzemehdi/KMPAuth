@@ -77,6 +77,19 @@ See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
   `filterByAuthorizedAccounts` overloads) remain deprecated with warnings
   and are slated for removal in 4.0.
 
+### Fixed
+- **Desktop (JVM) Google Sign-In redirect URI.** The loopback server used a
+  random port that never matched the `redirect_uri` sent to Google, so the
+  callback failed (`redirect_uri_mismatch`, blank callback page, or
+  `id_token=null` on a second attempt). The redirect is now fixed and
+  configurable via `GoogleAuthCredentials(serverId, redirectUri = "http://localhost:8080/callback")` —
+  pass the exact **Authorized redirect URI** registered for your OAuth client
+  in the Google Cloud console (any `http` loopback host/port/path;
+  defaults to `http://localhost:8080/callback`). The callback server binds the
+  URI's port and serves its path; when the port is already in use the failure
+  is logged clearly instead of silently falling back to a random port. The
+  browser now opens only after the server is listening (#172, #177, #181).
+
 ### Removed
 - **Koin.** KMPAuth no longer uses or ships Koin. The `@KMPAuthInternalApi`
   DI types `KMPKoinComponent` and `LibDependencyInitializer` are deleted and
