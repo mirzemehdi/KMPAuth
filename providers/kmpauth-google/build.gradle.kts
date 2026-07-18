@@ -36,7 +36,6 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(libs.ktor.core)
             api(project(":kmpauth-core"))
         }
         jvmMain.dependencies {

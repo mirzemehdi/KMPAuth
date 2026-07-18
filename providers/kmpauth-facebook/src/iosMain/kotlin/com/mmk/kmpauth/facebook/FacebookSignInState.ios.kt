@@ -9,15 +9,21 @@ import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.logger.currentLogger
-import io.ktor.util.generateNonce
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UByteVar
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.convert
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.refTo
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.CoreCrypto.CC_SHA256
 import platform.CoreCrypto.CC_SHA256_DIGEST_LENGTH
+import platform.Security.SecRandomCopyBytes
+import platform.Security.errSecSuccess
+import platform.Security.kSecRandomDefault
 import platform.UIKit.UIApplication
 import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowScene
@@ -70,7 +76,7 @@ private suspend fun signIn(
         return Result.failure(IllegalStateException("Root View Controller is null"))
     }
 
-    val nonce = generateNonce()
+    val nonce = generateRawNonce()
     val tracking = when (loginTracking) {
         FacebookLoginTracking.Limited -> FBSDKLoginTrackingLimited
         FacebookLoginTracking.Enabled -> FBSDKLoginTrackingEnabled
@@ -117,6 +123,19 @@ private suspend fun signIn(
             }
         )
     }
+}
+
+/** Hex-encoded secure random nonce, hashed before being sent to Facebook. */
+@OptIn(ExperimentalForeignApi::class, ExperimentalStdlibApi::class)
+private fun generateRawNonce(length: Int = 32): String = memScoped {
+    val randomBytes = allocArray<UByteVar>(length)
+    val errorCode = SecRandomCopyBytes(kSecRandomDefault, length.convert(), randomBytes)
+    if (errorCode != errSecSuccess) {
+        throw IllegalStateException(
+            "Unable to generate random bytes. SecRandomCopyBytes failed with OSStatus $errorCode"
+        )
+    }
+    randomBytes.readBytes(length).toHexString(HexFormat.Default)
 }
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalStdlibApi::class)

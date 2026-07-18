@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **KMPAuth no longer drags a Ktor client onto consumers** (#78). `kmpauth-core`
+  depended on the full Ktor client stack — `ktor-client-core`,
+  `ktor-client-content-negotiation`, `ktor-client-logging`,
+  `ktor-serialization-kotlinx-json` and the OkHttp/Darwin/JS engines — to build
+  an `HttpClient` that nothing in the library ever used. Apps on a different
+  Ktor version were pushed onto KMPAuth's, producing crashes such as
+  `NoClassDefFoundError: io/ktor/client/plugins/contentnegotiation/ContentNegotiation`.
+  The dead `HttpClientFactory`/`ServiceLocator` and every Ktor client
+  dependency are removed, so **KMPAuth now contributes no Ktor to Android, iOS,
+  JS or wasm consumers at all**; Ktor remains only as `ktor-server-*` inside
+  `kmpauth-google`'s JVM source set, which powers the desktop OAuth loopback.
+
+### Changed
+- Dependency updates: Gradle 9.4.1 → **9.6.1**, Android Gradle Plugin 9.2.0 →
+  **9.3.0** (requires Gradle 9.5+), `play-services-auth` 21.4.0 → **21.6.0**,
+  `google-services` 4.4.4 → **4.5.0**, `java-jwt` 4.5.2 → **4.6.0**. Kotlin,
+  Compose Multiplatform, Ktor, GitLive Firebase, Firebase BoM, the Facebook SDK,
+  `androidx.credentials` and `googleid` were already on their latest stable
+  releases.
+
 ### Added
 - **`kmpauth-apple`: native Sign in with Apple without Firebase** (#60). New
   `rememberAppleSignInState(...)` returns an `AppleUser` carrying Apple's
