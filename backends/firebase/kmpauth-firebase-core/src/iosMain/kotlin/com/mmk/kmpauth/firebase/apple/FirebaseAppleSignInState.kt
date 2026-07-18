@@ -8,6 +8,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import cocoapods.FirebaseAuth.FIRAuth
 import cocoapods.FirebaseAuth.FIRAuthDataResult
 import cocoapods.FirebaseAuth.FIROAuthProvider
+import com.mmk.kmpauth.apple.AppleSignInRequestScope
 import com.mmk.kmpauth.apple.performAppleSignIn
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
@@ -19,7 +20,6 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSError
 import kotlin.coroutines.resume
-import com.mmk.kmpauth.apple.AppleSignInRequestScope as NativeAppleSignInRequestScope
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
@@ -49,7 +49,7 @@ private suspend fun signInWithApple(
     requestScopes: List<AppleSignInRequestScope>,
     linkAccount: Boolean,
 ): Result<FirebaseUser?> {
-    val credentialResult = performAppleSignIn(requestScopes.map { it.toNativeScope() })
+    val credentialResult = performAppleSignIn(requestScopes)
     val appleCredential = credentialResult.getOrElse { return Result.failure(it) }
     return signInToFirebase(
         idToken = appleCredential.idToken,
@@ -92,9 +92,4 @@ private suspend fun signInToFirebase(
     } else {
         FIRAuth.auth().signInWithCredential(credential, handleResult)
     }
-}
-
-private fun AppleSignInRequestScope.toNativeScope(): NativeAppleSignInRequestScope = when (this) {
-    AppleSignInRequestScope.Email -> NativeAppleSignInRequestScope.Email
-    AppleSignInRequestScope.FullName -> NativeAppleSignInRequestScope.FullName
 }

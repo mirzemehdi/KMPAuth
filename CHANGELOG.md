@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `rememberFirebaseAppleSignInState` there. `kmpauth-firebase-core` now
   delegates its iOS Apple authorization to this module instead of carrying its
   own copy of the `ASAuthorization` flow.
+  **Breaking:** `AppleSignInRequestScope` moved from
+  `com.mmk.kmpauth.firebase.apple` to `com.mmk.kmpauth.apple` so both flows
+  share one type (matching how `kmpauth-firebase-facebook` reuses
+  `FacebookSignInRequestScope` from `kmpauth-facebook`). Update the import;
+  nothing else changes. See MIGRATION section 9.
 
 ### Changed
 - **Facebook on Android: classic login no longer requires `onActivityResult`.**

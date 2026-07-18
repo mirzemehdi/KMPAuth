@@ -1,5 +1,6 @@
 package com.mmk.kmpauth.firebase.apple
 
+import com.mmk.kmpauth.apple.AppleSignInRequestScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
