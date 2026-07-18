@@ -21,6 +21,10 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.mmk.kmpauthdesktop"
             packageVersion = "1.0.0"
+            // Google Sign-In runs its OAuth loopback on the JDK's built-in
+            // com.sun.net.httpserver, which lives in this module. jlink strips
+            // it otherwise and sign-in fails at runtime in packaged builds.
+            modules("jdk.httpserver")
         }
     }
 }

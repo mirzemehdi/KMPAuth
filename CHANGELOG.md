@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **KMPAuth no longer depends on Ktor at all.** Building on the client removal
+  below, the desktop Google OAuth loopback moved from `ktor-server-netty` to the
+  JDK's built-in `com.sun.net.httpserver`, so **Ktor and Netty are gone from
+  desktop/JVM consumers too** — the same version-clash risk that hit Android in
+  #78 applied to desktop apps using their own Ktor. Behavior is unchanged
+  (same routes, same fixed-port binding and error handling).
+  **Desktop packaging note:** `com.sun.net.httpserver` lives in the
+  `jdk.httpserver` JDK module; apps packaged with jpackage/jlink must declare
+  `modules("jdk.httpserver")` or sign-in fails at runtime.
 - **KMPAuth no longer drags a Ktor client onto consumers** (#78). `kmpauth-core`
   depended on the full Ktor client stack — `ktor-client-core`,
   `ktor-client-content-negotiation`, `ktor-client-logging`,

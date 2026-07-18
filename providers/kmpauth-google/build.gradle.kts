@@ -39,9 +39,9 @@ kotlin {
             api(project(":kmpauth-core"))
         }
         jvmMain.dependencies {
-            implementation(libs.ktor.server.core)
-            implementation(libs.ktor.server.netty)
-            implementation(libs.ktor.server.html.builder)
+            // The desktop OAuth loopback runs on the JDK's built-in
+            // com.sun.net.httpserver, so no server framework is pulled into
+            // consumers' desktop classpath.
             implementation(libs.java.jwt)
         }
         commonTest.dependencies {

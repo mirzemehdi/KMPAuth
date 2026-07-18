@@ -3,24 +3,18 @@ package com.mmk.kmpauth.google
 import com.auth0.jwt.JWT
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.logger.currentLogger
-import io.ktor.http.ContentType
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.html.respondHtml
-import io.ktor.server.netty.Netty
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
+import com.sun.net.httpserver.HttpExchange
+import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import kotlinx.html.body
-import kotlinx.html.script
-import kotlinx.html.unsafe
 import java.awt.Desktop
 import java.net.BindException
+import java.net.InetSocketAddress
 import java.net.URI
+import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
@@ -118,32 +112,38 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
             }
         """.trimIndent()
         val server = try {
-            embeddedServer(Netty, port = redirectTarget.port) {
-                routing {
-                    get(redirectTarget.callbackPath) {
-                        call.respondHtml {
-                            body { script { unsafe { +jsCode } } }
-                        }
-                    }
-                    get(redirectTarget.tokenPath) {
-                        val idToken = call.request.queryParameters["id_token"]
-                        val accessToken = call.request.queryParameters["access_token"]
-                        if (idToken.isNullOrEmpty().not() || accessToken.isNullOrEmpty().not()) {
-                            call.respondText(
-                                "Authorization is complete. You can close this window, and return to the application",
-                                contentType = ContentType.Text.Plain
-                            )
-                            tokenPairDeferred.complete(Pair(idToken, accessToken))
-                        } else {
-                            call.respondText(
-                                "Authorization failed",
-                                contentType = ContentType.Text.Plain
-                            )
-                            tokenPairDeferred.complete(Pair(null, null))
-                        }
+            // The JDK's built-in server is enough for these two routes; using it
+            // keeps Ktor (and Netty) off desktop consumers' classpath, so KMPAuth
+            // cannot clash with the app's own Ktor version.
+            HttpServer.create(InetSocketAddress(redirectTarget.port), 0).apply {
+                // Contexts match by longest path prefix, so the token route wins
+                // over the callback route for its own path.
+                createContext(redirectTarget.callbackPath) { exchange ->
+                    exchange.respond(
+                        contentType = "text/html; charset=utf-8",
+                        body = "<!doctype html><html><body><script>$jsCode</script></body></html>",
+                    )
+                }
+                createContext(redirectTarget.tokenPath) { exchange ->
+                    val query = exchange.requestURI.rawQuery.parseQueryParameters()
+                    val idToken = query["id_token"]?.takeIf { it != "null" }
+                    val accessToken = query["access_token"]?.takeIf { it != "null" }
+                    if (idToken.isNullOrEmpty().not() || accessToken.isNullOrEmpty().not()) {
+                        exchange.respond(
+                            contentType = "text/plain; charset=utf-8",
+                            body = "Authorization is complete. You can close this window, and return to the application",
+                        )
+                        tokenPairDeferred.complete(Pair(idToken, accessToken))
+                    } else {
+                        exchange.respond(
+                            contentType = "text/plain; charset=utf-8",
+                            body = "Authorization failed",
+                        )
+                        tokenPairDeferred.complete(Pair(null, null))
                     }
                 }
-            }.start(wait = false)
+                start()
+            }
         } catch (e: Exception) {
             currentCoroutineContext().ensureActive()
             val bindFailure = e is BindException || e.cause is BindException
@@ -167,8 +167,37 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         openUrlInBrowser(googleAuthUrl)
 
         val idTokenAndAccessTokenPair = tokenPairDeferred.await()
-        server.stop(1000, 1000)
+        // Give the in-flight response a moment to flush before tearing down.
+        server.stop(1)
         return idTokenAndAccessTokenPair
+    }
+
+    /** Writes [body] as a complete response and closes the exchange. */
+    private fun HttpExchange.respond(contentType: String, body: String) {
+        use {
+            val bytes = body.toByteArray(StandardCharsets.UTF_8)
+            responseHeaders.add("Content-Type", contentType)
+            sendResponseHeaders(200, bytes.size.toLong())
+            responseBody.use { output -> output.write(bytes) }
+        }
+    }
+
+    /** Decodes a raw query string into its parameters. */
+    private fun String?.parseQueryParameters(): Map<String, String> {
+        if (this.isNullOrEmpty()) return emptyMap()
+        return split("&").mapNotNull { parameter ->
+            val separatorIndex = parameter.indexOf('=')
+            if (separatorIndex <= 0) return@mapNotNull null
+            val name = URLDecoder.decode(
+                parameter.substring(0, separatorIndex),
+                StandardCharsets.UTF_8.name(),
+            )
+            val value = URLDecoder.decode(
+                parameter.substring(separatorIndex + 1),
+                StandardCharsets.UTF_8.name(),
+            )
+            name to value
+        }.toMap()
     }
 
     /**

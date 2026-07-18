@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.dokka)
     alias(libs.plugins.googleServices) apply false
-    alias(libs.plugins.kotlinx.serialization).apply(false)
     alias(libs.plugins.mavenPublish) apply false
     alias(libs.plugins.kotlinx.binary.validator)
 }

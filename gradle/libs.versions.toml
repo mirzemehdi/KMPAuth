@@ -29,8 +29,6 @@ firebaseGitLiveAuth = "2.4.0"
 firebaseAndroidBom = "34.15.0"
 androidLegacyPlayServices = "21.6.0"
 mavenPublish = "0.37.0"
-ktor = "3.5.1"
-kotlinx-serialization = "1.11.0"
 kotlinx-coroutines = "1.11.0"
 
 
@@ -75,18 +73,6 @@ firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.re
 #Facebook
 facebookAuthAndroid= { module = "com.facebook.android:facebook-login", version.ref = "facebookAuthAndroid" }
 
-#Ktor
-ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
-ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
-ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
-ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
-ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
-ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
-ktor-server-html-builder = { group = "io.ktor", name = "ktor-server-html-builder", version.ref = "ktor" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
@@ -99,4 +85,3 @@ kotlinx-binary-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-va
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
