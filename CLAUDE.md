@@ -15,7 +15,8 @@ Layout: identity **providers** (credential sources) live under `providers/`; ses
 | `:kmpauth-core` | Base infrastructure: logging, `SignInState`/`LaunchingSignInState`, HTTP client factory, `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`) | — |
 | `:providers:kmpauth-google` | Google Sign-In (Credential Manager on Android, GoogleSignIn SDK on iOS, OAuth loopback on JVM) | core |
 | `:providers:kmpauth-facebook` | Facebook Login via Facebook SDK (no Firebase) | core |
-| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/OAuth `rememberXxxSignInState` flows (GitLive firebase-auth) | core |
+| `:providers:kmpauth-apple` | Native Sign in with Apple via AuthenticationServices (no Firebase). iOS-only flow — other targets are no-op stubs, since Apple's web flow needs a server-side client-secret exchange. Also supplies the iOS credential acquisition reused by firebase-core (`performAppleSignIn`, `@KMPAuthInternalApi`) | core |
+| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/OAuth `rememberXxxSignInState` flows (GitLive firebase-auth). Its iOS Apple flow delegates to `:providers:kmpauth-apple` for the native authorization | core, apple |
 | `:backends:firebase:kmpauth-firebase-google` | `rememberFirebaseGoogleSignInState` + sign-in handler | firebase-core, google |
 | `:backends:firebase:kmpauth-firebase-facebook` | Facebook + Firebase combo container | firebase-core, facebook |
 | `:deprecated:kmpauth-firebase` | Backward-compat **aggregator** artifact: `api(firebase-core, firebase-google)` — keeps 2.x dependency blocks working | firebase-core, firebase-google |

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`kmpauth-apple`: native Sign in with Apple without Firebase** (#60). New
+  `rememberAppleSignInState(...)` returns an `AppleUser` carrying Apple's
+  identity token (JWT), the raw nonce, and — on the user's first authorization
+  only — `email`/`fullName`. The token is verifiable by any backend against
+  Apple's public keys, so no client secret is needed on the client.
+  **Apple platforms only:** on Android, JVM, JS and wasmJs the state is a
+  logged no-op, because Apple's web OAuth flow returns an authorization code
+  that must be exchanged with a client secret server-side; use
+  `rememberFirebaseAppleSignInState` there. `kmpauth-firebase-core` now
+  delegates its iOS Apple authorization to this module instead of carrying its
+  own copy of the `ASAuthorization` flow.
+
 ### Changed
 - **Facebook on Android: classic login no longer requires `onActivityResult`.**
   With `FacebookLoginTracking.Enabled`, KMPAuth now launches Facebook Login

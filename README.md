@@ -61,7 +61,7 @@ You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob
 ## Features
 - ✅ Google One Tap Sign-In (without Firebase)
 - ✅ [Google Sign-In with Firebase](#google-sign-in)
-- ✅ [Apple Sign-In with Firebase](#apple-sign-in)
+- ✅ [Apple Sign-In with Firebase](#apple-sign-in), and native Apple Sign-In without Firebase on Apple platforms
 - ✅ [Github Sign-In with Firebase](#github-sign-in)
 - ✅ [Facebook Sign-In (android and ios) with Firebase](#facebook-sign-in)
 - ✅ Apple, Google, Facebook "Sign in with " UiHelper buttons (according to each brand's guideline)
@@ -82,6 +82,7 @@ sourceSets {
   commonMain.dependencies {
     implementation("io.github.mirzemehdi:kmpauth-google:<version>") //Google Sign-In (no backend required)
     implementation("io.github.mirzemehdi:kmpauth-facebook:<version>") //Facebook Login (no backend required)
+    implementation("io.github.mirzemehdi:kmpauth-apple:<version>") //Native Sign in with Apple, Apple platforms only (no backend required)
 
     // Firebase — pick granular artifacts (3.0+):
     implementation("io.github.mirzemehdi:kmpauth-firebase-core:<version>") //Firebase backend + Apple/Github/OAuth sign-in
@@ -280,6 +281,32 @@ Apple Sign-In IconOnly Button. You need to implement `kmpauth-uihelper` dependen
 val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
 AppleSignInButtonIconOnly(onClick = { appleSignIn.launch() })
 ```
+
+#### Apple Sign-In without Firebase (Apple platforms only)
+Use `kmpauth-apple` when you verify Apple's identity token on your own backend.
+Apple's native flow returns a signed JWT that any server can validate against
+Apple's public keys — no client secret on the client.
+
+```kotlin
+val appleSignIn = rememberAppleSignInState(onResult = { result ->
+    val appleUser = result.getOrNull()
+    val idToken = appleUser?.idToken   // send to your backend
+    val rawNonce = appleUser?.nonce    // if your backend verifies the nonce claim
+})
+AppleSignInButton(modifier = Modifier.fillMaxWidth()) { appleSignIn.launch() }
+```
+
+> **Apple platforms only.** The native flow exists only on iOS. On Android, JVM,
+> JS and wasmJs `rememberAppleSignInState` is a no-op that logs — Apple's web
+> OAuth flow returns an authorization code that must be exchanged with a
+> **client secret server-side**, which is not safe from a client. Use
+> `rememberFirebaseAppleSignInState` (`kmpauth-firebase-core`) if you need Apple
+> Sign-In on non-Apple targets; Firebase performs that exchange for you.
+>
+> `email` and `fullName` are returned by Apple **only on the user's first
+> authorization** — persist them server-side; later sign-ins return null.
+
+Requires the "Sign In with Apple" capability in Xcode.
 
 ### Github Sign-In
 After enabling and configuring Github Sign-In in Firebase, you can use it as below in your @Composable function:
