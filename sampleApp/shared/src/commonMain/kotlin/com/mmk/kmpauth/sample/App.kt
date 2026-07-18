@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mmk.kmpauth.apple.rememberAppleSignInState
 import com.mmk.kmpauth.firebase.apple.rememberFirebaseAppleSignInState
 import com.mmk.kmpauth.firebase.facebook.rememberFirebaseFacebookSignInState
 import com.mmk.kmpauth.firebase.github.rememberFirebaseGithubSignInState
@@ -74,6 +75,19 @@ fun App() {
             //Apple Sign-In with Custom Button and authentication with Firebase
             val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
             Button(onClick = { appleSignIn.launch() }) { Text("Apple Sign-In (Custom Design)") }
+
+            //Native Apple Sign-In without Firebase. Apple platforms only - on
+            //Android/Desktop/Web this state is a no-op (see kmpauth-apple docs).
+            val appleNativeSignIn = rememberAppleSignInState(onResult = { result ->
+                val appleUser = result.getOrNull()
+                // Send appleUser?.idToken (with nonce) to your backend to verify.
+                // email/fullName are only returned on the first authorization.
+                signedInUserName = appleUser?.fullName
+                    ?: appleUser?.email
+                    ?: appleUser?.userId
+                    ?: "Null User"
+            })
+            Button(onClick = { appleNativeSignIn.launch() }) { Text("Apple Sign-In (No Firebase)") }
 
             //Github Sign-In with Custom Button and authentication with Firebase
             val githubSignIn = rememberFirebaseGithubSignInState(onResult = onFirebaseResult)
