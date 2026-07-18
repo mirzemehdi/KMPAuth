@@ -29,7 +29,16 @@ import kotlin.coroutines.resume
 
 
 /**
- * You mush call `KMPAuth.handleFacebookActivityResult` from your Activity's onActivityResult to handle Facebook login.
+ * Forwards an `Activity#onActivityResult` callback to the Facebook SDK.
+ *
+ * **Only required for [FacebookLoginTracking.Limited]** (the default). Limited
+ * Login needs a nonce, which the Facebook SDK only accepts through
+ * `LoginConfiguration`, and that API has no AndroidX Activity Result variant —
+ * its results still arrive via `onActivityResult`. With
+ * [FacebookLoginTracking.Enabled] KMPAuth uses the SDK's
+ * `ActivityResultRegistryOwner` overload, so no override is needed.
+ *
+ * Calling this when it is not needed is harmless.
  *
  * Example:
  * ```
@@ -97,13 +106,23 @@ private suspend fun signIn(
                 }
             )
             when (loginTracking) {
+                // Limited Login needs a nonce, which the SDK only accepts via
+                // LoginConfiguration - an API with no ActivityResultRegistryOwner
+                // overload, so its result still arrives through onActivityResult
+                // (see KMPAuth.handleFacebookActivityResult).
                 FacebookLoginTracking.Limited -> {
                     val config = LoginConfiguration(permissions, sha256(rawNonce!!))
                     loginManager.logIn(activity as Activity, config)
                 }
 
+                // Classic login goes through the AndroidX Activity Result APIs,
+                // so callers do not need to override onActivityResult.
                 FacebookLoginTracking.Enabled ->
-                    loginManager.logInWithReadPermissions(activity as Activity, permissions)
+                    loginManager.logInWithReadPermissions(
+                        activity,
+                        facebookLoginCallbackManager,
+                        permissions,
+                    )
             }
         }
     } finally {
