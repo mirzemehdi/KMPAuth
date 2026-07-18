@@ -136,6 +136,13 @@ GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = WebClie
 ##### Android Setup
 There is not any platform specific setup in Android side.
 
+> **"Google Play services out of date" at sign-in?** Google Sign-In runs through
+> Credential Manager, which needs a recent **Google Play services APK on the
+> device** — this is independent of your app's `minSdk`/`targetSdk`. Update
+> Google Play services on the device, and on an emulator use a system image
+> that includes the **Google Play Store** (images labelled "Google APIs" only
+> ship an older, non-updatable Play services).
+
 </details>
 
 <details>
