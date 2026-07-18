@@ -5,6 +5,21 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **Facebook on Android: classic login no longer requires `onActivityResult`.**
+  With `FacebookLoginTracking.Enabled`, KMPAuth now launches Facebook Login
+  through the SDK's `logInWithReadPermissions(ActivityResultRegistryOwner,
+  CallbackManager, permissions)` overload (the pattern used by Facebook's own
+  Compose sample), so apps no longer need to override `onActivityResult` or
+  call `KMPAuth.handleFacebookActivityResult` for that mode.
+  `FacebookLoginTracking.Limited` (the default) still needs it: Limited Login
+  requires a nonce, which the Facebook SDK only accepts via
+  `LoginConfiguration`, and that API has no `ActivityResultRegistryOwner`
+  overload — the SDK exposes one only as a `private` function. Calling
+  `handleFacebookActivityResult` when it is not needed remains harmless (#199).
+
 ## [3.0.0-alpha01] — 2026-07-08
 
 See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.

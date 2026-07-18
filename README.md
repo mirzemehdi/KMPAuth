@@ -350,7 +350,8 @@ Add these metadata tags and Facebook Activity to your `AndroidManifest.xml` insi
     android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
     android:label="@string/app_name" />
 ```
-For Facebook Login, on Your Main Activity's activity result call `KMPAuth.handleFacebookActivityResult` function:
+When using `FacebookLoginTracking.Limited` (the **default**), forward your Main Activity's
+activity result to `KMPAuth.handleFacebookActivityResult`:
 
 ```kotlin
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -358,6 +359,13 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
     super.onActivityResult(requestCode, resultCode, data)
 }
 ```
+
+> **Why only for `Limited`?** Limited Login requires a nonce, which the Facebook SDK
+> accepts only through `LoginConfiguration` — an API that has no
+> `ActivityResultRegistryOwner` overload, so its result still arrives via
+> `onActivityResult`. With `FacebookLoginTracking.Enabled`, KMPAuth uses the SDK's
+> AndroidX Activity Result API and **no override is needed**. Calling
+> `handleFacebookActivityResult` when it isn't needed is harmless.
 
 #### IOS Setup
 Add Facebook Login SDK Swift Package, and add below to your Info.plist:
