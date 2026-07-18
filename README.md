@@ -244,6 +244,20 @@ free when the user signs in; if it is already taken, sign-in fails with a
 logged error — free it or register a different URI. `redirectUri` is ignored
 on Android, iOS, JS and wasmJs.
 
+> **Packaging with jpackage/jlink:** the loopback runs on the JDK's built-in
+> `com.sun.net.httpserver`, which lives in the `jdk.httpserver` module. jlink
+> strips unused modules, so declare it or sign-in fails at runtime in packaged
+> builds:
+> ```kotlin
+> compose.desktop {
+>     application {
+>         nativeDistributions {
+>             modules("jdk.httpserver")
+>         }
+>     }
+> }
+> ```
+
 </details>
 
 #### Usage
