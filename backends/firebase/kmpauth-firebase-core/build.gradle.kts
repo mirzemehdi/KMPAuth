@@ -60,6 +60,9 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             api(project(":kmpauth-core"))
+            // Native Sign in with Apple; the iOS Firebase flow reuses this
+            // module's ASAuthorization credential acquisition.
+            api(project(":providers:kmpauth-apple"))
         }
     }
 }

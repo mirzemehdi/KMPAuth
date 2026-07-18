@@ -3,25 +3,6 @@ public final class com/mmk/kmpauth/firebase/apple/AppleButtonUiContainerKt {
 	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
-public abstract interface class com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope {
-}
-
-public final class com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope$Email : com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope {
-	public static final field $stable I
-	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/apple/AppleSignInRequestScope$Email;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope$FullName : com/mmk/kmpauth/firebase/apple/AppleSignInRequestScope {
-	public static final field $stable I
-	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/apple/AppleSignInRequestScope$FullName;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class com/mmk/kmpauth/firebase/apple/FirebaseAppleSignInState_jvmKt {
 	public static final fun rememberFirebaseAppleSignInState (Ljava/util/List;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }

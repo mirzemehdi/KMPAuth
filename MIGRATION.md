@@ -23,8 +23,10 @@ Step-by-step guide for upgrading from KMPAuth 2.x to 3.0.
   `kmpauth-uihelper` buttons. The containers are deprecated in favor of the
   `SignInState` API (section 4) but stay fully functional until 4.0.
 - `GoogleAuthProvider.create(credentials)` initialization flow.
-- Public models: `GoogleUser`, `GoogleAuthCredentials`, `FacebookUser`,
-  request-scope types.
+- Public models: `GoogleUser`, `FacebookUser`, and the Google/Facebook
+  request-scope types. (`GoogleAuthCredentials` gained an optional
+  `redirectUri` — section 7 — and `AppleSignInRequestScope` moved packages —
+  section 9.)
 - Maven coordinates (`io.github.mirzemehdi:kmpauth-*`).
 
 ## 1. iOS: CocoaPods → Swift Package Manager
@@ -203,3 +205,33 @@ val facebookSignIn = rememberFacebookSignInState(
 Firebase-backed Facebook sign-in needs no change: the credential type is
 selected automatically from `loginTracking`, so the default `Limited` keeps
 working on both platforms.
+
+## 9. Apple Sign-In: `AppleSignInRequestScope` moved
+
+Native Sign in with Apple is now available without Firebase through the new
+`kmpauth-apple` artifact, and both the Firebase and non-Firebase flows share a
+single scope type. `AppleSignInRequestScope` therefore moved out of
+`kmpauth-firebase-core`:
+
+```diff
+- import com.mmk.kmpauth.firebase.apple.AppleSignInRequestScope
++ import com.mmk.kmpauth.apple.AppleSignInRequestScope
+```
+
+Only the import changes — `AppleSignInRequestScope.FullName` /
+`AppleSignInRequestScope.Email` and every Firebase Apple composable behave
+exactly as before. `kmpauth-firebase-core` depends on `kmpauth-apple`
+transitively, so no new dependency is needed. (This mirrors how
+`kmpauth-firebase-facebook` already reuses `FacebookSignInRequestScope` from
+`kmpauth-facebook`.)
+
+**Optional:** if your backend verifies Apple's identity token itself, you can
+now skip Firebase entirely on Apple platforms:
+
+```kotlin
+val appleSignIn = rememberAppleSignInState(onResult = { result ->
+    val idToken = result.getOrNull()?.idToken // verify server-side
+})
+```
+
+See the README for the platform limitations (the native flow is Apple-only).

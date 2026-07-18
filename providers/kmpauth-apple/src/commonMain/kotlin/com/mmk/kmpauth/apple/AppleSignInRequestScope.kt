@@ -1,4 +1,4 @@
-package com.mmk.kmpauth.firebase.apple
+package com.mmk.kmpauth.apple
 
 /***
  * Apple Sign in Request Scope that can be requested from user when first time user signup.

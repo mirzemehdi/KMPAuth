@@ -1,5 +1,6 @@
 package com.mmk.kmpauth.firebase.apple
 
+import com.mmk.kmpauth.apple.AppleSignInRequestScope
 import androidx.compose.runtime.Composable
 import com.mmk.kmpauth.core.SignInState
 import dev.gitlive.firebase.auth.FirebaseUser

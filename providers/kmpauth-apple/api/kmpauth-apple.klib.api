@@ -1,0 +1,77 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, js, wasmJs]
+// Alias: ios => [iosArm64, iosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.mirzemehdi:kmpauth-apple>
+sealed interface com.mmk.kmpauth.apple/AppleSignInRequestScope { // com.mmk.kmpauth.apple/AppleSignInRequestScope|null[0]
+    final object Email : com.mmk.kmpauth.apple/AppleSignInRequestScope { // com.mmk.kmpauth.apple/AppleSignInRequestScope.Email|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.apple/AppleSignInRequestScope.Email.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.apple/AppleSignInRequestScope.Email.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.apple/AppleSignInRequestScope.Email.toString|toString(){}[0]
+    }
+
+    final object FullName : com.mmk.kmpauth.apple/AppleSignInRequestScope { // com.mmk.kmpauth.apple/AppleSignInRequestScope.FullName|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.apple/AppleSignInRequestScope.FullName.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.apple/AppleSignInRequestScope.FullName.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.apple/AppleSignInRequestScope.FullName.toString|toString(){}[0]
+    }
+}
+
+final class com.mmk.kmpauth.apple/AppleUser { // com.mmk.kmpauth.apple/AppleUser|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.apple/AppleUser.<init>|<init>(kotlin.String;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+
+    final val email // com.mmk.kmpauth.apple/AppleUser.email|{}email[0]
+        final fun <get-email>(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.email.<get-email>|<get-email>(){}[0]
+    final val fullName // com.mmk.kmpauth.apple/AppleUser.fullName|{}fullName[0]
+        final fun <get-fullName>(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.fullName.<get-fullName>|<get-fullName>(){}[0]
+    final val idToken // com.mmk.kmpauth.apple/AppleUser.idToken|{}idToken[0]
+        final fun <get-idToken>(): kotlin/String // com.mmk.kmpauth.apple/AppleUser.idToken.<get-idToken>|<get-idToken>(){}[0]
+    final val nonce // com.mmk.kmpauth.apple/AppleUser.nonce|{}nonce[0]
+        final fun <get-nonce>(): kotlin/String // com.mmk.kmpauth.apple/AppleUser.nonce.<get-nonce>|<get-nonce>(){}[0]
+    final val userId // com.mmk.kmpauth.apple/AppleUser.userId|{}userId[0]
+        final fun <get-userId>(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.userId.<get-userId>|<get-userId>(){}[0]
+
+    final fun component1(): kotlin/String // com.mmk.kmpauth.apple/AppleUser.component1|component1(){}[0]
+    final fun component2(): kotlin/String // com.mmk.kmpauth.apple/AppleUser.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.component4|component4(){}[0]
+    final fun component5(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.component5|component5(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): com.mmk.kmpauth.apple/AppleUser // com.mmk.kmpauth.apple/AppleUser.copy|copy(kotlin.String;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.apple/AppleUser.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.mmk.kmpauth.apple/AppleUser.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.mmk.kmpauth.apple/AppleUser.toString|toString(){}[0]
+}
+
+final val com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleSignInRequestScope_Email$stableprop // com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleSignInRequestScope_Email$stableprop|#static{}com_mmk_kmpauth_apple_AppleSignInRequestScope_Email$stableprop[0]
+final val com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleSignInRequestScope_FullName$stableprop // com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleSignInRequestScope_FullName$stableprop|#static{}com_mmk_kmpauth_apple_AppleSignInRequestScope_FullName$stableprop[0]
+final val com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleUser$stableprop // com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleUser$stableprop|#static{}com_mmk_kmpauth_apple_AppleUser$stableprop[0]
+
+final fun com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleSignInRequestScope_Email$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleSignInRequestScope_Email$stableprop_getter|com_mmk_kmpauth_apple_AppleSignInRequestScope_Email$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleSignInRequestScope_FullName$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleSignInRequestScope_FullName$stableprop_getter|com_mmk_kmpauth_apple_AppleSignInRequestScope_FullName$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleUser$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleUser$stableprop_getter|com_mmk_kmpauth_apple_AppleUser$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.apple/rememberAppleSignInState(kotlin.collections/List<com.mmk.kmpauth.apple/AppleSignInRequestScope>?, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.apple/AppleUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.apple/rememberAppleSignInState|rememberAppleSignInState(kotlin.collections.List<com.mmk.kmpauth.apple.AppleSignInRequestScope>?;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.apple.AppleUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+
+// Targets: [ios]
+final class com.mmk.kmpauth.apple/AppleNativeCredential { // com.mmk.kmpauth.apple/AppleNativeCredential|null[0]
+    final val fullNameComponents // com.mmk.kmpauth.apple/AppleNativeCredential.fullNameComponents|{}fullNameComponents[0]
+        final fun <get-fullNameComponents>(): platform.Foundation/NSPersonNameComponents? // com.mmk.kmpauth.apple/AppleNativeCredential.fullNameComponents.<get-fullNameComponents>|<get-fullNameComponents>(){}[0]
+    final val idToken // com.mmk.kmpauth.apple/AppleNativeCredential.idToken|{}idToken[0]
+        final fun <get-idToken>(): kotlin/String // com.mmk.kmpauth.apple/AppleNativeCredential.idToken.<get-idToken>|<get-idToken>(){}[0]
+    final val rawNonce // com.mmk.kmpauth.apple/AppleNativeCredential.rawNonce|{}rawNonce[0]
+        final fun <get-rawNonce>(): kotlin/String // com.mmk.kmpauth.apple/AppleNativeCredential.rawNonce.<get-rawNonce>|<get-rawNonce>(){}[0]
+    final val user // com.mmk.kmpauth.apple/AppleNativeCredential.user|{}user[0]
+        final fun <get-user>(): com.mmk.kmpauth.apple/AppleUser // com.mmk.kmpauth.apple/AppleNativeCredential.user.<get-user>|<get-user>(){}[0]
+}
+
+// Targets: [ios]
+final val com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleNativeCredential$stableprop // com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleNativeCredential$stableprop|#static{}com_mmk_kmpauth_apple_AppleNativeCredential$stableprop[0]
+
+// Targets: [ios]
+final fun com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleNativeCredential$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.apple/com_mmk_kmpauth_apple_AppleNativeCredential$stableprop_getter|com_mmk_kmpauth_apple_AppleNativeCredential$stableprop_getter(){}[0]
+
+// Targets: [ios]
+final suspend fun com.mmk.kmpauth.apple/performAppleSignIn(kotlin.collections/List<com.mmk.kmpauth.apple/AppleSignInRequestScope>): kotlin/Result<com.mmk.kmpauth.apple/AppleNativeCredential> // com.mmk.kmpauth.apple/performAppleSignIn|performAppleSignIn(kotlin.collections.List<com.mmk.kmpauth.apple.AppleSignInRequestScope>){}[0]

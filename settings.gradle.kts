@@ -25,6 +25,7 @@ include(":kmpauth-uihelper")
 // Identity providers (credential sources, no backend dependencies)
 include(":providers:kmpauth-google")
 include(":providers:kmpauth-facebook")
+include(":providers:kmpauth-apple")
 
 // Session backends
 include(":backends:firebase:kmpauth-firebase-core")
