@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Multiplatform resources ship as Android assets, so the modules generated their
   `composeResources` but published none of them. The convention plugin now sets
   `androidResources { enable = true }`.
+- **Apple sign-in button logo is the size Apple specifies** (#169). Apple's
+  official logo asset is exported on a 56×56 artboard whose content box is the
+  inner 44×44, but the button rendered the whole artboard — so the export margin
+  ate into the button and the glyph came out at 34% of the button height instead
+  of the ~43% Apple's button spec requires. The artwork is unchanged; only the
+  export margin is removed, so the content box now maps to the button.
 
 ## [3.0.0-alpha03] — 2026-07-19
 

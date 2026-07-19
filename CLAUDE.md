@@ -73,6 +73,16 @@ read at launch time through `rememberUpdatedState`. The 2.x `*UiContainer`
 composables are deprecated thin wrappers over these states — keep them
 delegating, never reimplement logic in them.
 
+**Failures are values, not nulls.** Every provider's `onResult` takes a
+`Result<T>` (`Result<GoogleUser>`, `Result<FacebookUser>`, `Result<AppleUser>`,
+`Result<FirebaseUser?>`); never swallow an exception into a `null` — the reason
+is what makes a field report actionable (#102, #103). Only the deprecated
+`GoogleButtonUiContainer` keeps a nullable callback, for 2.x source compat.
+
+Provider resolution must not happen during composition: guard on
+`LocalInspectionMode` and return `NoOpSignInState`, or IDE previews crash
+because `GoogleAuthProvider.create()` never ran (#162).
+
 ## Future consideration (when Supabase lands)
 
 A backend-agnostic `rememberSignInState(...)` returning `KMPAuthUser` — one
