@@ -122,6 +122,13 @@ final object com.mmk.kmpauth.core/KMPAuth { // com.mmk.kmpauth.core/KMPAuth|null
     final fun setLogger(com.mmk.kmpauth.core.logger/KMPAuthLogger) // com.mmk.kmpauth.core/KMPAuth.setLogger|setLogger(com.mmk.kmpauth.core.logger.KMPAuthLogger){}[0]
 }
 
+final object com.mmk.kmpauth.core/NoOpSignInState : com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.core/NoOpSignInState|null[0]
+    final val isInProgress // com.mmk.kmpauth.core/NoOpSignInState.isInProgress|{}isInProgress[0]
+        final fun <get-isInProgress>(): kotlin/Boolean // com.mmk.kmpauth.core/NoOpSignInState.isInProgress.<get-isInProgress>|<get-isInProgress>(){}[0]
+
+    final fun launch() // com.mmk.kmpauth.core/NoOpSignInState.launch|launch(){}[0]
+}
+
 final var com.mmk.kmpauth.core.logger/currentLogger // com.mmk.kmpauth.core.logger/currentLogger|{}currentLogger[0]
     final fun <get-currentLogger>(): com.mmk.kmpauth.core.logger/KMPAuthLogger // com.mmk.kmpauth.core.logger/currentLogger.<get-currentLogger>|<get-currentLogger>(){}[0]
     final fun <set-currentLogger>(com.mmk.kmpauth.core.logger/KMPAuthLogger) // com.mmk.kmpauth.core.logger/currentLogger.<set-currentLogger>|<set-currentLogger>(com.mmk.kmpauth.core.logger.KMPAuthLogger){}[0]

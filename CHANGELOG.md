@@ -5,6 +5,19 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Google sign-in composables no longer crash IDE previews** (#162).
+  `rememberGoogleSignInState` and `rememberFirebaseGoogleSignInState` resolved
+  the provider during composition via `GoogleAuthProvider.get()`, which throws
+  `IllegalArgumentException` when `create()` has not been called — and a
+  `@Preview` never runs application startup. Both now return an inert
+  `SignInState` when `LocalInspectionMode` is true, so previews render and
+  `launch()` is a no-op. The deprecated `GoogleButtonUiContainer` /
+  `GoogleButtonUiContainerFirebase` are thin wrappers over these states, so
+  they are fixed too.
+
 ## [3.0.0-alpha02] — 2026-07-19
 
 ### Fixed

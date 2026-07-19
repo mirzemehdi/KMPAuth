@@ -5,8 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.platform.LocalInspectionMode
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
+import com.mmk.kmpauth.core.NoOpSignInState
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
@@ -42,6 +44,10 @@ public fun rememberFirebaseGoogleSignInState(
     scopes: List<String> = listOf("email", "profile"),
     onResult: (Result<FirebaseUser?>) -> Unit,
 ): SignInState {
+    // IDE previews never run application startup, so GoogleAuthProvider.create()
+    // has not been called and get() would throw. Render an inert state instead.
+    if (LocalInspectionMode.current) return NoOpSignInState
+
     val googleAuthUiProvider = GoogleAuthProvider.get().getUiProvider()
     val scope = rememberCoroutineScope()
     val currentLinkAccount by rememberUpdatedState(linkAccount)
