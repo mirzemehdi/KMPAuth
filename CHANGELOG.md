@@ -29,6 +29,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `accessToken` and `serverAuthCode` — the legacy Android fallback never returns
   an access token, which is why it appeared to be missing (#129).
 
+### Fixed
+- **Compose resources are packaged again on Android.** `kmpauth-uihelper`'s icons
+  and font never reached consuming apps, so every sign-in button crashed at
+  runtime with
+  `MissingResourceException: Missing resource with path: composeResources/…`.
+  AGP 9's KMP library plugin disables Android resources by default, and Compose
+  Multiplatform resources ship as Android assets, so the modules generated their
+  `composeResources` but published none of them. The convention plugin now sets
+  `androidResources { enable = true }`.
+
 ## [3.0.0-alpha03] — 2026-07-19
 
 ### Changed
@@ -99,7 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Dependency updates: Gradle 9.4.1 → **9.6.1**, Android Gradle Plugin 9.2.0 →
-  **9.3.0** (requires Gradle 9.5+), `play-services-auth` 21.4.0 → **21.6.0**,
+  **9.2.1** (9.3.0 was tried but needs a newer Android Studio than the project
+  targets), `play-services-auth` 21.4.0 → **21.6.0**,
   `google-services` 4.4.4 → **4.5.0**, `java-jwt` 4.5.2 → **4.6.0**. Kotlin,
   Compose Multiplatform, Ktor, GitLive Firebase, Firebase BoM, the Facebook SDK,
   `androidx.credentials` and `googleid` were already on their latest stable
