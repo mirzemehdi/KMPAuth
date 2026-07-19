@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Google Sign-In now works in minified release builds** (#144). `kmpauth-google`
+  ships consumer R8/ProGuard rules, so apps no longer need to add keep rules of
+  their own. Credential Manager resolves its Play services provider
+  reflectively; R8 stripped it in release builds, which is why sign-in worked in
+  debug and silently did nothing once minified. Any module can now ship rules by
+  placing a `consumer-rules.pro` next to its build file — the convention plugin
+  publishes it with the artifact.
 - **Google sign-in composables no longer crash IDE previews** (#162).
   `rememberGoogleSignInState` and `rememberFirebaseGoogleSignInState` resolved
   the provider during composition via `GoogleAuthProvider.get()`, which throws
