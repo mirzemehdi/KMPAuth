@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Google sign-in now reports why it failed** (#102, #103, #67). Every failure
+  path used to return `null` and log the reason, so apps could not tell a
+  cancelled sign-in from a misconfigured client, a missing credential or a
+  token parsing error — and neither could their users' bug reports.
+  `GoogleAuthUiProvider.signIn(...)` and `rememberGoogleSignInState`'s
+  `onResult` now use `Result<GoogleUser>`, carrying the underlying exception
+  (`GetCredentialException`, `NoCredentialException`, `ApiException`,
+  `GoogleIdTokenParsingException`, …). This also makes Google consistent with
+  `rememberFacebookSignInState` and `rememberAppleSignInState`, which already
+  used `Result<T>`.
+
+  ```kotlin
+  val googleSignIn = rememberGoogleSignInState(onResult = { result ->
+      result.onSuccess { user -> /* user.idToken */ }
+            .onFailure { error -> /* show or report the reason */ }
+  })
+  ```
+
+  The deprecated `GoogleButtonUiContainer` keeps its 2.x
+  `(GoogleUser?) -> Unit` callback and is unaffected;
+  `rememberFirebaseGoogleSignInState` is unchanged but now propagates the real
+  Google failure instead of a generic "id token is null".
+
 ### Fixed
 - **Google Sign-In now works in minified release builds** (#144). `kmpauth-google`
   ships consumer R8/ProGuard rules, so apps no longer need to add keep rules of

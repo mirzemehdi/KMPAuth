@@ -26,21 +26,21 @@ public final class com/mmk/kmpauth/google/GoogleAuthProvider$Companion {
 
 public abstract interface class com/mmk/kmpauth/google/GoogleAuthUiProvider {
 	public static final field Companion Lcom/mmk/kmpauth/google/GoogleAuthUiProvider$Companion;
-	public fun signIn (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun signIn (ZZLjava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun signIn (ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun signIn$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLjava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun signIn$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public fun signIn-0E7RQCE (ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signIn-0E7RQCE$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun signIn-BWLJW6A (ZZLjava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signIn-BWLJW6A$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLjava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public fun signIn-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/mmk/kmpauth/google/GoogleAuthUiProvider$Companion {
 }
 
 public final class com/mmk/kmpauth/google/GoogleAuthUiProvider$DefaultImpls {
-	public static fun signIn (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static fun signIn (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun signIn$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLjava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun signIn$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun signIn-0E7RQCE (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signIn-0E7RQCE$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun signIn-BWLJW6A$default (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;ZZLjava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun signIn-IoAF18A (Lcom/mmk/kmpauth/google/GoogleAuthUiProvider;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/mmk/kmpauth/google/GoogleButtonUiContainerKt {

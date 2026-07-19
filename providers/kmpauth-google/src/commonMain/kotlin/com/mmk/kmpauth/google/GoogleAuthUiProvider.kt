@@ -10,13 +10,13 @@ public interface GoogleAuthUiProvider {
     }
 
     /**
-     * Opens Sign In with Google UI, and returns [GoogleUser]
-     * if sign-in was successful, otherwise, null
+     * Opens Sign In with Google UI and returns the signed-in [GoogleUser].
      * By default all available accounts are listed to choose from
      * @see signIn(filterByAuthorizedAccounts: Boolean)
-     * @return returns GoogleUser or null(if sign-in was not successful)
+     * @return a successful [Result] with the [GoogleUser], or a failed [Result]
+     * carrying the reason - including when the user dismisses the chooser.
      */
-    public suspend fun signIn(): GoogleUser? =
+    public suspend fun signIn(): Result<GoogleUser> =
         signIn(
             filterByAuthorizedAccounts = false,
             isAutoSelectEnabled = true,
@@ -34,7 +34,7 @@ public interface GoogleAuthUiProvider {
     public suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean = true
-    ): GoogleUser? =
+    ): Result<GoogleUser> =
         signIn(
             filterByAuthorizedAccounts = filterByAuthorizedAccounts,
             isAutoSelectEnabled = isAutoSelectEnabled,
@@ -55,5 +55,5 @@ public interface GoogleAuthUiProvider {
         filterByAuthorizedAccounts: Boolean = false,
         isAutoSelectEnabled: Boolean = true,
         scopes: List<String> = BASIC_AUTH_SCOPE
-    ): GoogleUser?
+    ): Result<GoogleUser>
 }

@@ -22,8 +22,9 @@ import com.mmk.kmpauth.google.GoogleAuthUiProvider.Companion.BASIC_AUTH_SCOPE
  * and [SignInState.launch] uses whatever is current when the user taps.
  *
  * ```
- * val googleSignIn = rememberGoogleSignInState(onResult = { googleUser ->
- *     val idToken = googleUser?.idToken // send to your backend
+ * val googleSignIn = rememberGoogleSignInState(onResult = { result ->
+ *     result.onSuccess { user -> val idToken = user.idToken } // send to your backend
+ *         .onFailure { error -> /* show why sign-in failed */ }
  * })
  *
  * Button(onClick = { googleSignIn.launch() }) { Text("Google Sign-In") }
@@ -34,7 +35,9 @@ import com.mmk.kmpauth.google.GoogleAuthUiProvider.Companion.BASIC_AUTH_SCOPE
  * @param isAutoSelectEnabled sign in automatically when exactly one eligible
  * account exists.
  * @param scopes OAuth scopes to request. Default `listOf("email", "profile")`.
- * @param onResult receives the [GoogleUser], or null when sign-in fails.
+ * @param onResult receives a successful [Result] with the [GoogleUser], or a
+ * failed [Result] carrying the reason - the platform credential exception, the
+ * user cancelling, or a token parsing failure.
  */
 @OptIn(KMPAuthInternalApi::class)
 @Composable
@@ -42,7 +45,7 @@ public fun rememberGoogleSignInState(
     filterByAuthorizedAccounts: Boolean = false,
     isAutoSelectEnabled: Boolean = true,
     scopes: List<String> = BASIC_AUTH_SCOPE,
-    onResult: (GoogleUser?) -> Unit,
+    onResult: (Result<GoogleUser>) -> Unit,
 ): SignInState {
     // IDE previews never run application startup, so GoogleAuthProvider.create()
     // has not been called and get() would throw. Render an inert state instead.
@@ -58,12 +61,13 @@ public fun rememberGoogleSignInState(
     return remember {
         LaunchingSignInState(scope) {
             currentLogger.log("Google sign-in launched")
-            val googleUser = googleAuthUiProvider.signIn(
-                filterByAuthorizedAccounts = currentFilter,
-                isAutoSelectEnabled = currentAutoSelect,
-                scopes = currentScopes,
+            currentOnResult(
+                googleAuthUiProvider.signIn(
+                    filterByAuthorizedAccounts = currentFilter,
+                    isAutoSelectEnabled = currentAutoSelect,
+                    scopes = currentScopes,
+                )
             )
-            currentOnResult(googleUser)
         }
     }
 }

@@ -22,11 +22,11 @@ class GoogleAuthUiProviderDelegationTest {
             filterByAuthorizedAccounts: Boolean,
             isAutoSelectEnabled: Boolean,
             scopes: List<String>,
-        ): GoogleUser? {
+        ): Result<GoogleUser> {
             this.filterByAuthorizedAccounts = filterByAuthorizedAccounts
             this.isAutoSelectEnabled = isAutoSelectEnabled
             this.scopes = scopes
-            return null
+            return Result.failure(IllegalStateException("not signed in"))
         }
     }
 

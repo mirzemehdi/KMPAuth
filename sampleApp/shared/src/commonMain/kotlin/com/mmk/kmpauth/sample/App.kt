@@ -66,9 +66,14 @@ fun App() {
             )
 
             //Google Sign-In with Custom Button and authentication without Firebase
-            val googleSignIn = rememberGoogleSignInState(onResult = { googleUser ->
-                val idToken = googleUser?.idToken // Send this idToken to your backend to verify
-                signedInUserName = googleUser?.displayName ?: "Null User"
+            val googleSignIn = rememberGoogleSignInState(onResult = { result ->
+                result.onSuccess { googleUser ->
+                    val idToken = googleUser.idToken // Send this idToken to your backend to verify
+                    signedInUserName = googleUser.displayName
+                }.onFailure { error ->
+                    // Failures now carry a reason instead of a bare null.
+                    signedInUserName = "Sign-in failed: ${error.message}"
+                }
             })
             Button(onClick = { googleSignIn.launch() }) { Text("Google Sign-In(Custom Design)") }
 
