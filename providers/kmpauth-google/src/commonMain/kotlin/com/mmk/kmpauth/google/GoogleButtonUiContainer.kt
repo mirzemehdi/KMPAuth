@@ -34,7 +34,9 @@ public fun GoogleButtonUiContainer(
         filterByAuthorizedAccounts = filterByAuthorizedAccounts,
         isAutoSelectEnabled = isAutoSelectEnabled,
         scopes = scopes,
-        onResult = onGoogleSignInResult,
+        // This deprecated container keeps its 2.x nullable callback; the reason
+        // for a failure is only available through rememberGoogleSignInState.
+        onResult = { result -> onGoogleSignInResult(result.getOrNull()) },
     )
     val uiContainerScope = remember(signInState) {
         object : UiContainerScope {

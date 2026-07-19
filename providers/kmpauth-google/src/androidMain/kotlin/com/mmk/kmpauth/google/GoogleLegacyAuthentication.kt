@@ -30,14 +30,14 @@ internal class GoogleLegacyAuthentication(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
-    ): GoogleUser? {
+    ): Result<GoogleUser> {
         val signInClient = getGoogleSignInClient(scopes = scopes).signInIntent
         activityResultState.isInProgress = true
         try {
             activityResultLauncher.launch(signInClient)
         } catch (e: ActivityNotFoundException) {
             currentLogger.log("GoogleLegacyAuth Error: $e")
-            return null
+            return Result.failure(e)
         }
 
         withContext(Dispatchers.Default) {
@@ -50,26 +50,30 @@ internal class GoogleLegacyAuthentication(
     }
 
 
-    private fun getGoogleUserFromIntentData(data: Intent?): GoogleUser? {
+    private fun getGoogleUserFromIntentData(data: Intent?): Result<GoogleUser> {
         return try {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             val account: GoogleSignInAccount = task.getResult(ApiException::class.java)
-            account.idToken?.let { idToken ->
-                GoogleUser(
-                    idToken = idToken,
-                    accessToken = null,
-                    serverAuthCode = account.serverAuthCode,
-                    email = account.email,
-                    displayName = account.displayName ?: "",
-                    profilePicUrl = account.photoUrl?.toString()
-                ).also {
-                    currentLogger.log("GoogleLegacy Auth is successful")
-                }
+            val idToken = account.idToken
+            if (idToken == null) {
+                currentLogger.log("GoogleLegacyAuth Error: signed-in account has no id token")
+                Result.failure(IllegalStateException("Google account did not return an id token"))
+            } else {
+                currentLogger.log("GoogleLegacy Auth is successful")
+                Result.success(
+                    GoogleUser(
+                        idToken = idToken,
+                        accessToken = null,
+                        serverAuthCode = account.serverAuthCode,
+                        email = account.email,
+                        displayName = account.displayName ?: "",
+                        profilePicUrl = account.photoUrl?.toString()
+                    )
+                )
             }
-
         } catch (e: ApiException) {
             currentLogger.log("GoogleLegacyAuth Error: $e")
-            null
+            Result.failure(e)
         }
     }
 

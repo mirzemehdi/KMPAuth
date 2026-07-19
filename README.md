@@ -265,8 +265,13 @@ After configuring above steps this is how you can use:
 
 ```kotlin
 //Google Sign-In with Custom Button (only one tap sign-in functionality)
-val googleSignIn = rememberGoogleSignInState(onResult = { googleUser ->
-  val idToken = googleUser?.idToken // Send this idToken to your backend to verify
+val googleSignIn = rememberGoogleSignInState(onResult = { result ->
+  result.onSuccess { googleUser ->
+    val idToken = googleUser.idToken // Send this idToken to your backend to verify
+  }.onFailure { error ->
+    // Carries the real reason: cancellation, GetCredentialException,
+    // a misconfigured client, a token parsing failure, ...
+  }
 })
 Button(onClick = { googleSignIn.launch() }) { Text("Google Sign-In(Custom Design)") }
 ```

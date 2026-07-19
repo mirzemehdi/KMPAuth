@@ -235,3 +235,36 @@ val appleSignIn = rememberAppleSignInState(onResult = { result ->
 ```
 
 See the README for the platform limitations (the native flow is Apple-only).
+
+## 10. Google sign-in results carry the failure reason
+
+`rememberGoogleSignInState` used to hand back `GoogleUser?`, with `null` for
+every kind of failure — a cancelled chooser, a misconfigured OAuth client, a
+missing credential and a malformed token were indistinguishable. It now uses
+`Result<GoogleUser>`, matching `rememberFacebookSignInState` and
+`rememberAppleSignInState`:
+
+```kotlin
+// before
+val googleSignIn = rememberGoogleSignInState(onResult = { googleUser ->
+    val idToken = googleUser?.idToken
+})
+
+// after
+val googleSignIn = rememberGoogleSignInState(onResult = { result ->
+    result.onSuccess { user -> val idToken = user.idToken }
+        .onFailure { error -> /* GetCredentialException, ApiException, ... */ }
+})
+```
+
+The same change applies to `GoogleAuthUiProvider.signIn(...)` if you call the
+provider directly.
+
+**Not affected:**
+
+- `GoogleButtonUiContainer` keeps its `(GoogleUser?) -> Unit` callback, so 2.x
+  container code compiles unchanged. To see failure reasons, move to
+  `rememberGoogleSignInState`.
+- `rememberFirebaseGoogleSignInState` already returned `Result<FirebaseUser?>`
+  and its signature is unchanged. It now propagates the underlying Google
+  failure instead of reporting a generic "id token is null".

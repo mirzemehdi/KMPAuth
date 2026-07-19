@@ -23,10 +23,14 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
-    ): GoogleUser? {
+    ): Result<GoogleUser> {
 
         val scriptLoaded = waitForGoogleAuthScriptToLoad()
-        if (!scriptLoaded) return null
+        if (!scriptLoaded) {
+            return Result.failure(
+                IllegalStateException("Google Sign-In script failed to load")
+            )
+        }
 
         return suspendCancellableCoroutine { continuation ->
             val tokenClientConfig = createTokenClientConfig(
@@ -68,12 +72,12 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         }
     }
 
-    private suspend fun CancellableContinuation<GoogleUser?>.handleTokenResponse(tokenResponse: JsAny) {
+    private suspend fun CancellableContinuation<Result<GoogleUser>>.handleTokenResponse(tokenResponse: JsAny) {
 
         val error = getTokenResponseError(tokenResponse)
         if (error != null) {
             showConsoleError("Error during Google sign-in: $error")
-            resume(null)
+            resume(Result.failure(IllegalStateException("Google sign-in failed: $error")))
             return
         }
 
@@ -96,7 +100,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 profilePicUrl = picture
             )
 
-            resume(googleUser)
+            resume(Result.success(googleUser))
 
         } catch (err: Throwable) {
             showConsoleError("Error fetching user info: $err")
@@ -105,7 +109,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 idToken = idToken,
                 accessToken = accessToken
             )
-            resume(googleUser)
+            resume(Result.success(googleUser))
         }
     }
 

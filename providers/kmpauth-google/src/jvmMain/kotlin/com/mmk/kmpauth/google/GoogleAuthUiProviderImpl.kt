@@ -31,8 +31,13 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
-    ): GoogleUser? {
-        val redirectTarget = resolveRedirectTarget() ?: return null
+    ): Result<GoogleUser> {
+        val redirectTarget = resolveRedirectTarget()
+            ?: return Result.failure(
+                IllegalArgumentException(
+                    "GoogleAuthCredentials.redirectUri is not a usable http loopback URL"
+                )
+            )
         val responseType = "id_token token"
         val scopeString = scopes.joinToString(" ")
         val state: String
@@ -60,7 +65,9 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         )
         if (idToken == null && accessToken == null) {
             currentLogger.log("GoogleAuthUiProvider: token is null")
-            return null
+            return Result.failure(
+                IllegalStateException("Google did not return a token to the redirect callback")
+            )
         }
 
 
@@ -71,15 +78,21 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         val receivedNonce = jwt?.getClaim("nonce")?.asString()
         if (receivedNonce != nonce) {
             currentLogger.log("GoogleAuthUiProvider: Invalid nonce state: A login callback was received, but no login request was sent.")
-            return null
+            return Result.failure(
+                IllegalStateException(
+                    "Invalid nonce: a login callback was received, but no login request was sent"
+                )
+            )
         }
 
-        return GoogleUser(
-            idToken = idToken ?: "",
-            accessToken = accessToken,
-            email = email,
-            displayName = name ?: "",
-            profilePicUrl = picture
+        return Result.success(
+            GoogleUser(
+                idToken = idToken ?: "",
+                accessToken = accessToken,
+                email = email,
+                displayName = name ?: "",
+                profilePicUrl = picture
+            )
         )
     }
 

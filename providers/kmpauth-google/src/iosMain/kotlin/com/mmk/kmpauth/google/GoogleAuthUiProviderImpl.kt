@@ -15,13 +15,17 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
-    ): GoogleUser? = suspendCoroutine { continutation ->
+    ): Result<GoogleUser> = suspendCoroutine { continutation ->
 
         val rootViewController =
             UIApplication.sharedApplication.keyWindow?.rootViewController
 
-        if (rootViewController == null) continutation.resume(null)
-        else {
+        if (rootViewController == null) {
+            currentLogger.log("Root View Controller is null")
+            continutation.resume(
+                Result.failure(IllegalStateException("Root View Controller is null"))
+            )
+        } else {
             GIDSignIn.sharedInstance
                 .signInWithPresentingViewController(rootViewController,null, scopes) { gidSignInResult, nsError ->
                     nsError?.let { currentLogger.log("Error While signing: $nsError") }
@@ -39,8 +43,17 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
                             displayName = profile?.name ?: "",
                             profilePicUrl = profile?.imageURLWithDimension(320u)?.absoluteString
                         )
-                        continutation.resume(googleUser)
-                    } else continutation.resume(null)
+                        continutation.resume(Result.success(googleUser))
+                    } else {
+                        continutation.resume(
+                            Result.failure(
+                                IllegalStateException(
+                                    nsError?.localizedDescription
+                                        ?: "Google Sign-In did not return an id token"
+                                )
+                            )
+                        )
+                    }
                 }
 
         }

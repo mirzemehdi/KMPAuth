@@ -62,12 +62,21 @@ public fun rememberFirebaseGoogleSignInState(
         KMPAuthBackend.register(FirebaseAuthBackend)
         val signInHandler = GoogleFirebaseSignInHandler(backend = KMPAuthBackend.require())
         LaunchingSignInState(scope) {
-            val googleUser = googleAuthUiProvider.signIn(
+            val googleResult = googleAuthUiProvider.signIn(
                 filterByAuthorizedAccounts = currentFilter,
                 isAutoSelectEnabled = currentAutoSelect,
                 scopes = currentScopes,
             )
-            currentOnResult(signInHandler.signIn(googleUser, currentLinkAccount))
+            currentOnResult(
+                googleResult.fold(
+                    onSuccess = { googleUser ->
+                        signInHandler.signIn(googleUser, currentLinkAccount)
+                    },
+                    // Propagate why Google sign-in failed instead of reporting a
+                    // generic "id token is null" from the Firebase exchange.
+                    onFailure = { error -> Result.failure(error) },
+                )
+            )
         }
     }
 }

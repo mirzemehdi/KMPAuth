@@ -43,9 +43,9 @@ internal class GoogleAuthUiProviderImpl(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
-    ): GoogleUser? {
+    ): Result<GoogleUser> {
 
-        val googleUser = try {
+        return try {
             getGoogleUserFromCredential(
                 filterByAuthorizedAccounts = filterByAuthorizedAccounts,
                 isAutoSelectEnabled = isAutoSelectEnabled,
@@ -75,7 +75,7 @@ internal class GoogleAuthUiProviderImpl(
                 )
             } catch (e: NullPointerException) {
                 currentLogger.log("GoogleAuthUiProvider: NullPointerException while getting credential")
-                null
+                Result.failure(e)
             }
         } catch (e: GetCredentialException) {
             currentLogger.log("GoogleAuthUiProvider: GetCredentialException while getting credential")
@@ -87,9 +87,8 @@ internal class GoogleAuthUiProviderImpl(
             )
         } catch (e: NullPointerException) {
             currentLogger.log("GoogleAuthUiProvider: NullPointerException while getting credential")
-            null
+            Result.failure(e)
         }
-        return googleUser
     }
 
 
@@ -98,7 +97,7 @@ internal class GoogleAuthUiProviderImpl(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
-    ): GoogleUser? {
+    ): Result<GoogleUser> {
         currentLogger.log("GoogleAuthUiProvider error: $e and message: ${e.message}")
         val shouldCheckLegacyAuthServices = when (e) {
             is GetCredentialProviderConfigurationException -> true
@@ -111,7 +110,7 @@ internal class GoogleAuthUiProviderImpl(
             checkLegacyGoogleSignIn(filterByAuthorizedAccounts, isAutoSelectEnabled, scopes)
         } else {
             currentLogger.log("GoogleAuthUiProvider: No valid credential response found")
-            null
+            Result.failure(e)
         }
     }
 
@@ -120,7 +119,7 @@ internal class GoogleAuthUiProviderImpl(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
-    ): GoogleUser? {
+    ): Result<GoogleUser> {
         currentLogger.log("GoogleAuthUiProvider: Checking Outdated Google Sign In...")
         return googleLegacyAuthentication.signIn(
             filterByAuthorizedAccounts = filterByAuthorizedAccounts,
@@ -134,7 +133,7 @@ internal class GoogleAuthUiProviderImpl(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
         scopes: List<String>
-    ): GoogleUser? {
+    ): Result<GoogleUser> {
         val credential = credentialManager.getCredential(
             context = activityContext,
             request = getCredentialRequest(filterByAuthorizedAccounts, isAutoSelectEnabled)
@@ -155,22 +154,28 @@ internal class GoogleAuthUiProviderImpl(
                         } else {
                             null
                         }
-                    GoogleUser(
-                        idToken = googleIdTokenCredential.idToken,
-                        accessToken = accessToken,
-                        email = googleIdTokenCredential.id,
-                        displayName = googleIdTokenCredential.displayName ?: "",
-                        profilePicUrl = googleIdTokenCredential.profilePictureUri?.toString()
+                    Result.success(
+                        GoogleUser(
+                            idToken = googleIdTokenCredential.idToken,
+                            accessToken = accessToken,
+                            email = googleIdTokenCredential.id,
+                            displayName = googleIdTokenCredential.displayName ?: "",
+                            profilePicUrl = googleIdTokenCredential.profilePictureUri?.toString()
+                        )
                     )
                 } catch (e: GoogleIdTokenParsingException) {
                     currentLogger.log("GoogleAuthUiProvider Received an invalid google id token response: ${e.message}")
-                    null
+                    Result.failure(e)
                 }
             }
 
             else -> {
                 currentLogger.log("GoogleAuthUiProvider Received an invalid credential response: ${credential.type}")
-                null
+                Result.failure(
+                    IllegalStateException(
+                        "Unexpected credential type from Credential Manager: ${credential.type}"
+                    )
+                )
             }
         }
     }
