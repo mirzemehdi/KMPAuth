@@ -12,6 +12,12 @@ public final class com/mmk/kmpauth/core/LaunchingSignInState : com/mmk/kmpauth/c
 	public fun launch ()V
 }
 
+public final class com/mmk/kmpauth/core/NoOpSignInState : com/mmk/kmpauth/core/SignInState {
+	public static final field INSTANCE Lcom/mmk/kmpauth/core/NoOpSignInState;
+	public fun isInProgress ()Z
+	public fun launch ()V
+}
+
 public abstract interface class com/mmk/kmpauth/core/SignInState {
 	public abstract fun isInProgress ()Z
 	public abstract fun launch ()V

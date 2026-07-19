@@ -35,6 +35,18 @@ public interface SignInState {
 }
 
 /**
+ * Inert [SignInState] returned while a composable is rendered in inspection
+ * mode (an IDE `@Preview`). Previews never run application startup, so the
+ * provider a real state needs has not been created; returning this instead of
+ * resolving it keeps previews from crashing. [launch] does nothing.
+ */
+@KMPAuthInternalApi
+public object NoOpSignInState : SignInState {
+    override val isInProgress: Boolean = false
+    override fun launch(): Unit = Unit
+}
+
+/**
  * Shared [SignInState] implementation used by the provider modules: runs
  * [block] in [scope], guarding against concurrent launches and driving
  * [isInProgress]. [block] reads its parameters through
