@@ -22,6 +22,7 @@ class GoogleAuthUiProviderDelegationTest {
             filterByAuthorizedAccounts: Boolean,
             isAutoSelectEnabled: Boolean,
             scopes: List<String>,
+            requestAccessToken: Boolean,
         ): Result<GoogleUser> {
             this.filterByAuthorizedAccounts = filterByAuthorizedAccounts
             this.isAutoSelectEnabled = isAutoSelectEnabled

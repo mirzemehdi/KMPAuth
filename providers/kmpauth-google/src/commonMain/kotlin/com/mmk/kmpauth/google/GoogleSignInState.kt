@@ -35,6 +35,11 @@ import com.mmk.kmpauth.google.GoogleAuthUiProvider.Companion.BASIC_AUTH_SCOPE
  * @param isAutoSelectEnabled sign in automatically when exactly one eligible
  * account exists.
  * @param scopes OAuth scopes to request. Default `listOf("email", "profile")`.
+ * @param requestAccessToken request an OAuth access token alongside the ID
+ * token. **Only affects Android**, where Credential Manager returns an ID token
+ * alone and an access token needs a separate authorization request with its own
+ * consent prompt; every other platform already returns one. Asking for scopes
+ * beyond `email`/`profile` implies this. See [GoogleUser.accessToken].
  * @param onResult receives a successful [Result] with the [GoogleUser], or a
  * failed [Result] carrying the reason - the platform credential exception, the
  * user cancelling, or a token parsing failure.
@@ -45,6 +50,7 @@ public fun rememberGoogleSignInState(
     filterByAuthorizedAccounts: Boolean = false,
     isAutoSelectEnabled: Boolean = true,
     scopes: List<String> = BASIC_AUTH_SCOPE,
+    requestAccessToken: Boolean = false,
     onResult: (Result<GoogleUser>) -> Unit,
 ): SignInState {
     // IDE previews never run application startup, so GoogleAuthProvider.create()
@@ -56,6 +62,7 @@ public fun rememberGoogleSignInState(
     val currentFilter by rememberUpdatedState(filterByAuthorizedAccounts)
     val currentAutoSelect by rememberUpdatedState(isAutoSelectEnabled)
     val currentScopes by rememberUpdatedState(scopes)
+    val currentRequestAccessToken by rememberUpdatedState(requestAccessToken)
     val currentOnResult by rememberUpdatedState(onResult)
 
     return remember {
@@ -66,6 +73,7 @@ public fun rememberGoogleSignInState(
                     filterByAuthorizedAccounts = currentFilter,
                     isAutoSelectEnabled = currentAutoSelect,
                     scopes = currentScopes,
+                    requestAccessToken = currentRequestAccessToken,
                 )
             )
         }

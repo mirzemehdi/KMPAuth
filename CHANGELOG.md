@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`requestAccessToken` for Google sign-in** (#90, #129). Android's Credential
+  Manager returns an ID token only; an access token requires a separate
+  authorization request with its own consent prompt. That was previously
+  triggered implicitly by passing scopes other than `email`/`profile`, which was
+  undocumented and — because the check compared the scope *list* — meant
+  reordering the same scopes changed the result. There is now an explicit flag:
+
+  ```kotlin
+  val googleSignIn = rememberGoogleSignInState(
+      requestAccessToken = true,
+      onResult = { result -> result.getOrNull()?.accessToken },
+  )
+  ```
+
+  Requesting scopes beyond `email`/`profile` still implies it, and that check now
+  compares sets, so ordering no longer matters. The flag has no effect on iOS,
+  desktop, JS and wasm, which always return an access token.
+- `GoogleUser` is now documented, including the per-platform availability of
+  `accessToken` and `serverAuthCode` — the legacy Android fallback never returns
+  an access token, which is why it appeared to be missing (#129).
+
 ### Fixed
 - **Compose resources are packaged again on Android.** `kmpauth-uihelper`'s icons
   and font never reached consuming apps, so every sign-in button crashed at

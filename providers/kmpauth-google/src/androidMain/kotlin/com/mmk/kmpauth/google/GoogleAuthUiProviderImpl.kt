@@ -42,14 +42,16 @@ internal class GoogleAuthUiProviderImpl(
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
-        scopes: List<String>
+        scopes: List<String>,
+        requestAccessToken: Boolean
     ): Result<GoogleUser> {
 
         return try {
             getGoogleUserFromCredential(
                 filterByAuthorizedAccounts = filterByAuthorizedAccounts,
                 isAutoSelectEnabled = isAutoSelectEnabled,
-                scopes = scopes
+                scopes = scopes,
+                requestAccessToken = requestAccessToken
             )
         } catch (e: NoCredentialException) {
             currentLogger.log("GoogleAuthUiProvider: NoCredentialException while getting credential")
@@ -64,7 +66,8 @@ internal class GoogleAuthUiProviderImpl(
                 getGoogleUserFromCredential(
                     filterByAuthorizedAccounts = false,
                     isAutoSelectEnabled = isAutoSelectEnabled,
-                    scopes = scopes)
+                    scopes = scopes,
+                    requestAccessToken = requestAccessToken)
             } catch (e: GetCredentialException) {
                 currentLogger.log("GoogleAuthUiProvider: GetCredentialException while getting credential")
                 handleCredentialException(
@@ -132,7 +135,8 @@ internal class GoogleAuthUiProviderImpl(
     private suspend fun getGoogleUserFromCredential(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
-        scopes: List<String>
+        scopes: List<String>,
+        requestAccessToken: Boolean
     ): Result<GoogleUser> {
         val credential = credentialManager.getCredential(
             context = activityContext,
@@ -146,14 +150,17 @@ internal class GoogleAuthUiProviderImpl(
                 try {
                     val googleIdTokenCredential =
                         GoogleIdTokenCredential.createFrom(credential.data)
+                    // Credential Manager only returns an ID token; an access
+                    // token needs a separate authorization request with its own
+                    // consent prompt. Do it when the caller asks explicitly, or
+                    // when they requested scopes beyond the basic ones (which
+                    // are useless without a token to spend them on). Compared as
+                    // sets so scope ordering cannot change the behaviour.
+                    val needsAccessToken = requestAccessToken ||
+                        scopes.toSet() != GoogleAuthUiProvider.BASIC_AUTH_SCOPE.toSet()
                     val accessToken =
-                        if (scopes != GoogleAuthUiProvider.BASIC_AUTH_SCOPE) {
-                            fetchAccessTokenWithScopes(
-                                scopes
-                            ).accessToken
-                        } else {
-                            null
-                        }
+                        if (needsAccessToken) fetchAccessTokenWithScopes(scopes).accessToken
+                        else null
                     Result.success(
                         GoogleUser(
                             idToken = googleIdTokenCredential.idToken,

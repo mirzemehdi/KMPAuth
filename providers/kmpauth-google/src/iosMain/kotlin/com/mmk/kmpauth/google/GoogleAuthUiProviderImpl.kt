@@ -14,7 +14,8 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
-        scopes: List<String>
+        scopes: List<String>,
+        requestAccessToken: Boolean,
     ): Result<GoogleUser> = suspendCoroutine { continutation ->
 
         val rootViewController =

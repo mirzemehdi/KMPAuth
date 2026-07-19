@@ -276,6 +276,30 @@ val googleSignIn = rememberGoogleSignInState(onResult = { result ->
 Button(onClick = { googleSignIn.launch() }) { Text("Google Sign-In(Custom Design)") }
 ```
 
+##### Getting an access token
+`GoogleUser.idToken` is always present. `accessToken` — for calling Google APIs
+on the user's behalf — depends on the platform:
+
+| Platform | `accessToken` |
+|---|---|
+| iOS, Desktop, JS, wasm | always returned |
+| Android (Credential Manager) | returned only when you ask (below) |
+| Android legacy fallback | never returned |
+
+Android's Credential Manager hands back an ID token only; an access token needs
+a **separate authorization request with its own consent prompt**, so you opt in:
+
+```kotlin
+val googleSignIn = rememberGoogleSignInState(
+    requestAccessToken = true,
+    onResult = { result -> val accessToken = result.getOrNull()?.accessToken },
+)
+```
+
+Requesting `scopes` beyond `email`/`profile` implies it, since those scopes are
+only useful with a token to spend them on. The flag is ignored on the other
+platforms, which already return one.
+
 Google Sign-In Button and authentication with Firebase. You need to implement `kmpauth-uihelper` dependency
 ```kotlin
 val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
