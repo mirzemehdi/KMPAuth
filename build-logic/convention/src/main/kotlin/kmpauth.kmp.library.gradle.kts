@@ -40,6 +40,14 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
 
+        // AGP 9's KMP library plugin disables Android resources by default.
+        // Compose Multiplatform resources are packaged as Android assets, so
+        // without this a module builds its composeResources but ships none, and
+        // consumers crash at runtime with MissingResourceException.
+        androidResources {
+            enable = true
+        }
+
         withHostTest { }
 
         // A module ships consumer R8 rules by dropping a consumer-rules.pro
