@@ -42,6 +42,17 @@ kotlin {
 
         withHostTest { }
 
+        // A module ships consumer R8 rules by dropping a consumer-rules.pro
+        // next to its build file; they are then published with the artifact so
+        // apps do not have to copy them into their own configuration.
+        val consumerRules = project.file("consumer-rules.pro")
+        if (consumerRules.exists()) {
+            optimization {
+                consumerKeepRules.file(consumerRules)
+                consumerKeepRules.publish = true
+            }
+        }
+
         packaging {
             resources {
                 excludes.add("/META-INF/AL2.0")
