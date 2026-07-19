@@ -23,7 +23,8 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
     override suspend fun signIn(
         filterByAuthorizedAccounts: Boolean,
         isAutoSelectEnabled: Boolean,
-        scopes: List<String>
+        scopes: List<String>,
+        requestAccessToken: Boolean
     ): Result<GoogleUser> {
         val scriptLoaded = waitForGoogleAuthScriptToLoad()
         if (!scriptLoaded) {
