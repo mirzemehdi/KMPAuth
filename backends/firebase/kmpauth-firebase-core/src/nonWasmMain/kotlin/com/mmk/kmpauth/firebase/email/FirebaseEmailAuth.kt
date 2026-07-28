@@ -115,4 +115,31 @@ public object FirebaseEmailAuth {
         }
         result.user
     }
+
+    /**
+     * Reauthenticates the currently signed-in user with their email/password
+     * credential.
+     *
+     * Firebase requires a recent sign-in before security-sensitive
+     * operations — deleting the account, changing the password or email. When
+     * such an operation fails with a recent-login-required error, call this
+     * with the user's current password and retry (#167):
+     *
+     * ```
+     * FirebaseEmailAuth.reauthenticate(email, currentPassword)
+     *     .onSuccess { user.updatePassword(newPassword) }
+     * ```
+     *
+     * @param email The signed-in user's email address.
+     * @param password The user's current password.
+     * @return success, or the failure (no signed-in user, wrong password, ...).
+     */
+    public suspend fun reauthenticate(
+        email: String,
+        password: String,
+    ): Result<Unit> = runCatchingCancellable {
+        val currentUser = Firebase.auth.currentUser
+            ?: throw IllegalStateException("No signed-in user to reauthenticate")
+        currentUser.reauthenticate(EmailAuthProvider.credential(email, password))
+    }
 }

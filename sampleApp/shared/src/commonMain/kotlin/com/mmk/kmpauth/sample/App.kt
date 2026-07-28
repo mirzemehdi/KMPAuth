@@ -35,6 +35,8 @@ import com.mmk.kmpauth.firebase.email.rememberFirebaseEmailSignInState
 import com.mmk.kmpauth.firebase.facebook.rememberFirebaseFacebookSignInState
 import com.mmk.kmpauth.firebase.github.rememberFirebaseGithubSignInState
 import com.mmk.kmpauth.firebase.google.rememberFirebaseGoogleSignInState
+import com.mmk.kmpauth.firebase.microsoft.rememberFirebaseMicrosoftSignInState
+import com.mmk.kmpauth.firebase.phone.rememberFirebasePhoneSignInState
 import com.mmk.kmpauth.google.rememberGoogleSignInState
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
@@ -109,12 +111,19 @@ fun App() {
             val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
             Button(onClick = { facebookSignIn.launch() }) { Text("Facebook Sign-In (Custom Design)") }
 
+            //Microsoft Sign-In with Firebase (OAuth web flow, no Microsoft SDK)
+            val microsoftSignIn = rememberFirebaseMicrosoftSignInState(onResult = onFirebaseResult)
+            Button(onClick = { microsoftSignIn.launch() }) { Text("Microsoft Sign-In") }
+
             //Anonymous (guest) sign-in with Firebase
             val anonymousSignIn = rememberFirebaseAnonymousSignInState(onResult = onFirebaseResult)
             Button(onClick = { anonymousSignIn.launch() }) { Text("Continue as Guest") }
 
             //Email/password authentication with Firebase
             EmailAuthSection(onFirebaseResult = onFirebaseResult)
+
+            //Phone number authentication with Firebase (Android and iOS)
+            PhoneAuthSection(onFirebaseResult = onFirebaseResult)
 
             // ************************** UiHelper Text Buttons *************
             Divider(modifier = Modifier.fillMaxWidth().padding(16.dp))
@@ -177,6 +186,48 @@ fun EmailAuthSection(
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Button(onClick = { emailSignIn.launch() }) { Text("Email Sign-In") }
             Button(onClick = { emailSignUp.launch() }) { Text("Email Sign-Up") }
+        }
+    }
+}
+
+@Composable
+fun PhoneAuthSection(
+    modifier: Modifier = Modifier,
+    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        var phoneNumber by remember { mutableStateOf("") }
+        var smsCode by remember { mutableStateOf("") }
+        val phoneSignIn = rememberFirebasePhoneSignInState(
+            phoneNumber = phoneNumber,
+            onResult = onFirebaseResult,
+        )
+        if (!phoneSignIn.isCodeSent) {
+            OutlinedTextField(
+                value = phoneNumber,
+                onValueChange = { phoneNumber = it },
+                label = { Text("Phone (+15551234567)") },
+                singleLine = true,
+            )
+            Button(
+                onClick = { phoneSignIn.launch() },
+                enabled = !phoneSignIn.isInProgress,
+            ) { Text("Phone Sign-In") }
+        } else {
+            OutlinedTextField(
+                value = smsCode,
+                onValueChange = { smsCode = it },
+                label = { Text("SMS code") },
+                singleLine = true,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Button(onClick = { phoneSignIn.submitCode(smsCode) }) { Text("Verify") }
+                Button(onClick = { phoneSignIn.cancel() }) { Text("Cancel") }
+            }
         }
     }
 }

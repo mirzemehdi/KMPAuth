@@ -15,10 +15,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   types. `FirebaseEmailAuth` adds the flows that don't fit a launchable state:
   `sendPasswordResetEmail`, and passwordless email-link (magic link) sign-in via
   `sendSignInLinkToEmail` / `isSignInWithEmailLink` / `signInWithEmailLink`.
+- **Phone number sign-in with Firebase** (#111).
+  `rememberFirebasePhoneSignInState(phoneNumber, ...)` returns a
+  `PhoneSignInState`: `launch()` sends the SMS, `isCodeSent`/`onCodeSent`
+  signal when to show the code input, `submitCode(code)` completes sign-in and
+  `cancel()` abandons the flow. Android supports automatic SMS verification
+  (Play services); iOS falls back to Firebase's reCAPTCHA when needed. On
+  Desktop and JS/web launching reports a failed `Result` — the Firebase Java
+  SDK does not implement phone auth, and the web flow would need a reCAPTCHA
+  verifier KMPAuth does not provide yet.
+- **Microsoft sign-in with Firebase** (#173, #95).
+  `rememberFirebaseMicrosoftSignInState(requestScopes, customParameters,
+  linkAccount, onResult)` — Firebase drives the OAuth web flow, no Microsoft
+  SDK involved. Restrict to one Azure AD tenant via
+  `customParameters = mapOf("tenant" to "...")`.
 - **Anonymous (guest) sign-in with Firebase**.
   `rememberFirebaseAnonymousSignInState(onResult)` creates or resumes a
   temporary account; upgrade it later by signing in with any provider state
   using `linkAccount = true`, which keeps the anonymous uid and its data.
+- **`FirebaseEmailAuth.reauthenticate(email, password)`** (#167). Firebase
+  requires a recent sign-in before security-sensitive operations (account
+  deletion, password change); this reauthenticates the current user with
+  their email credential so the operation can be retried.
 
   All of these delegate to the Firebase SDK and report failures as `Result`
   values. On Desktop (JVM) the underlying SDK does not implement auth yet

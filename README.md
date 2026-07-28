@@ -64,7 +64,9 @@ You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob
 - ✅ [Apple Sign-In with Firebase](#apple-sign-in), and native Apple Sign-In without Firebase on Apple platforms
 - ✅ [Github Sign-In with Firebase](#github-sign-in)
 - ✅ [Facebook Sign-In (android and ios) with Firebase](#facebook-sign-in)
-- ✅ [Email authentication with Firebase](#email-authentication) - password sign-in/sign-up, password reset, passwordless email link
+- ✅ [Microsoft Sign-In with Firebase](#microsoft-sign-in)
+- ✅ [Email authentication with Firebase](#email-authentication) - password sign-in/sign-up, password reset, passwordless email link, reauthentication
+- ✅ [Phone number Sign-In with Firebase](#phone-sign-in) (android and ios)
 - ✅ [Anonymous (guest) Sign-In with Firebase](#anonymous-sign-in)
 - ✅ Apple, Google, Facebook "Sign in with " UiHelper buttons (according to each brand's guideline)
 - 📱 Multiplatform (android, iOS, jvm and web (js,wasm))
@@ -525,6 +527,44 @@ func application(
 - Firebase Authentication with Facebook - https://firebase.google.com/docs/auth/android/facebook-login
 - Firebase Authentication with Facebook iOS - https://firebase.google.com/docs/auth/ios/facebook-login
 
+### Microsoft Sign-In
+Enable the Microsoft provider in the Firebase console and register the app in
+the Azure portal — Firebase drives the OAuth web flow, no Microsoft SDK needed:
+
+```kotlin
+val microsoftSignIn = rememberFirebaseMicrosoftSignInState(onResult = onFirebaseResult)
+Button(onClick = { microsoftSignIn.launch() }) { Text("Microsoft Sign-In") }
+```
+
+To restrict sign-in to one Azure AD tenant, pass
+`customParameters = mapOf("tenant" to "your-tenant-id")`.
+
+### Phone Sign-In
+Enable the "Phone" sign-in method in the Firebase console. Two-step flow: launch
+sends the SMS, `submitCode` completes sign-in. Supported on Android (with
+automatic SMS verification when Play services can) and iOS:
+
+```kotlin
+var phoneNumber by remember { mutableStateOf("") }
+var smsCode by remember { mutableStateOf("") }
+val phoneSignIn = rememberFirebasePhoneSignInState(
+    phoneNumber = phoneNumber, // E.164 format, e.g. +15551234567
+    onResult = onFirebaseResult,
+)
+
+if (!phoneSignIn.isCodeSent) {
+    Button(onClick = { phoneSignIn.launch() }) { Text("Send code") }
+} else {
+    OutlinedTextField(value = smsCode, onValueChange = { smsCode = it })
+    Button(onClick = { phoneSignIn.submitCode(smsCode) }) { Text("Verify") }
+}
+```
+
+`phoneSignIn.cancel()` abandons the flow (e.g. the user dismissed the code
+input). On Desktop and JS/web, launching reports a failed `Result` — the
+Firebase Java SDK does not implement phone auth, and the web flow would need a
+reCAPTCHA verifier KMPAuth does not provide yet.
+
 ### Email Authentication
 Enable the "Email/Password" sign-in method in the Firebase console, then
 (`kmpauth-firebase` dependency):
@@ -568,6 +608,14 @@ FirebaseEmailAuth.sendSignInLinkToEmail(
 if (FirebaseEmailAuth.isSignInWithEmailLink(link)) {
     val result = FirebaseEmailAuth.signInWithEmailLink(persistedEmail, link)
 }
+```
+
+Before security-sensitive operations (deleting the account, changing the
+password), Firebase requires a recent sign-in — reauthenticate first:
+
+```kotlin
+FirebaseEmailAuth.reauthenticate(email, currentPassword)
+    .onSuccess { /* now delete the account / update the password */ }
 ```
 
 > [!NOTE]
