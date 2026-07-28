@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Every Firebase API is now callable from `commonMain`, including on wasm**
+  (#179-adjacent). The sign-in states no longer expose GitLive types in their
+  signatures: every `onResult` now receives `Result<KMPAuthUser?>` instead of
+  `Result<FirebaseUser?>` — the native `dev.gitlive.firebase.auth.FirebaseUser`
+  stays reachable through `KMPAuthUser.raw`. Because the signatures are now
+  SDK-agnostic, the declarations moved to `commonMain`: projects with a wasm
+  target can call all of them from shared code, and on wasm (where the
+  Firebase SDK has no target) they report a failed `Result` instead of not
+  compiling. Alpha adopters: change your callback's type; `user.displayName`,
+  `email`, `uid`, `photoUrl` are available directly on `KMPAuthUser`.
+- `rememberFirebaseOAuthSignInState` now takes the provider as plain data —
+  `(provider, requestScopes, customParameters, ...)` — instead of a GitLive
+  `OAuthProvider` instance.
+- `FirebaseEmailAuth` takes an `EmailActionCodeSettings` (KMPAuth's own type)
+  instead of GitLive's `ActionCodeSettings`.
+- On Desktop and JS, the unimplemented Firebase flows (OAuth/GitHub/Apple web
+  flow, Facebook) now report a failed `Result` explaining why instead of
+  silently doing nothing when launched.
+- The deprecated 2.x `*UiContainer` composables are unchanged: they keep their
+  `Result<FirebaseUser?>` callbacks (unwrapping through `KMPAuthUser.raw`) and
+  remain non-wasm.
+
 ### Added
 - **Email authentication with Firebase** (#97, #110).
   `rememberFirebaseEmailSignInState(email, password, mode, linkAccount, onResult)`

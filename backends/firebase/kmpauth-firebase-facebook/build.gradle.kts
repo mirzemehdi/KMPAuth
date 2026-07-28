@@ -37,13 +37,12 @@ kotlin {
     }
 
     sourceSets {
-        // kmpauth-firebase exposes its Firebase API only on non-wasm
-        // targets (GitLive has no wasm); this module mirrors that shape.
+        // Same shape as kmpauth-firebase-core: the public API lives in
+        // commonMain (KMPAuthUser-based) so wasm consumers can call it; the
+        // GitLive-facing exchange and the deprecated 2.x container stay in
+        // nonWasmMain.
         val nonWasmMain by creating {
             dependsOn(commonMain.get())
-            dependencies {
-                api(project(":backends:firebase:kmpauth-firebase-core"))
-            }
         }
         androidMain.get().dependsOn(nonWasmMain)
         iosMain.get().dependsOn(nonWasmMain)
@@ -62,6 +61,7 @@ kotlin {
             implementation(compose.material)
             api(project(":kmpauth-core"))
             api(project(":providers:kmpauth-facebook"))
+            api(project(":backends:firebase:kmpauth-firebase-core"))
         }
     }
 }

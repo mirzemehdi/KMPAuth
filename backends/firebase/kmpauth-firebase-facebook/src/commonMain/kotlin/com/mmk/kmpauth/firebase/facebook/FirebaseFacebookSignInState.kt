@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.facebook.FacebookLoginTracking
 import com.mmk.kmpauth.facebook.FacebookSignInRequestScope
-import dev.gitlive.firebase.auth.FirebaseUser
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 /**
  * Facebook Sign-In exchanged for a Firebase session, as a Compose state
@@ -29,7 +29,8 @@ import dev.gitlive.firebase.auth.FirebaseUser
  * [FacebookLoginTracking.Limited], exchanged with Firebase through the OIDC
  * OAuth provider; [FacebookLoginTracking.Enabled] uses a classic access token
  * via Firebase's `FacebookAuthProvider`. See [FacebookLoginTracking].
- * @param onResult receives the signed-in [FirebaseUser] or the failure.
+ * @param onResult receives the signed-in [KMPAuthUser] or the failure. The
+ * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
 public expect fun rememberFirebaseFacebookSignInState(
@@ -39,5 +40,5 @@ public expect fun rememberFirebaseFacebookSignInState(
     ),
     linkAccount: Boolean = false,
     loginTracking: FacebookLoginTracking = FacebookLoginTracking.Limited,
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): SignInState

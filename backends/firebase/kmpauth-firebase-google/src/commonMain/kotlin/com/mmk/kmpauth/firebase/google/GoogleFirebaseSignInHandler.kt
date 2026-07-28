@@ -5,22 +5,22 @@ import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.logger.currentLogger
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.google.GoogleUser
-import dev.gitlive.firebase.auth.FirebaseUser
 
 /**
  * Non-composable orchestration behind [GoogleButtonUiContainerFirebase]:
  * turns a [GoogleUser] sign-in result into a Firebase session through the
  * pluggable [AuthProviderBackend]. Kept separate from the composable so the
- * container contract (exact failure messages, link-vs-sign-in decision,
- * raw-user unwrapping) stays unit-testable with a fake backend.
+ * contract (exact failure messages, link-vs-sign-in decision) stays
+ * unit-testable with a fake backend.
  */
 internal class GoogleFirebaseSignInHandler(
     private val backend: AuthProviderBackend,
 ) {
 
     @OptIn(KMPAuthInternalApi::class)
-    suspend fun signIn(googleUser: GoogleUser?, linkAccount: Boolean): Result<FirebaseUser?> {
+    suspend fun signIn(googleUser: GoogleUser?, linkAccount: Boolean): Result<KMPAuthUser?> {
         val idToken = googleUser?.idToken
         if (idToken == null) {
             currentLogger.log("Google idToken is null")
@@ -32,7 +32,7 @@ internal class GoogleFirebaseSignInHandler(
             accessToken = googleUser.accessToken,
         )
         return backend.signIn(credential, linkWithCurrentUser = linkAccount).fold(
-            onSuccess = { user -> Result.success(user.raw as? FirebaseUser) },
+            onSuccess = { user -> Result.success<KMPAuthUser?>(user) },
             onFailure = { e ->
                 currentLogger.log("Google sign-in failed with exception: $e")
                 Result.failure(e)

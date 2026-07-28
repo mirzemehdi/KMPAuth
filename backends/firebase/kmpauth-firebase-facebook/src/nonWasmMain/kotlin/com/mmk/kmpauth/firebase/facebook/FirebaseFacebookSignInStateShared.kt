@@ -13,6 +13,8 @@ import com.mmk.kmpauth.facebook.FacebookLoginTracking
 import com.mmk.kmpauth.facebook.FacebookSignInRequestScope
 import com.mmk.kmpauth.facebook.FacebookUser
 import com.mmk.kmpauth.facebook.rememberFacebookSignInState
+import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.firebase.backend.FirebaseKMPAuthUser
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FacebookAuthProvider
@@ -45,7 +47,7 @@ internal fun rememberFirebaseFacebookSignInStateInternal(
     requestScopes: List<FacebookSignInRequestScope>,
     linkAccount: Boolean,
     loginTracking: FacebookLoginTracking,
-    onResult: (Result<dev.gitlive.firebase.auth.FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
     val currentLinkAccount by rememberUpdatedState(linkAccount)
@@ -108,7 +110,7 @@ internal fun rememberFirebaseFacebookSignInStateInternal(
                                 currentOnResult(Result.failure(IllegalStateException("Firebase user is null")))
                             } else {
                                 currentLogger.log("Firebase sign-in successful")
-                                currentOnResult(Result.success(user))
+                                currentOnResult(Result.success(FirebaseKMPAuthUser(user)))
                             }
                         } catch (e: Exception) {
                             if (e is CancellationException) throw e

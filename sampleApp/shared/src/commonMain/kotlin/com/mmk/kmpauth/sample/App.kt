@@ -44,7 +44,7 @@ import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButton
 import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButtonIconOnly
-import dev.gitlive.firebase.auth.FirebaseUser
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 @Composable
 fun App() {
@@ -57,11 +57,11 @@ fun App() {
         ) {
 
             var signedInUserName: String by remember { mutableStateOf("") }
-            val onFirebaseResult: (Result<FirebaseUser?>) -> Unit = { result ->
+            val onFirebaseResult: (Result<KMPAuthUser?>) -> Unit = { result ->
                 if (result.isSuccess) {
-                    val firebaseUser = result.getOrNull()
+                    val user = result.getOrNull()
                     signedInUserName =
-                        firebaseUser?.displayName ?: firebaseUser?.email ?: "Null User"
+                        user?.displayName ?: user?.email ?: "Null User"
                 } else {
                     signedInUserName = "Null User"
                     println("Error Result: ${result.exceptionOrNull()?.message}")
@@ -146,7 +146,7 @@ fun App() {
 @Composable
 fun EmailAuthSection(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -193,7 +193,7 @@ fun EmailAuthSection(
 @Composable
 fun PhoneAuthSection(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -235,7 +235,7 @@ fun PhoneAuthSection(
 @Composable
 fun AuthUiHelperButtonsAndFirebaseAuth(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -266,7 +266,7 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
 @Composable
 fun IconOnlyButtonsAndFirebaseAuth(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
 ) {
     Row(
         modifier = modifier,

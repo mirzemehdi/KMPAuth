@@ -15,10 +15,10 @@ import dev.gitlive.firebase.auth.OAuthProvider
  * the receiver-scope indirection.
  */
 @Deprecated(
-    "Use rememberFirebaseOAuthSignInState(...) and call launch() from your own button's onClick. " +
-        "Scheduled for removal in 4.0.",
+    "Use rememberFirebaseOAuthSignInState(provider, ...) and call launch() from your own " +
+        "button's onClick. Scheduled for removal in 4.0.",
     ReplaceWith(
-        "rememberFirebaseOAuthSignInState(oAuthProvider, linkAccount, onResult)",
+        "rememberFirebaseOAuthSignInState(provider, requestScopes, customParameters, linkAccount, onResult)",
         "com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState"
     ),
     DeprecationLevel.WARNING
@@ -31,7 +31,7 @@ public fun OAuthContainer(
     linkAccount: Boolean = false,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
-    val signInState = rememberFirebaseOAuthSignInState(
+    val signInState = rememberFirebaseGitLiveOAuthSignInState(
         oAuthProvider = oAuthProvider,
         linkAccount = linkAccount,
         onResult = onResult,

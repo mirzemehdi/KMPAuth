@@ -9,12 +9,8 @@ import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
-import com.mmk.kmpauth.core.runCatchingCancellable
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.EmailAuthProvider
-import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.auth
 
 /**
  * Whether an email/password launch signs in an existing user or creates a
@@ -49,11 +45,12 @@ public enum class EmailAuthMode {
  * }
  * ```
  *
- * For password reset and passwordless email-link sign-in, see
- * [FirebaseEmailAuth].
+ * For password reset, reauthentication and passwordless email-link sign-in,
+ * see [FirebaseEmailAuth].
  *
  * Note: on Desktop (JVM) the underlying Firebase SDK does not implement
- * auth yet, so the flow reports a failed [Result] there.
+ * auth yet, and on wasm the SDK has no target — the flow reports a failed
+ * [Result] there.
  *
  * @param email Email address, read at launch time.
  * @param password Password, read at launch time.
@@ -62,8 +59,9 @@ public enum class EmailAuthMode {
  * @param linkAccount true links the email/password credential to the
  * currently signed-in Firebase user instead of creating a new session —
  * e.g. to upgrade an anonymous user to a permanent account.
- * @param onResult receives the signed-in [FirebaseUser] or the failure
+ * @param onResult receives the signed-in [KMPAuthUser] or the failure
  * (wrong password, user not found, weak password, email already in use, ...).
+ * The native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @OptIn(KMPAuthInternalApi::class)
 @Composable
@@ -72,7 +70,7 @@ public fun rememberFirebaseEmailSignInState(
     password: String,
     mode: EmailAuthMode = EmailAuthMode.SignIn,
     linkAccount: Boolean = false,
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
     val currentEmail by rememberUpdatedState(email)
@@ -87,7 +85,7 @@ public fun rememberFirebaseEmailSignInState(
         KMPAuthBackend.register(FirebaseAuthBackend)
         LaunchingSignInState(scope) {
             currentOnResult(
-                signInWithEmail(
+                firebaseEmailSignIn(
                     email = currentEmail,
                     password = currentPassword,
                     mode = currentMode,
@@ -98,20 +96,13 @@ public fun rememberFirebaseEmailSignInState(
     }
 }
 
-@OptIn(KMPAuthInternalApi::class)
-private suspend fun signInWithEmail(
+/**
+ * Platform email/password exchange: delegates to the Firebase SDK where it
+ * exists; reports an unsupported failure on wasm.
+ */
+internal expect suspend fun firebaseEmailSignIn(
     email: String,
     password: String,
     mode: EmailAuthMode,
     linkAccount: Boolean,
-): Result<FirebaseUser?> = runCatchingCancellable {
-    val auth = Firebase.auth
-    val currentUser = auth.currentUser
-    val result = if (linkAccount && currentUser != null) {
-        currentUser.linkWithCredential(EmailAuthProvider.credential(email, password))
-    } else when (mode) {
-        EmailAuthMode.SignIn -> auth.signInWithEmailAndPassword(email, password)
-        EmailAuthMode.SignUp -> auth.createUserWithEmailAndPassword(email, password)
-    }
-    result.user
-}
+): Result<KMPAuthUser?>

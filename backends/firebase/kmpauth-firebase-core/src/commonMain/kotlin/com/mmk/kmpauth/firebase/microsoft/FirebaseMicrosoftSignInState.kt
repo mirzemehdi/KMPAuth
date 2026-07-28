@@ -2,9 +2,8 @@ package com.mmk.kmpauth.firebase.microsoft
 
 import androidx.compose.runtime.Composable
 import com.mmk.kmpauth.core.SignInState
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState
-import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.OAuthProvider
 
 /**
  * Microsoft Sign-In with Firebase as a Compose state holder.
@@ -32,23 +31,19 @@ import dev.gitlive.firebase.auth.OAuthProvider
  * @param customParameters Custom parameters for the Microsoft OAuth flow,
  * e.g. `"tenant"`, `"prompt"`, `"login_hint"`.
  * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
- * @param onResult receives the signed-in [FirebaseUser] or the failure.
+ * @param onResult receives the signed-in [KMPAuthUser] or the failure. The
+ * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
 public fun rememberFirebaseMicrosoftSignInState(
     requestScopes: List<String> = listOf("mail.read"),
     customParameters: Map<String, String> = emptyMap(),
     linkAccount: Boolean = false,
-    onResult: (Result<FirebaseUser?>) -> Unit,
-): SignInState {
-    val oAuthProvider = OAuthProvider(
-        provider = "microsoft.com",
-        scopes = requestScopes,
-        customParameters = customParameters
-    )
-    return rememberFirebaseOAuthSignInState(
-        oAuthProvider = oAuthProvider,
-        linkAccount = linkAccount,
-        onResult = onResult,
-    )
-}
+    onResult: (Result<KMPAuthUser?>) -> Unit,
+): SignInState = rememberFirebaseOAuthSignInState(
+    provider = "microsoft.com",
+    requestScopes = requestScopes,
+    customParameters = customParameters,
+    linkAccount = linkAccount,
+    onResult = onResult,
+)

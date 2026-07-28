@@ -37,7 +37,9 @@ public fun GoogleButtonUiContainerFirebase(
         filterByAuthorizedAccounts = filterByAuthorizedAccounts,
         isAutoSelectEnabled = isAutoSelectEnabled,
         scopes = scopes,
-        onResult = onResult,
+        // The state reports KMPAuthUser; this 2.x-compat container keeps its
+        // Result<FirebaseUser?> callback by unwrapping the native user.
+        onResult = { result -> onResult(result.map { it?.raw as? FirebaseUser }) },
     )
     val uiContainerScope = remember(signInState) {
         object : UiContainerScope {

@@ -11,7 +11,7 @@ import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.core.getActivity
 import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
-import dev.gitlive.firebase.auth.FirebaseUser
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import dev.gitlive.firebase.auth.PhoneVerificationProvider
 import java.util.concurrent.TimeUnit
 
@@ -21,7 +21,7 @@ public actual fun rememberFirebasePhoneSignInState(
     phoneNumber: String,
     linkAccount: Boolean,
     onCodeSent: () -> Unit,
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): PhoneSignInState {
     val activity = LocalContext.current.getActivity()
     val scope = rememberCoroutineScope()

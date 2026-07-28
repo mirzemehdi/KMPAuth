@@ -2,9 +2,8 @@ package com.mmk.kmpauth.firebase.github
 
 import androidx.compose.runtime.Composable
 import com.mmk.kmpauth.core.SignInState
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState
-import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.OAuthProvider
 
 /**
  * Github Sign-In with Firebase as a Compose state holder.
@@ -24,23 +23,19 @@ import dev.gitlive.firebase.auth.OAuthProvider
  * @param requestScopes Request Scopes that is provided in Github OAuth. By Default, user's email is requested.
  * @param customParameters Custom Parameters that is provided in Github OAuth.
  * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
- * @param onResult receives the signed-in [FirebaseUser] or the failure.
+ * @param onResult receives the signed-in [KMPAuthUser] or the failure. The
+ * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
 public fun rememberFirebaseGithubSignInState(
     requestScopes: List<String> = listOf("user:email"),
     customParameters: Map<String, String> = emptyMap(),
     linkAccount: Boolean = false,
-    onResult: (Result<FirebaseUser?>) -> Unit,
-): SignInState {
-    val oAuthProvider = OAuthProvider(
-        provider = "github.com",
-        scopes = requestScopes,
-        customParameters = customParameters
-    )
-    return rememberFirebaseOAuthSignInState(
-        oAuthProvider = oAuthProvider,
-        linkAccount = linkAccount,
-        onResult = onResult,
-    )
-}
+    onResult: (Result<KMPAuthUser?>) -> Unit,
+): SignInState = rememberFirebaseOAuthSignInState(
+    provider = "github.com",
+    requestScopes = requestScopes,
+    customParameters = customParameters,
+    linkAccount = linkAccount,
+    onResult = onResult,
+)

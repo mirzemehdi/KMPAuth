@@ -13,7 +13,7 @@ import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
 import com.mmk.kmpauth.google.GoogleAuthProvider
-import dev.gitlive.firebase.auth.FirebaseUser
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 /**
  * Google Sign-In exchanged for a Firebase session, as a Compose state
@@ -33,7 +33,8 @@ import dev.gitlive.firebase.auth.FirebaseUser
  *
  * @param linkAccount true links the credential to the currently signed-in
  * Firebase user instead of creating a new session.
- * @param onResult receives the signed-in [FirebaseUser] or the failure.
+ * @param onResult receives the signed-in [KMPAuthUser] or the failure. The
+ * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @OptIn(KMPAuthInternalApi::class)
 @Composable
@@ -42,7 +43,7 @@ public fun rememberFirebaseGoogleSignInState(
     filterByAuthorizedAccounts: Boolean = false,
     isAutoSelectEnabled: Boolean = true,
     scopes: List<String> = listOf("email", "profile"),
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): SignInState {
     // IDE previews never run application startup, so GoogleAuthProvider.create()
     // has not been called and get() would throw. Render an inert state instead.

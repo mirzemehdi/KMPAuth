@@ -31,6 +31,12 @@ public abstract interface class com/mmk/kmpauth/core/UiContainerScope {
 	public abstract fun onClick ()V
 }
 
+public final class com/mmk/kmpauth/core/UnsupportedSignInState : com/mmk/kmpauth/core/SignInState {
+	public fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public fun isInProgress ()Z
+	public fun launch ()V
+}
+
 public abstract interface class com/mmk/kmpauth/core/auth/AuthCredential {
 	public abstract fun getProviderId ()Ljava/lang/String;
 }

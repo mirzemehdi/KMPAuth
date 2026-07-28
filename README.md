@@ -9,7 +9,7 @@
 ![badge-desktop](http://img.shields.io/badge/platform-desktop-FF8E8E.svg?style=flat)
 
 
-Simple and easy to use Kotlin Multiplatform Authentication library targeting iOS, Android, Desktop and Web. All modules resolve on every target; the Firebase modules expose their API on android/iOS/jvm/js (not wasm — the underlying Firebase SDK has no wasm support). Supporting **Google**, **Apple**, **Github**, **Facebook** authentication integrations using Firebase.   
+Simple and easy to use Kotlin Multiplatform Authentication library targeting iOS, Android, Desktop and Web. Every API is callable from `commonMain` on every target — including wasm, where the Firebase-backed flows report a failed `Result` (the underlying Firebase SDK has no wasm support yet). Supporting **Google**, **Apple**, **Github**, **Facebook**, **Microsoft**, **email**, **phone** and **anonymous** authentication using Firebase.   
 Because I am using KMPAuth in [FindTravelNow](https://github.com/mirzemehdi/FindTravelNow-KMM/) production KMP project, I'll support development of this library :).   
 Related blog post: [Integrating Google Sign-In into Kotlin Multiplatform](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891)  
 You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full library api information.
@@ -23,7 +23,7 @@ You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full
 @Composable
 fun AuthUiHelperButtonsAndFirebaseAuth(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
@@ -376,7 +376,7 @@ Button(onClick = { githubSignIn.launch() }) { Text("Github Sign-In (Custom Desig
 ```kotlin
 val facebookSignIn = rememberFirebaseFacebookSignInState(
     linkAccount = false,
-    onResult = { result -> /* handle FirebaseUser result or error */ },
+    onResult = { result -> /* handle KMPAuthUser result or error */ },
 )
 
 //Facebook button with icon
@@ -578,7 +578,7 @@ val emailSignIn = rememberFirebaseEmailSignInState(
     email = email,
     password = password,
     mode = EmailAuthMode.SignIn, // or EmailAuthMode.SignUp to create the account
-    onResult = onFirebaseResult, // Result<FirebaseUser?>
+    onResult = onFirebaseResult, // Result<KMPAuthUser?>
 )
 Button(onClick = { emailSignIn.launch() }, enabled = !emailSignIn.isInProgress) {
     Text("Sign in with email")
@@ -595,11 +595,11 @@ FirebaseEmailAuth.sendPasswordResetEmail(email)
 // Passwordless: step 1 - send the link (enable "Email link" in the Firebase console)
 FirebaseEmailAuth.sendSignInLinkToEmail(
     email = email,
-    actionCodeSettings = ActionCodeSettings(
+    actionCodeSettings = EmailActionCodeSettings(
         url = "https://example.com/finish-sign-in",
         canHandleCodeInApp = true,
         iOSBundleId = "com.example.app",
-        androidPackageName = AndroidPackageName("com.example.app"),
+        androidPackageName = "com.example.app",
     ),
 )
 // Persist `email` locally - you need it again after the user opens the link.
@@ -620,8 +620,9 @@ FirebaseEmailAuth.reauthenticate(email, currentPassword)
 
 > [!NOTE]
 > On Desktop (JVM) the underlying Firebase SDK does not implement auth yet
-> ([#204](https://github.com/mirzemehdi/KMPAuth/issues/204)), so email and
-> anonymous flows report a failed `Result` there.
+> ([#204](https://github.com/mirzemehdi/KMPAuth/issues/204)), and on wasm the
+> Firebase SDK has no target - email and anonymous flows report a failed
+> `Result` there.
 
 ### Anonymous Sign-In
 Enable the "Anonymous" sign-in method in the Firebase console. Lets users try

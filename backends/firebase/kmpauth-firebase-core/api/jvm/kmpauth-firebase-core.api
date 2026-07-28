@@ -19,6 +19,42 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackend : com/mm
 	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class com/mmk/kmpauth/firebase/backend/FirebaseKMPAuthUser : com/mmk/kmpauth/core/auth/KMPAuthUser {
+	public static final field $stable I
+	public fun <init> (Ldev/gitlive/firebase/auth/FirebaseUser;)V
+	public fun getDisplayName ()Ljava/lang/String;
+	public fun getEmail ()Ljava/lang/String;
+	public fun getPhotoUrl ()Ljava/lang/String;
+	public fun getProviderId ()Ljava/lang/String;
+	public fun getRaw ()Ljava/lang/Object;
+	public fun getUid ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/firebase/email/EmailActionCodeSettings {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Z
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Z
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)Lcom/mmk/kmpauth/firebase/email/EmailActionCodeSettings;
+	public static synthetic fun copy$default (Lcom/mmk/kmpauth/firebase/email/EmailActionCodeSettings;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mmk/kmpauth/firebase/email/EmailActionCodeSettings;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAndroidInstallIfNotAvailable ()Z
+	public final fun getAndroidMinimumVersion ()Ljava/lang/String;
+	public final fun getAndroidPackageName ()Ljava/lang/String;
+	public final fun getCanHandleCodeInApp ()Z
+	public final fun getIOSBundleId ()Ljava/lang/String;
+	public final fun getLinkDomain ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/mmk/kmpauth/firebase/email/EmailAuthMode : java/lang/Enum {
 	public static final field SignIn Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
 	public static final field SignUp Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
@@ -32,9 +68,9 @@ public final class com/mmk/kmpauth/firebase/email/FirebaseEmailAuth {
 	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/email/FirebaseEmailAuth;
 	public final fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public final fun reauthenticate-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun sendPasswordResetEmail-0E7RQCE$default (Lcom/mmk/kmpauth/firebase/email/FirebaseEmailAuth;Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/firebase/email/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendPasswordResetEmail-0E7RQCE$default (Lcom/mmk/kmpauth/firebase/email/FirebaseEmailAuth;Ljava/lang/String;Lcom/mmk/kmpauth/firebase/email/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/firebase/email/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/firebase/email/FirebaseEmailAuth;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
@@ -56,8 +92,8 @@ public final class com/mmk/kmpauth/firebase/microsoft/FirebaseMicrosoftSignInSta
 	public static final fun rememberFirebaseMicrosoftSignInState (Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
-public final class com/mmk/kmpauth/firebase/oauth/FirebaseOAuthSignInState_jvmKt {
-	public static final fun rememberFirebaseOAuthSignInState (Ldev/gitlive/firebase/auth/OAuthProvider;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+public final class com/mmk/kmpauth/firebase/oauth/FirebaseOAuthSignInStateKt {
+	public static final fun rememberFirebaseOAuthSignInState (Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/firebase/oauth/OAuthContainerKt {

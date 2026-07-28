@@ -90,15 +90,16 @@ class GoogleFirebaseSignInHandlerTest {
     }
 
     @Test
-    fun nonFirebaseRawUserUnwrapsToNullSuccess() = runTest {
-        // A custom backend returning a non-Firebase user still yields a
-        // successful (null) FirebaseUser result rather than a crash.
-        val backend = RecordingBackend(Result.success(FakeUser(raw = "not-a-firebase-user")))
+    fun backendUserPassesThroughUnchanged() = runTest {
+        // The handler returns the backend's KMPAuthUser as-is; unwrapping to
+        // the native FirebaseUser is the deprecated container's job.
+        val user = FakeUser(raw = "not-a-firebase-user")
+        val backend = RecordingBackend(Result.success(user))
         val handler = GoogleFirebaseSignInHandler(backend)
 
         val result = handler.signIn(GoogleUser(idToken = "t"), linkAccount = false)
 
         assertTrue(result.isSuccess)
-        assertNull(result.getOrNull())
+        assertEquals(user, result.getOrNull())
     }
 }

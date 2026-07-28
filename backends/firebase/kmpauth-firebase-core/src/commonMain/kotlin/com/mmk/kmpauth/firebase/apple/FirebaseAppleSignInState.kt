@@ -1,12 +1,14 @@
 package com.mmk.kmpauth.firebase.apple
 
-import com.mmk.kmpauth.apple.AppleSignInRequestScope
 import androidx.compose.runtime.Composable
+import com.mmk.kmpauth.apple.AppleSignInRequestScope
 import com.mmk.kmpauth.core.SignInState
-import dev.gitlive.firebase.auth.FirebaseUser
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 /**
- * Apple Sign-In with Firebase as a Compose state holder.
+ * Apple Sign-In with Firebase as a Compose state holder. Native
+ * AuthenticationServices flow on iOS; Firebase's Apple OAuth web flow on
+ * Android. On Desktop, JS and wasm, launching reports a failed [Result].
  *
  * Parameters are read at launch time: recomposing with new values (e.g.
  * toggling [linkAccount] between sign-in and sign-up modes) updates the
@@ -22,7 +24,8 @@ import dev.gitlive.firebase.auth.FirebaseUser
  *
  * @param requestScopes list of request scopes type of [AppleSignInRequestScope].
  * @param linkAccount boolean value to link account with existing account. Default value is false
- * @param onResult receives the signed-in [FirebaseUser] or the failure.
+ * @param onResult receives the signed-in [KMPAuthUser] or the failure. The
+ * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
 public expect fun rememberFirebaseAppleSignInState(
@@ -31,5 +34,5 @@ public expect fun rememberFirebaseAppleSignInState(
         AppleSignInRequestScope.Email
     ),
     linkAccount: Boolean = false,
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): SignInState

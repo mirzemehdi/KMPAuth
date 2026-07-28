@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
 import dev.gitlive.firebase.auth.FirebaseUser
 
 /**
@@ -37,7 +38,7 @@ public fun AppleButtonUiContainer(
     val signInState = rememberFirebaseAppleSignInState(
         requestScopes = requestScopes,
         linkAccount = linkAccount,
-        onResult = onResult,
+        onResult = FirebaseAuthBackend.toFirebaseUserCallback(onResult),
     )
     val uiContainerScope = remember(signInState) {
         object : UiContainerScope {

@@ -4,14 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import dev.gitlive.firebase.auth.FirebaseUser
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 @Composable
 public actual fun rememberFirebasePhoneSignInState(
     phoneNumber: String,
     linkAccount: Boolean,
     onCodeSent: () -> Unit,
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): PhoneSignInState {
     val currentOnResult by rememberUpdatedState(onResult)
     return remember {

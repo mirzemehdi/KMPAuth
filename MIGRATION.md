@@ -265,6 +265,44 @@ provider directly.
 - `GoogleButtonUiContainer` keeps its `(GoogleUser?) -> Unit` callback, so 2.x
   container code compiles unchanged. To see failure reasons, move to
   `rememberGoogleSignInState`.
-- `rememberFirebaseGoogleSignInState` already returned `Result<FirebaseUser?>`
-  and its signature is unchanged. It now propagates the underlying Google
-  failure instead of reporting a generic "id token is null".
+- `rememberFirebaseGoogleSignInState` already used a `Result` callback. It now
+  propagates the underlying Google failure instead of reporting a generic
+  "id token is null", and as of the KMPAuthUser change (section 11) the result
+  type is `Result<KMPAuthUser?>`.
+
+## 11. Firebase states return `KMPAuthUser` and are callable from commonMain (wasm included)
+
+In 2.x (and the early 3.0 alphas) every Firebase state exposed GitLive's
+`FirebaseUser` in its `onResult` signature. Since GitLive has no wasm target,
+that made the whole Firebase API invisible to `commonMain` in projects with a
+wasm target. The states now use KMPAuth's own `KMPAuthUser` and live in
+`commonMain` on **all** targets — on wasm they report a failed `Result`
+instead of not compiling.
+
+```kotlin
+// before (3.0 alphas)
+val onFirebaseResult: (Result<FirebaseUser?>) -> Unit = { result ->
+    val name = result.getOrNull()?.displayName
+}
+
+// after
+val onFirebaseResult: (Result<KMPAuthUser?>) -> Unit = { result ->
+    val name = result.getOrNull()?.displayName // same properties: uid, email, displayName, photoUrl, providerId
+    val nativeUser = result.getOrNull()?.raw as? dev.gitlive.firebase.auth.FirebaseUser // escape hatch
+}
+```
+
+Also changed:
+
+- `rememberFirebaseOAuthSignInState(oAuthProvider = OAuthProvider(...))` →
+  `rememberFirebaseOAuthSignInState(provider = "github.com", requestScopes = ..., customParameters = ...)`.
+- `FirebaseEmailAuth.sendSignInLinkToEmail` takes `EmailActionCodeSettings`
+  (KMPAuth's type, android fields flattened) instead of GitLive's
+  `ActionCodeSettings`.
+- Desktop/JS: launching a flow that is not implemented there (OAuth/GitHub/
+  Apple web flow, Facebook) now reports a failed `Result` with the reason;
+  previously it silently did nothing.
+
+**Not affected:** the deprecated 2.x `*UiContainer` composables keep their
+`Result<FirebaseUser?>` callbacks unchanged (and stay non-wasm), so 2.x code
+compiles as before.

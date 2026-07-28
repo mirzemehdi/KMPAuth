@@ -9,11 +9,8 @@ import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
-import com.mmk.kmpauth.core.runCatchingCancellable
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.auth
 
 /**
  * Anonymous Firebase sign-in as a Compose state holder. Creates (or
@@ -35,15 +32,16 @@ import dev.gitlive.firebase.auth.auth
  * Enable the "Anonymous" sign-in method in the Firebase console first.
  *
  * Note: on Desktop (JVM) the underlying Firebase SDK does not implement
- * auth yet, so the flow reports a failed [Result] there.
+ * auth yet, and on wasm the SDK has no target — the flow reports a failed
+ * [Result] there.
  *
- * @param onResult receives the signed-in anonymous [FirebaseUser] or the
- * failure.
+ * @param onResult receives the signed-in anonymous [KMPAuthUser] or the
+ * failure. The native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @OptIn(KMPAuthInternalApi::class)
 @Composable
 public fun rememberFirebaseAnonymousSignInState(
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
     val currentOnResult by rememberUpdatedState(onResult)
@@ -53,12 +51,13 @@ public fun rememberFirebaseAnonymousSignInState(
         // a backend at startup (first registration wins).
         KMPAuthBackend.register(FirebaseAuthBackend)
         LaunchingSignInState(scope) {
-            currentOnResult(signInAnonymously())
+            currentOnResult(firebaseAnonymousSignIn())
         }
     }
 }
 
-@OptIn(KMPAuthInternalApi::class)
-private suspend fun signInAnonymously(): Result<FirebaseUser?> = runCatchingCancellable {
-    Firebase.auth.signInAnonymously().user
-}
+/**
+ * Platform anonymous sign-in: delegates to the Firebase SDK where it
+ * exists; reports an unsupported failure on wasm.
+ */
+internal expect suspend fun firebaseAnonymousSignIn(): Result<KMPAuthUser?>

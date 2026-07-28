@@ -8,7 +8,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import cocoapods.FirebaseAuth.FIRAuthUIDelegateProtocol
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
-import dev.gitlive.firebase.auth.FirebaseUser
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import dev.gitlive.firebase.auth.PhoneVerificationProvider
 import kotlinx.cinterop.ExperimentalForeignApi
 
@@ -18,7 +18,7 @@ public actual fun rememberFirebasePhoneSignInState(
     phoneNumber: String,
     linkAccount: Boolean,
     onCodeSent: () -> Unit,
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): PhoneSignInState {
     val scope = rememberCoroutineScope()
     val currentPhoneNumber by rememberUpdatedState(phoneNumber)

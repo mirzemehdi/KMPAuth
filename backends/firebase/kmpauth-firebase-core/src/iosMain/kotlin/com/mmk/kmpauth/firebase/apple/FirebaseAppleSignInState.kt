@@ -14,7 +14,8 @@ import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
 import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.FirebaseUser
+import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.firebase.backend.FirebaseKMPAuthUser
 import dev.gitlive.firebase.auth.auth
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -26,7 +27,7 @@ import kotlin.coroutines.resume
 public actual fun rememberFirebaseAppleSignInState(
     requestScopes: List<AppleSignInRequestScope>,
     linkAccount: Boolean,
-    onResult: (Result<FirebaseUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser?>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
     val currentRequestScopes by rememberUpdatedState(requestScopes)
@@ -48,7 +49,7 @@ public actual fun rememberFirebaseAppleSignInState(
 private suspend fun signInWithApple(
     requestScopes: List<AppleSignInRequestScope>,
     linkAccount: Boolean,
-): Result<FirebaseUser?> {
+): Result<KMPAuthUser?> {
     val credentialResult = performAppleSignIn(requestScopes)
     val appleCredential = credentialResult.getOrElse { return Result.failure(it) }
     return signInToFirebase(
@@ -59,13 +60,13 @@ private suspend fun signInWithApple(
     )
 }
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, KMPAuthInternalApi::class)
 private suspend fun signInToFirebase(
     idToken: String,
     rawNonce: String,
     fullName: platform.Foundation.NSPersonNameComponents?,
     linkAccount: Boolean,
-): Result<FirebaseUser?> = suspendCancellableCoroutine { continuation ->
+): Result<KMPAuthUser?> = suspendCancellableCoroutine { continuation ->
     // Pass Apple's name components along so Firebase can populate the display
     // name on the user's first sign-in.
     val credential = FIROAuthProvider.appleCredentialWithIDToken(idToken, rawNonce, fullName)
@@ -82,7 +83,7 @@ private suspend fun signInToFirebase(
                     )
                 )
             } else {
-                continuation.resume(Result.success(Firebase.auth.currentUser))
+                continuation.resume(Result.success(Firebase.auth.currentUser?.let(::FirebaseKMPAuthUser)))
             }
         }
     }

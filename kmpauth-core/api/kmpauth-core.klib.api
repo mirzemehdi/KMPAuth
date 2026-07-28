@@ -101,6 +101,15 @@ final class com.mmk.kmpauth.core/LaunchingSignInState : com.mmk.kmpauth.core/Sig
     final fun launch() // com.mmk.kmpauth.core/LaunchingSignInState.launch|launch(){}[0]
 }
 
+final class com.mmk.kmpauth.core/UnsupportedSignInState : com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.core/UnsupportedSignInState|null[0]
+    constructor <init>(kotlin/String, kotlin/Function1<kotlin/Throwable, kotlin/Unit>) // com.mmk.kmpauth.core/UnsupportedSignInState.<init>|<init>(kotlin.String;kotlin.Function1<kotlin.Throwable,kotlin.Unit>){}[0]
+
+    final val isInProgress // com.mmk.kmpauth.core/UnsupportedSignInState.isInProgress|{}isInProgress[0]
+        final fun <get-isInProgress>(): kotlin/Boolean // com.mmk.kmpauth.core/UnsupportedSignInState.isInProgress.<get-isInProgress>|<get-isInProgress>(){}[0]
+
+    final fun launch() // com.mmk.kmpauth.core/UnsupportedSignInState.launch|launch(){}[0]
+}
+
 final object com.mmk.kmpauth.core.auth/AuthProviderIds { // com.mmk.kmpauth.core.auth/AuthProviderIds|null[0]
     final const val APPLE // com.mmk.kmpauth.core.auth/AuthProviderIds.APPLE|{}APPLE[0]
         final fun <get-APPLE>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthProviderIds.APPLE.<get-APPLE>|<get-APPLE>(){}[0]

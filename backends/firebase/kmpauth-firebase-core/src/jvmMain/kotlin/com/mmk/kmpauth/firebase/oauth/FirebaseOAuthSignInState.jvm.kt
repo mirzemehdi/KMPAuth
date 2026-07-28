@@ -1,26 +1,28 @@
 package com.mmk.kmpauth.firebase.oauth
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import com.mmk.kmpauth.core.KMPAuthInternalApi
-import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
+import com.mmk.kmpauth.core.UnsupportedSignInState
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun rememberFirebaseOAuthSignInState(
+internal actual fun rememberFirebaseGitLiveOAuthSignInState(
     oAuthProvider: OAuthProvider,
     linkAccount: Boolean,
     onResult: (Result<FirebaseUser?>) -> Unit,
 ): SignInState {
-    val scope = rememberCoroutineScope()
+    val currentOnResult by rememberUpdatedState(onResult)
     return remember {
-        LaunchingSignInState(scope) {
-            // OAuth sign-in with Firebase is not implemented on JVM. The legacy
-            // container was a no-op on this platform as well.
-        }
+        UnsupportedSignInState(
+            reason = "OAuth sign-in with Firebase is not implemented on Desktop " +
+                "(https://github.com/mirzemehdi/KMPAuth/issues/204).",
+            onFailure = { currentOnResult(Result.failure(it)) },
+        )
     }
 }

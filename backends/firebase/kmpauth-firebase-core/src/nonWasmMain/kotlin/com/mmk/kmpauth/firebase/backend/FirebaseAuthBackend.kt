@@ -18,7 +18,8 @@ import kotlinx.coroutines.CancellationException
  * [KMPAuthUser] view over a Firebase user. The native
  * [dev.gitlive.firebase.auth.FirebaseUser] stays reachable through [raw].
  */
-internal class FirebaseKMPAuthUser(private val user: FirebaseUser) : KMPAuthUser {
+@KMPAuthInternalApi
+public class FirebaseKMPAuthUser(private val user: FirebaseUser) : KMPAuthUser {
     override val uid: String get() = user.uid
     override val email: String? get() = user.email
     override val displayName: String? get() = user.displayName
@@ -27,18 +28,8 @@ internal class FirebaseKMPAuthUser(private val user: FirebaseUser) : KMPAuthUser
     override val raw: Any get() = user
 }
 
-/**
- * Firebase implementation of [AuthProviderBackend], KMPAuth's default
- * backend. Registered automatically the first time a Firebase container is
- * used; register a different backend at application start to override.
- *
- * Token-based credentials ([AuthCredential.IdToken] from Google or
- * Facebook) are exchanged directly. Apple and web-flow sign-in
- * ([AuthCredential.OAuthWebFlow]) require a platform-driven browser flow
- * and are served by the dedicated composables (`AppleButtonUiContainer`,
- * `GithubButtonUiContainer`, `OAuthContainer`) rather than this backend.
- */
-public object FirebaseAuthBackend : AuthProviderBackend {
+@OptIn(KMPAuthInternalApi::class)
+public actual object FirebaseAuthBackend : AuthProviderBackend {
 
     @OptIn(KMPAuthInternalApi::class)
     override suspend fun signIn(
@@ -80,6 +71,18 @@ public object FirebaseAuthBackend : AuthProviderBackend {
 
     override fun currentUser(): KMPAuthUser? =
         Firebase.auth.currentUser?.let { FirebaseKMPAuthUser(it) }
+
+    /**
+     * Adapts a legacy `Result<FirebaseUser?>` callback (the deprecated 2.x
+     * container composables) to the `Result<KMPAuthUser?>` the sign-in
+     * states now produce, unwrapping the native user through
+     * [KMPAuthUser.raw].
+     */
+    internal fun toFirebaseUserCallback(
+        onResult: (Result<FirebaseUser?>) -> Unit,
+    ): (Result<KMPAuthUser?>) -> Unit = { result ->
+        onResult(result.map { it?.raw as? FirebaseUser })
+    }
 
     private fun AuthCredential.toFirebaseCredentialOrNull(): dev.gitlive.firebase.auth.AuthCredential? =
         when (this) {
