@@ -26,6 +26,12 @@ kotlin {
         browser()
     }
 
+    // Smoke test for the wasm-callable Firebase API: the same commonMain App
+    // compiles for wasm; Firebase flows report failed Results there.
+    wasmJs {
+        browser()
+    }
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()

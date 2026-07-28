@@ -7,8 +7,6 @@ plugins {
 }
 
 kotlin {
-    // js rather than wasmJs: the Firebase modules expose their API on js
-    // but intentionally ship an empty wasm variant (GitLive has no wasm).
     js(IR) {
         outputModuleName.set("webApp")
         browser {
@@ -24,12 +22,39 @@ kotlin {
         }
         binaries.executable()
     }
+
+    // Wasm variant of the same sample. Firebase sign-in states are callable
+    // from commonMain here too; on wasm they report failed Results (the
+    // Firebase SDK has no wasm target), while Google sign-in works natively.
+    // Run with :sampleApp:webApp:wasmJsBrowserDevelopmentRun.
+    wasmJs {
+        outputModuleName.set("webAppWasm")
+        browser {
+            commonWebpackConfig {
+                outputFileName = "webAppWasm.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    // The js variant's dev server uses the default 8080.
+                    port = 8081
+                }
+            }
+        }
+        binaries.executable()
+    }
+
     sourceSets {
         jsMain.dependencies {
             implementation(project(":sampleApp:shared"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
+        }
+        wasmJsMain.dependencies {
+            implementation(project(":sampleApp:shared"))
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+            // kotlinx.browser (document) for the wasm entry point.
+            implementation(libs.kotlinx.browser)
         }
     }
 }
