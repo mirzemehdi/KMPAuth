@@ -134,3 +134,4 @@ final var com.mmk.kmpauth.core.logger/currentLogger // com.mmk.kmpauth.core.logg
     final fun <set-currentLogger>(com.mmk.kmpauth.core.logger/KMPAuthLogger) // com.mmk.kmpauth.core.logger/currentLogger.<set-currentLogger>|<set-currentLogger>(com.mmk.kmpauth.core.logger.KMPAuthLogger){}[0]
 
 final fun com.mmk.kmpauth.core.di/isAndroidPlatform(): kotlin/Boolean // com.mmk.kmpauth.core.di/isAndroidPlatform|isAndroidPlatform(){}[0]
+final inline fun <#A: kotlin/Any?> com.mmk.kmpauth.core/runCatchingCancellable(kotlin/Function0<#A>): kotlin/Result<#A> // com.mmk.kmpauth.core/runCatchingCancellable|runCatchingCancellable(kotlin.Function0<0:0>){0§<kotlin.Any?>}[0]

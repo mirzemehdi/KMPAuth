@@ -18,6 +18,10 @@ public final class com/mmk/kmpauth/core/NoOpSignInState : com/mmk/kmpauth/core/S
 	public fun launch ()V
 }
 
+public final class com/mmk/kmpauth/core/RunCatchingCancellableKt {
+	public static final fun runCatchingCancellable (Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+}
+
 public abstract interface class com/mmk/kmpauth/core/SignInState {
 	public abstract fun isInProgress ()Z
 	public abstract fun launch ()V

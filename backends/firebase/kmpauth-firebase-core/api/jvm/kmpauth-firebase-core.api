@@ -1,3 +1,7 @@
+public final class com/mmk/kmpauth/firebase/anonymous/FirebaseAnonymousSignInStateKt {
+	public static final fun rememberFirebaseAnonymousSignInState (Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/mmk/kmpauth/core/SignInState;
+}
+
 public final class com/mmk/kmpauth/firebase/apple/AppleButtonUiContainerKt {
 	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
@@ -13,6 +17,29 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackend : com/mm
 	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
 	public fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/firebase/email/EmailAuthMode : java/lang/Enum {
+	public static final field SignIn Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
+	public static final field SignUp Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
+	public static fun values ()[Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
+}
+
+public final class com/mmk/kmpauth/firebase/email/FirebaseEmailAuth {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/email/FirebaseEmailAuth;
+	public final fun isSignInWithEmailLink (Ljava/lang/String;)Z
+	public final fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendPasswordResetEmail-0E7RQCE$default (Lcom/mmk/kmpauth/firebase/email/FirebaseEmailAuth;Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/firebase/email/FirebaseEmailAuth;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/firebase/email/FirebaseEmailSignInStateKt {
+	public static final fun rememberFirebaseEmailSignInState (Ljava/lang/String;Ljava/lang/String;Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/firebase/github/FirebaseGithubSignInStateKt {

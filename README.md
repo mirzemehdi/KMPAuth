@@ -64,6 +64,8 @@ You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob
 - ✅ [Apple Sign-In with Firebase](#apple-sign-in), and native Apple Sign-In without Firebase on Apple platforms
 - ✅ [Github Sign-In with Firebase](#github-sign-in)
 - ✅ [Facebook Sign-In (android and ios) with Firebase](#facebook-sign-in)
+- ✅ [Email authentication with Firebase](#email-authentication) - password sign-in/sign-up, password reset, passwordless email link
+- ✅ [Anonymous (guest) Sign-In with Firebase](#anonymous-sign-in)
 - ✅ Apple, Google, Facebook "Sign in with " UiHelper buttons (according to each brand's guideline)
 - 📱 Multiplatform (android, iOS, jvm and web (js,wasm))
 
@@ -522,6 +524,70 @@ func application(
 - Facebook Login for Android - https://developers.facebook.com/docs/facebook-login/ios
 - Firebase Authentication with Facebook - https://firebase.google.com/docs/auth/android/facebook-login
 - Firebase Authentication with Facebook iOS - https://firebase.google.com/docs/auth/ios/facebook-login
+
+### Email Authentication
+Enable the "Email/Password" sign-in method in the Firebase console, then
+(`kmpauth-firebase` dependency):
+
+```kotlin
+var email by remember { mutableStateOf("") }
+var password by remember { mutableStateOf("") }
+
+// Field values are read at launch time - create the state once and reuse it as the user types.
+val emailSignIn = rememberFirebaseEmailSignInState(
+    email = email,
+    password = password,
+    mode = EmailAuthMode.SignIn, // or EmailAuthMode.SignUp to create the account
+    onResult = onFirebaseResult, // Result<FirebaseUser?>
+)
+Button(onClick = { emailSignIn.launch() }, enabled = !emailSignIn.isInProgress) {
+    Text("Sign in with email")
+}
+```
+
+Password reset and passwordless email-link (magic link) sign-in are plain suspend
+functions on `FirebaseEmailAuth`:
+
+```kotlin
+// Password reset
+FirebaseEmailAuth.sendPasswordResetEmail(email)
+
+// Passwordless: step 1 - send the link (enable "Email link" in the Firebase console)
+FirebaseEmailAuth.sendSignInLinkToEmail(
+    email = email,
+    actionCodeSettings = ActionCodeSettings(
+        url = "https://example.com/finish-sign-in",
+        canHandleCodeInApp = true,
+        iOSBundleId = "com.example.app",
+        androidPackageName = AndroidPackageName("com.example.app"),
+    ),
+)
+// Persist `email` locally - you need it again after the user opens the link.
+
+// Passwordless: step 2 - in your deep/universal link handler
+if (FirebaseEmailAuth.isSignInWithEmailLink(link)) {
+    val result = FirebaseEmailAuth.signInWithEmailLink(persistedEmail, link)
+}
+```
+
+> [!NOTE]
+> On Desktop (JVM) the underlying Firebase SDK does not implement auth yet
+> ([#204](https://github.com/mirzemehdi/KMPAuth/issues/204)), so email and
+> anonymous flows report a failed `Result` there.
+
+### Anonymous Sign-In
+Enable the "Anonymous" sign-in method in the Firebase console. Lets users try
+the app before creating an account:
+
+```kotlin
+val anonymousSignIn = rememberFirebaseAnonymousSignInState(onResult = onFirebaseResult)
+Button(onClick = { anonymousSignIn.launch() }) { Text("Continue as guest") }
+```
+
+To later upgrade the guest to a permanent account, sign in with any provider
+state using `linkAccount = true` (e.g. `rememberFirebaseEmailSignInState(...,
+linkAccount = true)`) - the credential is linked to the anonymous user, keeping
+its uid and data.
 
 
 

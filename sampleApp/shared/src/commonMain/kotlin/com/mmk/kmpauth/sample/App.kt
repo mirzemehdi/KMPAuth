@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,11 +23,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.apple.rememberAppleSignInState
+import com.mmk.kmpauth.firebase.anonymous.rememberFirebaseAnonymousSignInState
 import com.mmk.kmpauth.firebase.apple.rememberFirebaseAppleSignInState
+import com.mmk.kmpauth.firebase.email.EmailAuthMode
+import com.mmk.kmpauth.firebase.email.rememberFirebaseEmailSignInState
 import com.mmk.kmpauth.firebase.facebook.rememberFirebaseFacebookSignInState
 import com.mmk.kmpauth.firebase.github.rememberFirebaseGithubSignInState
 import com.mmk.kmpauth.firebase.google.rememberFirebaseGoogleSignInState
@@ -42,7 +49,7 @@ fun App() {
 
     MaterialTheme {
         Column(
-            Modifier.fillMaxSize().padding(20.dp),
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
         ) {
@@ -102,6 +109,13 @@ fun App() {
             val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
             Button(onClick = { facebookSignIn.launch() }) { Text("Facebook Sign-In (Custom Design)") }
 
+            //Anonymous (guest) sign-in with Firebase
+            val anonymousSignIn = rememberFirebaseAnonymousSignInState(onResult = onFirebaseResult)
+            Button(onClick = { anonymousSignIn.launch() }) { Text("Continue as Guest") }
+
+            //Email/password authentication with Firebase
+            EmailAuthSection(onFirebaseResult = onFirebaseResult)
+
             // ************************** UiHelper Text Buttons *************
             Divider(modifier = Modifier.fillMaxWidth().padding(16.dp))
             AuthUiHelperButtonsAndFirebaseAuth(
@@ -116,6 +130,53 @@ fun App() {
                 onFirebaseResult = onFirebaseResult
             )
 
+        }
+    }
+}
+
+@Composable
+fun EmailAuthSection(
+    modifier: Modifier = Modifier,
+    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        var email by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            singleLine = true,
+        )
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+        )
+
+        // Field values are read at launch time, so the states can be
+        // created once and reused as the user types.
+        val emailSignIn = rememberFirebaseEmailSignInState(
+            email = email,
+            password = password,
+            mode = EmailAuthMode.SignIn,
+            onResult = onFirebaseResult,
+        )
+        val emailSignUp = rememberFirebaseEmailSignInState(
+            email = email,
+            password = password,
+            mode = EmailAuthMode.SignUp,
+            onResult = onFirebaseResult,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Button(onClick = { emailSignIn.launch() }) { Text("Email Sign-In") }
+            Button(onClick = { emailSignUp.launch() }) { Text("Email Sign-Up") }
         }
     }
 }

@@ -5,6 +5,25 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Email authentication with Firebase** (#97, #110).
+  `rememberFirebaseEmailSignInState(email, password, mode, linkAccount, onResult)`
+  signs in or — with `EmailAuthMode.SignUp` — creates the account; field values
+  are read at launch time, so the state is created once and reused as the user
+  types. `FirebaseEmailAuth` adds the flows that don't fit a launchable state:
+  `sendPasswordResetEmail`, and passwordless email-link (magic link) sign-in via
+  `sendSignInLinkToEmail` / `isSignInWithEmailLink` / `signInWithEmailLink`.
+- **Anonymous (guest) sign-in with Firebase**.
+  `rememberFirebaseAnonymousSignInState(onResult)` creates or resumes a
+  temporary account; upgrade it later by signing in with any provider state
+  using `linkAccount = true`, which keeps the anonymous uid and its data.
+
+  All of these delegate to the Firebase SDK and report failures as `Result`
+  values. On Desktop (JVM) the underlying SDK does not implement auth yet
+  (#204), so they return failed `Result`s there.
+
 ## [3.0.0-alpha04] — 2026-07-19
 
 ### Added
