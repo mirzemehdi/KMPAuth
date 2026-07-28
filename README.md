@@ -614,8 +614,20 @@ Before security-sensitive operations (deleting the account, changing the
 password), Firebase requires a recent sign-in — reauthenticate first:
 
 ```kotlin
+// Email/password users
 FirebaseEmailAuth.reauthenticate(email, currentPassword)
     .onSuccess { /* now delete the account / update the password */ }
+```
+
+Reauthentication is not email-specific. For Google/Apple/Facebook users,
+rerun the provider flow to get a fresh token, then use the provider-agnostic
+backend API:
+
+```kotlin
+// e.g. after rememberGoogleSignInState returns a fresh GoogleUser
+KMPAuthBackend.require().reauthenticate(
+    AuthCredential.IdToken(AuthProviderIds.GOOGLE, googleUser.idToken)
+)
 ```
 
 > [!NOTE]

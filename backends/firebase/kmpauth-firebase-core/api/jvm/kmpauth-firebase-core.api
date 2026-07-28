@@ -15,6 +15,7 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackend : com/mm
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/backend/FirebaseAuthBackend;
 	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }

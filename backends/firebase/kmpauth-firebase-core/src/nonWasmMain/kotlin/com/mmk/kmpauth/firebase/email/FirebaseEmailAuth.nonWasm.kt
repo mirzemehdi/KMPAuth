@@ -1,8 +1,10 @@
 package com.mmk.kmpauth.firebase.email
 
 import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.runCatchingCancellable
+import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
 import com.mmk.kmpauth.firebase.backend.FirebaseKMPAuthUser
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.ActionCodeSettings
@@ -78,12 +80,9 @@ internal actual suspend fun firebaseSignInWithEmailLink(
     result.user?.let(::FirebaseKMPAuthUser)
 }
 
-@OptIn(KMPAuthInternalApi::class)
 internal actual suspend fun firebaseReauthenticate(
     email: String,
     password: String,
-): Result<Unit> = runCatchingCancellable {
-    val currentUser = Firebase.auth.currentUser
-        ?: throw IllegalStateException("No signed-in user to reauthenticate")
-    currentUser.reauthenticate(EmailAuthProvider.credential(email, password))
-}
+): Result<Unit> = FirebaseAuthBackend.reauthenticate(
+    AuthCredential.EmailPassword(email, password)
+)

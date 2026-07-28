@@ -56,10 +56,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `rememberFirebaseAnonymousSignInState(onResult)` creates or resumes a
   temporary account; upgrade it later by signing in with any provider state
   using `linkAccount = true`, which keeps the anonymous uid and its data.
-- **`FirebaseEmailAuth.reauthenticate(email, password)`** (#167). Firebase
-  requires a recent sign-in before security-sensitive operations (account
-  deletion, password change); this reauthenticates the current user with
-  their email credential so the operation can be retried.
+- **Reauthentication** (#167). Firebase requires a recent sign-in before
+  security-sensitive operations (account deletion, password change). The
+  provider-agnostic `AuthProviderBackend.reauthenticate(credential)` accepts
+  any credential — `AuthCredential.EmailPassword`, or a fresh
+  `AuthCredential.IdToken` from rerunning the Google/Apple/Facebook flow —
+  and `FirebaseEmailAuth.reauthenticate(email, password)` is the email
+  convenience over it. `AuthCredential` gains the `EmailPassword` variant,
+  and the Firebase backend can now also exchange Apple `IdToken`
+  credentials (idToken + rawNonce).
 
   All of these delegate to the Firebase SDK and report failures as `Result`
   values. On Desktop (JVM) the underlying SDK does not implement auth yet

@@ -22,6 +22,26 @@ public interface AuthProviderBackend {
         linkWithCurrentUser: Boolean = false,
     ): Result<KMPAuthUser>
 
+    /**
+     * Reauthenticates the currently signed-in user with a fresh
+     * [credential], without creating a new session.
+     *
+     * Backends like Firebase require a recent sign-in before
+     * security-sensitive operations (deleting the account, changing the
+     * password or email). Obtain a fresh credential — for email/password
+     * an [AuthCredential.EmailPassword]; for token providers rerun the
+     * provider flow (e.g. Google sign-in) and pass the resulting
+     * [AuthCredential.IdToken] — then call this and retry the operation.
+     *
+     * The default implementation reports the operation as unsupported.
+     */
+    public suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
+        Result.failure(
+            UnsupportedOperationException(
+                "This AuthProviderBackend does not support reauthentication."
+            )
+        )
+
     /** Signs out the current user. */
     public suspend fun signOut()
 

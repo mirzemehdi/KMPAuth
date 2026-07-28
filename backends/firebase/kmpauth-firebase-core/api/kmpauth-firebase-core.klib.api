@@ -59,6 +59,7 @@ final class com.mmk.kmpauth.firebase.email/EmailActionCodeSettings { // com.mmk.
 
 final object com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend : com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend|null[0]
     final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.currentUser|currentUser(){}[0]
+    final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
     final suspend fun signIn(com.mmk.kmpauth.core.auth/AuthCredential, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signIn|signIn(com.mmk.kmpauth.core.auth.AuthCredential;kotlin.Boolean){}[0]
     final suspend fun signOut() // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signOut|signOut(){}[0]
 }

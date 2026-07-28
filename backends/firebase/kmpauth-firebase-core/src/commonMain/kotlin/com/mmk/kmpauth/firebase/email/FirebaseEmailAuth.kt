@@ -133,6 +133,19 @@ public object FirebaseEmailAuth {
      *     .onSuccess { /* delete the account / update the password */ }
      * ```
      *
+     * This is the email convenience over the provider-agnostic
+     * [com.mmk.kmpauth.core.auth.AuthProviderBackend.reauthenticate]. For
+     * users signed in with Google, Apple or Facebook, rerun the provider
+     * flow to get a fresh token and pass it as an
+     * [com.mmk.kmpauth.core.auth.AuthCredential.IdToken]:
+     *
+     * ```
+     * // e.g. after rememberGoogleSignInState returns a fresh GoogleUser
+     * KMPAuthBackend.require().reauthenticate(
+     *     AuthCredential.IdToken(AuthProviderIds.GOOGLE, googleUser.idToken)
+     * )
+     * ```
+     *
      * @param email The signed-in user's email address.
      * @param password The user's current password.
      * @return success, or the failure (no signed-in user, wrong password, ...).

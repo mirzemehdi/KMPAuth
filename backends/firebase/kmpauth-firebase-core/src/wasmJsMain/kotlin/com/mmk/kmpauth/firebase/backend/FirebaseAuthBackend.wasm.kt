@@ -16,6 +16,9 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
     ): Result<KMPAuthUser> =
         Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
 
+    override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
+        Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
+
     override suspend fun signOut(): Unit = Unit
 
     override fun currentUser(): KMPAuthUser? = null

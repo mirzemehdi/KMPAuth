@@ -7,10 +7,13 @@ import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.logger.currentLogger
+import com.mmk.kmpauth.core.runCatchingCancellable
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FacebookAuthProvider
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.GoogleAuthProvider
+import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.CancellationException
 
@@ -65,6 +68,18 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         }
     }
 
+    override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
+        runCatchingCancellable {
+            val firebaseCredential = credential.toFirebaseCredentialOrNull()
+                ?: throw UnsupportedOperationException(
+                    "FirebaseAuthBackend cannot reauthenticate with this credential " +
+                        "(provider '${credential.providerId}')."
+                )
+            val currentUser = Firebase.auth.currentUser
+                ?: throw IllegalStateException("No signed-in user to reauthenticate")
+            currentUser.reauthenticate(firebaseCredential)
+        }
+
     override suspend fun signOut() {
         Firebase.auth.signOut()
     }
@@ -89,8 +104,18 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
             is AuthCredential.IdToken -> when (providerId) {
                 AuthProviderIds.GOOGLE -> GoogleAuthProvider.credential(idToken, accessToken)
                 AuthProviderIds.FACEBOOK -> accessToken?.let { FacebookAuthProvider.credential(it) }
+                // Apple issues a verifiable identity token; Firebase checks
+                // the unhashed nonce against the hash embedded in the token.
+                AuthProviderIds.APPLE -> OAuthProvider.credential(
+                    providerId = AuthProviderIds.APPLE,
+                    idToken = idToken,
+                    rawNonce = rawNonce,
+                )
+
                 else -> null
             }
+
+            is AuthCredential.EmailPassword -> EmailAuthProvider.credential(email, password)
 
             is AuthCredential.OAuthWebFlow -> null
         }
