@@ -65,6 +65,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `firebase(apiKey = ..., projectId = ..., applicationId = ...)`,
   `supabase(url = ..., apiKey = ...)` — no wrapper objects needed at the
   call site (the options-object overloads remain).
+- **Backend priority**: auto-registered defaults (Firebase's
+  ServiceLoader/load-time self-registration) never beat an explicit choice —
+  `supabase(...)` in `KMPAuth.initialize { }` always becomes the active
+  backend, no `replace` flag needed (the parameter is gone).
 - **Supabase auth backend — `kmpauth-supabase`** (#138). The first
   non-Firebase `AuthProviderBackend`, over the community
   [supabase-kt](https://github.com/supabase-community/supabase-kt) SDK, on

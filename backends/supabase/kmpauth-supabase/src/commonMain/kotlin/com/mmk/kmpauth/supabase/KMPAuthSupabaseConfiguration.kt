@@ -44,22 +44,17 @@ public data class SupabaseBackendOptions(
  * self-register from the classpath; a Supabase client cannot exist without
  * the project URL and key, which only this call provides.
  *
- * Registration follows the first-one-wins rule of [KMPAuthBackend.register]:
- * called at application start, `supabase(...)` beats the lazily discovered
- * Firebase default on JVM/Android. On iOS/JS/wasm however,
- * `kmpauth-firebase-core` (when it is also in the dependencies) registers
- * eagerly at binary load — pass [replace] = true there (harmless elsewhere)
- * to make Supabase the active backend.
+ * Calling this makes Supabase the active backend: an explicit registration
+ * always supersedes Firebase's auto-registered default, regardless of when
+ * that self-registration happened.
  *
  * @param options Supabase project URL and public API key.
- * @param replace Override an already registered backend (see above).
  * @param builder Extra [SupabaseClientBuilder] configuration — install
  * additional plugins (Postgrest, Storage, ...) or re-install `Auth` with
  * custom settings (flow type, deep-link scheme/host, session storage).
  */
 public fun KMPAuthConfiguration.supabase(
     options: SupabaseBackendOptions,
-    replace: Boolean = false,
     builder: SupabaseClientBuilder.() -> Unit = {},
 ) {
     val client = createSupabaseClient(
@@ -69,7 +64,7 @@ public fun KMPAuthConfiguration.supabase(
         install(Auth)
         builder()
     }
-    supabase(client, replace)
+    supabase(client)
 }
 
 /**
@@ -80,9 +75,10 @@ public fun KMPAuthConfiguration.supabase(
  */
 public fun KMPAuthConfiguration.supabase(
     client: SupabaseClient,
-    replace: Boolean = false,
 ) {
-    KMPAuthBackend.register(SupabaseAuthBackend(client), replace)
+    // The DSL call is an explicit choice: it supersedes any auto-registered
+    // default and any earlier configuration.
+    KMPAuthBackend.register(SupabaseAuthBackend(client), replace = true)
 }
 
 /**
@@ -124,10 +120,9 @@ public fun SupabaseAuthBackend(
 public fun KMPAuthConfiguration.supabase(
     url: String,
     apiKey: String,
-    replace: Boolean = false,
     builder: SupabaseClientBuilder.() -> Unit = {},
 ) {
-    supabase(SupabaseBackendOptions(url = url, apiKey = apiKey), replace, builder)
+    supabase(SupabaseBackendOptions(url = url, apiKey = apiKey), builder)
 }
 
 /**

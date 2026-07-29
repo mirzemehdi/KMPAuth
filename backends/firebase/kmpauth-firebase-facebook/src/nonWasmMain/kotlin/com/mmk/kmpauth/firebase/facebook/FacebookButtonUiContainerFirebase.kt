@@ -27,6 +27,7 @@ import dev.gitlive.firebase.auth.FirebaseUser
     ),
     DeprecationLevel.WARNING
 )
+@OptIn(com.mmk.kmpauth.core.KMPAuthInternalApi::class)
 @Composable
 public fun FacebookButtonUiContainerFirebase(
     modifier: Modifier = Modifier,
@@ -41,7 +42,7 @@ public fun FacebookButtonUiContainerFirebase(
 ) {
     // 2.x apps never registered a backend explicitly; keep the container
     // zero-config by lazily registering the Firebase default.
-    KMPAuthBackend.register(FirebaseAuthBackend)
+    KMPAuthBackend.registerDefault(FirebaseAuthBackend)
     val signInState = rememberFacebookAuthState(
         requestScopes = requestScopes,
         linkAccount = linkAccount,

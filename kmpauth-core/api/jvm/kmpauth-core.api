@@ -210,6 +210,7 @@ public final class com/mmk/kmpauth/core/auth/KMPAuthBackend : com/mmk/kmpauth/co
 	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun register (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Z)V
 	public static synthetic fun register$default (Lcom/mmk/kmpauth/core/auth/KMPAuthBackend;Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZILjava/lang/Object;)V
+	public final fun registerDefault (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;)V
 	public final fun require ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
 	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

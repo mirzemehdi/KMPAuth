@@ -10,33 +10,30 @@ import kotlin.test.assertSame
 
 /**
  * Locks the registration contract of `KMPAuth.initialize { supabase(...) }`:
- * explicit registration, first-one-wins by default, replace to swap.
- * KMPAuthBackend is a process-wide singleton, so each test starts by
- * force-registering a known backend.
+ * the DSL call is an explicit choice that supersedes auto-registered
+ * defaults and earlier configuration (last explicit configuration wins).
+ * KMPAuthBackend is a process-wide singleton, so tests re-configure freely.
  */
 class SupabaseBackendRegistrationTest {
 
     @Test
     fun supabaseClientOverloadRegistersBackend() {
         val engine = RecordingMockEngine { jsonResponse("{}") }
-        KMPAuth.initialize { supabase(engine.client, replace = true) }
+        KMPAuth.initialize { supabase(engine.client) }
 
         val backend = assertIs<SupabaseAuthBackend>(KMPAuthBackend.getOrNull())
         assertSame(engine.client, backend.supabaseClient)
     }
 
     @Test
-    fun firstRegistrationWinsUnlessReplaceIsSet() {
+    fun lastExplicitConfigurationWins() {
         val first = RecordingMockEngine { jsonResponse("{}") }
         val second = RecordingMockEngine { jsonResponse("{}") }
-        KMPAuth.initialize { supabase(first.client, replace = true) }
 
-        // Default replace = false: the already registered backend stays.
-        KMPAuth.initialize { supabase(second.client) }
+        KMPAuth.initialize { supabase(first.client) }
         assertSame(first.client, assertIs<SupabaseAuthBackend>(KMPAuthBackend.getOrNull()).supabaseClient)
 
-        // replace = true swaps it.
-        KMPAuth.initialize { supabase(second.client, replace = true) }
+        KMPAuth.initialize { supabase(second.client) }
         assertSame(second.client, assertIs<SupabaseAuthBackend>(KMPAuthBackend.getOrNull()).supabaseClient)
     }
 
@@ -48,7 +45,6 @@ class SupabaseBackendRegistrationTest {
                     url = "https://unit-test.supabase.co",
                     apiKey = "test-anon-key",
                 ),
-                replace = true,
             ) {
                 // The builder hook must reach the SupabaseClientBuilder -
                 // here it injects the offline test engine.

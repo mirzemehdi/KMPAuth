@@ -12,7 +12,7 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
 import dev.gitlive.firebase.auth.PhoneVerificationProvider
 import kotlinx.cinterop.ExperimentalForeignApi
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, com.mmk.kmpauth.core.KMPAuthInternalApi::class)
 @Composable
 public actual fun rememberPhoneAuthState(
     phoneNumber: String,
@@ -29,7 +29,7 @@ public actual fun rememberPhoneAuthState(
     return remember {
         // Lazy default registration: no-op when the app already registered
         // a backend at startup (first registration wins).
-        KMPAuthBackend.register(FirebaseAuthBackend)
+        KMPAuthBackend.registerDefault(FirebaseAuthBackend)
         PhoneAuthStateImpl(
             scope = scope,
             phoneNumber = { currentPhoneNumber },

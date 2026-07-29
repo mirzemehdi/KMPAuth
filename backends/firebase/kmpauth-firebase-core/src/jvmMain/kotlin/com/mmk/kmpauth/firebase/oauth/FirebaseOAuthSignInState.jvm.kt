@@ -32,7 +32,7 @@ public actual fun rememberOAuthState(
     return remember {
         // Lazy default registration: no-op when the app already registered
         // a backend at startup (first registration wins).
-        KMPAuthBackend.register(FirebaseAuthBackend)
+        KMPAuthBackend.registerDefault(FirebaseAuthBackend)
         LaunchingSignInState(scope) {
             // On Desktop the backend runs the flow in the system browser via
             // Firebase's hosted auth handler (DesktopWebAuthFlow).

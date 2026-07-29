@@ -1,5 +1,7 @@
 package com.mmk.kmpauth.core.auth
 
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+
 /**
  * Pluggable authentication backend. KMPAuth ships a Firebase implementation
  * (registered automatically by `kmpauth-firebase`); other backends — e.g.
@@ -168,17 +170,39 @@ public interface AuthProviderBackend {
 public object KMPAuthBackend : AuthProviderBackend {
 
     private var backend: AuthProviderBackend? = null
+    private var backendIsDefault: Boolean = false
     private var discoveryAttempted: Boolean = false
 
     /**
-     * Registers [backend] as the process-wide auth backend.
+     * Registers [backend] as the process-wide auth backend — an explicit
+     * app choice, which always supersedes an auto-registered default
+     * (Firebase's classpath/load-time self-registration).
      *
-     * @param replace When false (default), registration is ignored if a
-     * backend is already registered.
+     * @param replace When false (default), registration is ignored if
+     * another **explicitly registered** backend is already active; pass
+     * true to swap it.
      */
     public fun register(backend: AuthProviderBackend, replace: Boolean = false) {
-        if (this.backend == null || replace) {
+        if (this.backend == null || backendIsDefault || replace) {
             this.backend = backend
+            backendIsDefault = false
+        }
+    }
+
+    /**
+     * Registers [backend] as an auto-provided **default** — used by backend
+     * modules' self-registration (`kmpauth-firebase-core`'s ServiceLoader /
+     * load-time hooks and lazy state-side registration). A default never
+     * replaces anything already registered, and any explicit [register]
+     * call supersedes it regardless of ordering — this is what lets
+     * `supabase(...)` win even though Firebase self-registers at binary
+     * load before `KMPAuth.initialize { }` runs.
+     */
+    @KMPAuthInternalApi
+    public fun registerDefault(backend: AuthProviderBackend) {
+        if (this.backend == null) {
+            this.backend = backend
+            backendIsDefault = true
         }
     }
 
@@ -189,11 +213,12 @@ public object KMPAuthBackend : AuthProviderBackend {
      * on iOS/JS it self-registers eagerly at load). Explicit registration
      * always wins over discovery.
      */
+    @OptIn(KMPAuthInternalApi::class)
     private fun activeBackend(): AuthProviderBackend? {
         backend?.let { return it }
         if (!discoveryAttempted) {
             discoveryAttempted = true
-            loadPlatformBackends().firstOrNull()?.let { register(it) }
+            loadPlatformBackends().firstOrNull()?.let { registerDefault(it) }
         }
         return backend
     }

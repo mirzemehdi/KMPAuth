@@ -9,8 +9,8 @@ import com.mmk.kmpauth.core.auth.KMPAuthBackend
  * still wins when registered first (and `replace = true` always wins).
  */
 @Suppress("unused")
-@OptIn(ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class, com.mmk.kmpauth.core.KMPAuthInternalApi::class)
 @EagerInitialization
 private val firebaseBackendAutoRegistration: Unit = run {
-    KMPAuthBackend.register(FirebaseAuthBackend)
+    KMPAuthBackend.registerDefault(FirebaseAuthBackend)
 }
