@@ -157,6 +157,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Result` values. On Desktop (JVM) the underlying Firebase SDK does not
   implement auth yet (#204), so they return failed `Result`s there.
 
+### Fixed
+- **Web (JS/wasm) Google sign-in returns an ID token** (#146). Google's GIS
+  splits tokens across two flows - the OAuth token client used before only
+  ever returns an access token, so `GoogleUser.idToken` was always empty on
+  web and Firebase/backend exchange was impossible. The web implementations
+  now obtain the ID token via Sign in with Google (`google.accounts.id`,
+  FedCM-enabled) first, filling profile data from the JWT claims, and only
+  run the token flow when an access token is requested (`requestAccessToken`
+  or extra scopes) or the One Tap prompt is suppressed.
+- **`filterByAuthorizedAccounts` documentation was inverted** (#117). The
+  KDoc claimed true shows all accounts; actually true limits the chooser to
+  accounts that previously signed in to the app - and when none exists the
+  flow deliberately retries with all accounts so first-time users can sign
+  in, which is why a device with two authorized accounts still shows both.
+
 ## [3.0.0-alpha04] — 2026-07-19
 
 ### Added
@@ -181,7 +196,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `accessToken` and `serverAuthCode` — the legacy Android fallback never returns
   an access token, which is why it appeared to be missing (#129).
 
-### Fixed
+- **Web (JS/wasm) Google sign-in returns an ID token** (#146). Google's GIS
+  splits tokens across two flows - the OAuth token client used before only
+  ever returns an access token, so `GoogleUser.idToken` was always empty on
+  web and Firebase/backend exchange was impossible. The web implementations
+  now obtain the ID token via Sign in with Google (`google.accounts.id`,
+  FedCM-enabled) first, filling profile data from the JWT claims, and only
+  fall back to / additionally run the token flow when an access token is
+  requested (`requestAccessToken` or extra scopes) or the One Tap prompt is
+  suppressed.
+- **`filterByAuthorizedAccounts` documentation was inverted** (#117). The
+  KDoc claimed true shows all accounts; actually true limits the chooser to
+  accounts that previously signed in to the app, and when none exists the
+  flow deliberately retries with all accounts so first-time users can sign
+  in - which is why a device with two authorized accounts still shows both.
 - **Compose resources are packaged again on Android.** `kmpauth-uihelper`'s icons
   and font never reached consuming apps, so every sign-in button crashed at
   runtime with
