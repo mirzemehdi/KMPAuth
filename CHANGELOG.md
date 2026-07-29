@@ -70,6 +70,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   providers (use supabase-kt's `signInWith(Github)` directly), and
   email/password linking (Supabase uses `auth.updateUser`). Consumers add a
   Ktor client engine per platform, as in any supabase-kt setup.
+- **Desktop (JVM) web-flow sign-in** (#81). `rememberOAuthState`/GitHub/
+  Microsoft/Apple states now work on Desktop: the state serves a one-page
+  site on a loopback port, opens it in the system browser, and the official
+  Firebase JS SDK on that page runs `signInWithPopup` against the project's
+  hosted auth handler (`https://<authDomain>/__/auth/handler`) - the same
+  https redirect target Android uses, so every console-configured provider
+  works, including Apple (which forbids direct localhost redirects). The
+  page hands the Firebase session back to the app; nothing but that single
+  flow is served, and the config is injected as markup-inert JSON.
+- **`firebase(FirebaseBackendOptions(apiKey, projectId, applicationId))` in
+  `KMPAuth.initialize { }`** - Desktop/Web Firebase configuration through
+  the KMPAuth entry point instead of a direct GitLive `Firebase.initialize`
+  call (which still works); no-op on Android/iOS where the SDK reads the
+  bundled config files.
 - **Desktop (JVM) Firebase auth works** (#204). GitLive's firebase-java-sdk
   has no auth implementation, so on Desktop the Firebase backend now talks
   to the Firebase Auth REST API (Identity Toolkit) directly - JDK built-in

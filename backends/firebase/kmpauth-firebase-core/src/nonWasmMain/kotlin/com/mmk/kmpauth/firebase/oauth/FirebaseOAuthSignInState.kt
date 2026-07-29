@@ -10,9 +10,14 @@ import com.mmk.kmpauth.firebase.backend.FirebaseKMPAuthUser
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 
+/**
+ * Shared android/ios/js implementation of `rememberOAuthState`, bridging
+ * to the GitLive-typed platform web flows. Desktop (JVM) has its own
+ * actual that routes through the backend's browser flow instead.
+ */
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun rememberOAuthState(
+internal fun rememberOAuthStateViaGitLive(
     provider: String,
     requestScopes: List<String>,
     customParameters: Map<String, String>,
@@ -47,8 +52,8 @@ public actual fun rememberOAuthState(
 /**
  * Platform-specific OAuth web flow keyed on GitLive's [OAuthProvider]:
  * Android uses `startActivityForSignInWithProvider`, iOS the FirebaseAuth
- * ObjC provider flow; Desktop and JS are not implemented and report a
- * failed [Result].
+ * ObjC provider flow; JS is not implemented and reports a failed [Result].
+ * (Desktop's `rememberOAuthState` bypasses this entirely.)
  */
 @Composable
 internal expect fun rememberFirebaseGitLiveOAuthSignInState(
