@@ -38,13 +38,16 @@ provider's token to verify yourself.)
 | Google | your server · Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Apple | Firebase | ✅ | ✅ native | ✅ | — | — |
 | Apple (native token, no backend) | your server | — | ✅ | — | — | — |
-| Facebook | your server · Firebase · Supabase¹ | ✅ | ✅ | — | — | — |
-| GitHub / Microsoft / any OAuth | Firebase · Supabase | ✅ | ✅ | ✅ | ✅⁴ | ✅⁴ |
+| Facebook (native SDK login) | your server · Firebase · Supabase¹ | ✅ | ✅ | — | — | — |
+| GitHub / Microsoft / Facebook-web / any OAuth | Firebase · Supabase | ✅ | ✅ | ✅ | ✅⁴ | ✅⁴ |
 | Email (password / reset / magic link) | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
 | Phone number | Firebase · Supabase | ✅ | ✅ | ✅³ | ✅³ | ✅³ |
 | Anonymous | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
 
-¹ Supabase accepts Facebook Limited Login (OIDC) tokens only.
+¹ Supabase accepts Facebook Limited Login (OIDC) tokens only. Meta's SDK
+exists only on Android/iOS — on other platforms use the browser-OAuth row
+(`rememberOAuthState("facebook.com")` with Firebase, or
+`OAuthWebFlow("facebook.com")` with Supabase).
 ² On wasm only with Supabase — the Firebase SDK has no wasm target.
 ³ Beyond Android/iOS only with Supabase (SMS OTP); Firebase phone auth
 needs the mobile SDKs.
