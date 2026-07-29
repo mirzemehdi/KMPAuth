@@ -60,7 +60,7 @@ Sample apps: `./gradlew :sampleApp:desktopApp:run` (desktop), `:sampleApp:androi
 
 ## CI / release
 
-`.github/workflows/build_and_publish.yml`: apiCheck → `testAndroid jvmTest` + androidApp APK (ubuntu) and `iosSimulatorArm64Test` (macOS) → on `v*` tag: Dokka docs to GitHub Pages + `publishAndReleaseToMavenCentral` (vanniktech, GPG-signed) + GitHub release. PR builds trigger only for PRs targeting `main`. CI does **not** run `./gradlew build`, so failures outside `apiCheck`/tests (e.g. a stale `kotlin-js-store/yarn.lock` after dependency bumps — fix with `kotlinUpgradeYarnLock`) surface only locally.
+`.github/workflows/build_and_publish.yml`: apiCheck → `testAndroid jvmTest` + androidApp APK (ubuntu) and `iosSimulatorArm64Test` (macOS) → on `v*` tag: Dokka docs to GitHub Pages + `publishAndReleaseToMavenCentral` (vanniktech, GPG-signed) + GitHub release. PR builds trigger only for PRs targeting `main`. CI does **not** run `./gradlew build`, so failures outside `apiCheck`/tests (e.g. a stale `kotlin-js-store/yarn.lock` after dependency bumps — fix with `kotlinUpgradeYarnLock`) surface only locally. The release job additionally runs `./gradlew :dokkaGeneratePublicationHtml`, whose common/intermediate **metadata compilations** are stricter than the per-target ones (an `expect object : Interface` must redeclare the interface's non-default members or metadata compile fails) — run it locally before tagging.
 
 Release flow: bump `kmpAuthVersion` in `gradle.properties`, merge to `main`, tag `vX.Y.Z`.
 

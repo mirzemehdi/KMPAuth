@@ -28,7 +28,7 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
     // REST API on Desktop (JVM), where firebase-java-sdk lacks auth (#204).
     private val engine: AuthProviderBackend by lazy { createFirebaseAuthEngine() }
 
-    override suspend fun signIn(
+    actual override suspend fun signIn(
         credential: AuthCredential,
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> = engine.signIn(credential, linkWithCurrentUser)
@@ -68,9 +68,9 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         linkAccount: Boolean,
     ): Result<KMPAuthUser> = engine.signInWithEmailLink(email, link, linkAccount)
 
-    override suspend fun signOut(): Unit = engine.signOut()
+    actual override suspend fun signOut(): Unit = engine.signOut()
 
-    override fun currentUser(): KMPAuthUser? = engine.currentUser()
+    actual override fun currentUser(): KMPAuthUser? = engine.currentUser()
 
     /**
      * Adapts a legacy `Result<FirebaseUser?>` callback (the deprecated 2.x

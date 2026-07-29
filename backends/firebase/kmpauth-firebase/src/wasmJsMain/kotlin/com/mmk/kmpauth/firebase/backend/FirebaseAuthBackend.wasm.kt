@@ -48,7 +48,7 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         )
     }
 
-    override suspend fun signIn(
+    actual override suspend fun signIn(
         credential: AuthCredential,
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> = engine.signIn(credential, linkWithCurrentUser)
@@ -90,7 +90,7 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         linkAccount: Boolean,
     ): Result<KMPAuthUser> = engine.signInWithEmailLink(email, link, linkAccount)
 
-    override suspend fun signOut(): Unit = engine.signOut()
+    actual override suspend fun signOut(): Unit = engine.signOut()
 
-    override fun currentUser(): KMPAuthUser? = engine.currentUser()
+    actual override fun currentUser(): KMPAuthUser? = engine.currentUser()
 }

@@ -1,6 +1,8 @@
 package com.mmk.kmpauth.firebase.backend
 
+import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 /**
  * Firebase implementation of [AuthProviderBackend], KMPAuth's default
@@ -16,4 +18,16 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
  * On wasm, where the Firebase SDK has no target, every operation reports an
  * [UnsupportedOperationException] failure.
  */
-public expect object FirebaseAuthBackend : AuthProviderBackend
+public expect object FirebaseAuthBackend : AuthProviderBackend {
+    // The interface's non-default members, redeclared so the commonMain
+    // metadata compilation (Dokka's entry point) sees them implemented;
+    // the platform actuals provide the real bodies.
+    override suspend fun signIn(
+        credential: AuthCredential,
+        linkWithCurrentUser: Boolean,
+    ): Result<KMPAuthUser>
+
+    override suspend fun signOut()
+
+    override fun currentUser(): KMPAuthUser?
+}
