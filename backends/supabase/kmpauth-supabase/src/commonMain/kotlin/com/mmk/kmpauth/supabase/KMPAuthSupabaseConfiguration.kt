@@ -84,3 +84,57 @@ public fun KMPAuthConfiguration.supabase(
 ) {
     KMPAuthBackend.register(SupabaseAuthBackend(client), replace)
 }
+
+/**
+ * Builds a standalone [SupabaseAuthBackend] without registering it as the
+ * process-wide backend — for using several backends side by side by passing
+ * it to a state's `backend` parameter:
+ *
+ * ```
+ * val supabaseBackend = SupabaseAuthBackend(SupabaseBackendOptions(url, key))
+ * val emailAuth = rememberEmailAuthState(email, password, backend = supabaseBackend, onResult = ...)
+ * ```
+ *
+ * @param options Supabase project URL and public API key.
+ * @param builder Extra [SupabaseClientBuilder] configuration.
+ */
+public fun SupabaseAuthBackend(
+    options: SupabaseBackendOptions,
+    builder: SupabaseClientBuilder.() -> Unit = {},
+): SupabaseAuthBackend = SupabaseAuthBackend(
+    createSupabaseClient(
+        supabaseUrl = options.url,
+        supabaseKey = options.apiKey,
+    ) {
+        install(Auth)
+        builder()
+    }
+)
+
+/**
+ * [supabase] shorthand taking the values directly — same semantics as the
+ * [SupabaseBackendOptions] overload:
+ *
+ * ```
+ * KMPAuth.initialize {
+ *     supabase(url = projectUrl, apiKey = publishableKey)
+ * }
+ * ```
+ */
+public fun KMPAuthConfiguration.supabase(
+    url: String,
+    apiKey: String,
+    replace: Boolean = false,
+    builder: SupabaseClientBuilder.() -> Unit = {},
+) {
+    supabase(SupabaseBackendOptions(url = url, apiKey = apiKey), replace, builder)
+}
+
+/**
+ * [SupabaseAuthBackend] factory shorthand taking the values directly.
+ */
+public fun SupabaseAuthBackend(
+    url: String,
+    apiKey: String,
+    builder: SupabaseClientBuilder.() -> Unit = {},
+): SupabaseAuthBackend = SupabaseAuthBackend(SupabaseBackendOptions(url, apiKey), builder)

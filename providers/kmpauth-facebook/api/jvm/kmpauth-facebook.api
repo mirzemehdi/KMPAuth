@@ -1,5 +1,5 @@
 public final class com/mmk/kmpauth/facebook/FacebookAuthStateKt {
-	public static final fun rememberFacebookAuthState (Ljava/util/List;ZLcom/mmk/kmpauth/facebook/FacebookLoginTracking;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberFacebookAuthState (Ljava/util/List;ZLcom/mmk/kmpauth/facebook/FacebookLoginTracking;Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/facebook/FacebookButtonUiContainerKt {

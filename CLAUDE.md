@@ -93,7 +93,11 @@ works), `currentUser()`, `signOut()`, `signIn(credential)`, `signUp`,
 email-link sign-in, and `registerBackendProvider`/`getBackendProvider`/
 `requireBackendProvider`. It delegates to `KMPAuthBackend`; keep new
 session/account operations and setup on this facade rather than inventing
-provider-specific top-level objects.
+provider-specific top-level objects. Backend-generic states take a
+`backend: AuthProviderBackend = KMPAuthBackend` parameter for multi-backend
+apps; configuration extensions ship flat-parameter overloads
+(`google(serverId)`, `firebase(apiKey, projectId, applicationId)`,
+`supabase(url, apiKey)`) alongside the options-object ones.
 
 **Failures are values, not nulls.** `Result<KMPAuthUser>` is non-null — a
 backend producing no user is a failure with a reason, never a null success;
