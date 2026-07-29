@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.auth.rememberGithubAuthState
 import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
 import dev.gitlive.firebase.auth.FirebaseUser
 
@@ -19,7 +20,7 @@ import dev.gitlive.firebase.auth.FirebaseUser
         "Scheduled for removal in 4.0.",
     ReplaceWith(
         "rememberGithubAuthState(requestScopes, customParameters, linkAccount, onResult)",
-        "com.mmk.kmpauth.firebase.github.rememberGithubAuthState"
+        "com.mmk.kmpauth.core.auth.rememberGithubAuthState"
     ),
     DeprecationLevel.WARNING
 )

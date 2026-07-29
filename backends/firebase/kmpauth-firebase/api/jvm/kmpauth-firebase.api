@@ -28,10 +28,6 @@ public final class com/mmk/kmpauth/firebase/apple/AppleButtonUiContainerKt {
 	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
-public final class com/mmk/kmpauth/firebase/apple/FirebaseAppleSignInState_jvmKt {
-	public static final fun rememberAppleAuthState (Ljava/util/List;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
-}
-
 public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackend : com/mmk/kmpauth/core/auth/AuthProviderBackend {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/backend/FirebaseAuthBackend;
@@ -75,21 +71,9 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseKMPAuthUser : com/mm
 	public fun getUid ()Ljava/lang/String;
 }
 
-public final class com/mmk/kmpauth/firebase/github/FirebaseGithubSignInStateKt {
-	public static final fun rememberGithubAuthState (Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
-}
-
 public final class com/mmk/kmpauth/firebase/github/GithubButtonUiContainerKt {
 	public static final fun GithubButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Ljava/util/Map;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun GithubButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
-}
-
-public final class com/mmk/kmpauth/firebase/microsoft/FirebaseMicrosoftSignInStateKt {
-	public static final fun rememberMicrosoftAuthState (Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
-}
-
-public final class com/mmk/kmpauth/firebase/oauth/FirebaseOAuthSignInState_jvmKt {
-	public static final fun rememberOAuthState (Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/firebase/oauth/OAuthContainerKt {

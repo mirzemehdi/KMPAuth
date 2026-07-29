@@ -128,7 +128,7 @@ GoogleSignInButton { googleSignIn.launch() }
 
 val appleSignIn = rememberAppleAuthState(onResult = onResult)       // native on iOS, web flow elsewhere
 val facebookSignIn = rememberFacebookAuthState(onResult = onResult) // kmpauth-facebook, Android/iOS
-val githubSignIn = rememberGithubAuthState(onResult = onResult)     // Firebase OAuth web flow
+val githubSignIn = rememberGithubAuthState(onResult = onResult)     // browser OAuth web flow
 val microsoftSignIn = rememberMicrosoftAuthState(onResult = onResult)
 val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
 val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult)
@@ -160,17 +160,12 @@ val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
 val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult) // SMS OTP, every target
 val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
 
-// Apple on iOS: exchange the native credential through the id_token grant
-val appleSignIn = rememberAppleSignInState(onResult = { result ->   // kmpauth-apple
-    result.onSuccess { apple ->
-        // suspend call - launch from your scope:
-        KMPAuth.signIn(AuthCredential.IdToken(AuthProviderIds.APPLE, apple.idToken, rawNonce = apple.nonce))
-    }
-})
-
-// Browser OAuth - GitHub/Microsoft/Apple/Facebook/any GoTrue provider
-// (Desktop works out of the box; see the guide for mobile deep links):
-val githubResult = KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))
+// Same composables as with Firebase - the backend behind them differs:
+val appleSignIn = rememberAppleAuthState(onResult = onResult)       // native on iOS, browser flow elsewhere
+val githubSignIn = rememberGithubAuthState(onResult = onResult)     // browser OAuth: Desktop OOTB, mobile via deep links
+val microsoftSignIn = rememberMicrosoftAuthState(onResult = onResult)
+// ...or any GoTrue provider: rememberOAuthState(provider = "gitlab") /
+// KMPAuth.signIn(AuthCredential.OAuthWebFlow("gitlab"))
 
 KMPAuth.sendPasswordResetEmail(email)
 KMPAuth.signOut()

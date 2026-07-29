@@ -325,15 +325,18 @@ session through the registered backend):
   | `GoogleButtonUiContainerFirebase` | `rememberGoogleAuthState` | `kmpauth-google` |
   | `FacebookButtonUiContainer` | `rememberFacebookSignInState` (credential only) | `kmpauth-facebook` |
   | `FacebookButtonUiContainerFirebase` | `rememberFacebookAuthState` | `kmpauth-facebook` |
-  | `AppleButtonUiContainer` | `rememberAppleAuthState` | `kmpauth-firebase` |
-  | `GithubButtonUiContainer` | `rememberGithubAuthState` | `kmpauth-firebase` |
-  | `OAuthContainer` | `rememberOAuthState(provider = "...")` | `kmpauth-firebase` |
+  | `AppleButtonUiContainer` | `rememberAppleAuthState` | `kmpauth-apple` |
+  | `GithubButtonUiContainer` | `rememberGithubAuthState` | `kmpauth-core` |
+  | `OAuthContainer` | `rememberOAuthState(provider = "...")` | `kmpauth-core` |
 
-  New in 3.0, no 2.x equivalent: `rememberMicrosoftAuthState`
-  (`kmpauth-firebase`), `rememberEmailAuthState`,
-  `rememberAnonymousAuthState` and `rememberPhoneAuthState`
-  (`kmpauth-core`, served by the registered backend),
-  `rememberAppleSignInState` (native Apple credential, `kmpauth-apple`).
+  New in 3.0, no 2.x equivalent: `rememberMicrosoftAuthState`,
+  `rememberEmailAuthState`, `rememberAnonymousAuthState` and
+  `rememberPhoneAuthState` (all in `kmpauth-core`, served by the registered
+  backend), `rememberAppleSignInState` (native Apple credential,
+  `kmpauth-apple`).
+
+  Every `rememberXxxAuthState` is backend-generic — the same composable
+  runs against Firebase or Supabase, whichever is registered.
 
 Also changed in 3.0:
 
