@@ -7,6 +7,12 @@ Two flavors:
 | `rememberAppleAuthState` | `kmpauth-firebase` | Android, iOS (native), Desktop | Firebase session |
 | `rememberAppleSignInState` | `kmpauth-apple` | iOS only | none — you verify the token |
 
+**With Supabase** instead: on iOS exchange the native credential —
+`KMPAuth.signIn(AuthCredential.IdToken(AuthProviderIds.APPLE, appleUser.idToken, rawNonce = appleUser.nonce))`
+— and on other platforms use the browser flow,
+`KMPAuth.signIn(AuthCredential.OAuthWebFlow("apple.com"))` (see the
+[Supabase guide](supabase.md#browser-oauth-per-platform)).
+
 ## With Firebase (all platforms)
 
 Enable Apple in the Firebase console and add the **"Sign In with Apple"

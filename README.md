@@ -36,7 +36,7 @@ provider's token to verify yourself.)
 | Sign-in method | Works with | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
 |---|---|:---:|:---:|:---:|:---:|:---:|
 | Google | your server · Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Apple | Firebase | ✅ | ✅ native | ✅ | — | — |
+| Apple | Firebase · Supabase | ✅ | ✅ native | ✅ | ✅⁴ | ✅⁴ |
 | Apple (native token, no backend) | your server | — | ✅ | — | — | — |
 | Facebook (native SDK login) | your server · Firebase · Supabase¹ | ✅ | ✅ | — | — | — |
 | GitHub / Microsoft / Facebook-web / any OAuth | Firebase · Supabase | ✅ | ✅ | ✅ | ✅⁴ | ✅⁴ |
