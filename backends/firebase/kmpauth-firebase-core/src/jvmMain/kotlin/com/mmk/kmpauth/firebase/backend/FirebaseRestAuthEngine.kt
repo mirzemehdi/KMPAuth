@@ -71,15 +71,24 @@ internal fun interface FirebaseRestTransport {
  */
 internal class FirebaseRestAuthEngine(
     private val transport: FirebaseRestTransport = JdkFirebaseRestTransport(),
-    private val apiKeyProvider: () -> String = {
-        runCatching { Firebase.app.options.apiKey }.getOrNull()
-            ?: throw IllegalStateException(
-                "Firebase is not initialized on Desktop. Call " +
-                    "Firebase.initialize(options = FirebaseOptions(applicationId, apiKey, projectId)) " +
-                    "at application start (dev.gitlive.firebase) - the REST auth engine needs the web API key."
-            )
-    },
+    private val apiKeyProvider: () -> String = { firebaseOptionsOrFail().apiKey },
+    webFlowRunner: (suspend (WebFlowRequest) -> WebFlowResult)? = null,
 ) : AuthProviderBackend {
+
+    private val webFlowRunner: suspend (WebFlowRequest) -> WebFlowResult =
+        webFlowRunner ?: DesktopWebAuthFlow(config = {
+            val options = firebaseOptionsOrFail()
+            val projectId = options.projectId
+                ?: throw IllegalStateException(
+                    "FirebaseBackendOptions.projectId is required for web-flow sign-in on Desktop."
+                )
+            DesktopWebAuthFlow.WebFlowPageConfig(
+                apiKey = options.apiKey,
+                authDomain = options.authDomain ?: "$projectId.firebaseapp.com",
+                projectId = projectId,
+                applicationId = options.applicationId,
+            )
+        })::signIn
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -124,15 +133,48 @@ internal class FirebaseRestAuthEngine(
                     call("accounts:signInWithIdp", credential.toSignInWithIdpBody(linkWithCurrentUser))
                 )
 
-                is AuthCredential.OAuthWebFlow -> throw UnsupportedOperationException(
-                    "OAuth web-flow sign-in (provider '${credential.providerId}') is not " +
-                        "available on Desktop yet - see " +
-                        "https://github.com/mirzemehdi/KMPAuth/issues/81."
-                )
+                is AuthCredential.OAuthWebFlow -> {
+                    if (linkWithCurrentUser) throw UnsupportedOperationException(
+                        "Linking a web-flow provider to the current user is not " +
+                            "supported on Desktop yet."
+                    )
+                    val flowResult = webFlowRunner(
+                        WebFlowRequest(
+                            providerId = credential.providerId,
+                            scopes = credential.scopes,
+                            customParameters = credential.customParameters,
+                        )
+                    )
+                    adoptSession(flowResult, credential.providerId)
+                }
             }
             session = user
             FirebaseRestKMPAuthUser(user)
         }
+    }
+
+    /**
+     * Adopts a Firebase session produced by the browser page (the JS SDK
+     * already completed sign-in there) by looking up the user profile for
+     * its ID token.
+     */
+    private fun adoptSession(flowResult: WebFlowResult, providerId: String): FirebaseRestUser {
+        val info = call(
+            "accounts:lookup",
+            buildJsonObject { put("idToken", flowResult.idToken) },
+        ).get("users")?.jsonArray?.firstOrNull()?.jsonObject
+            ?: throw IllegalStateException("Firebase Null user")
+        return FirebaseRestUser(
+            uid = info["localId"]?.jsonPrimitive?.content
+                ?: throw IllegalStateException("Firebase Null user"),
+            email = info["email"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
+            displayName = info["displayName"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
+            photoUrl = info["photoUrl"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
+            providerId = providerId,
+            idToken = flowResult.idToken,
+            refreshToken = flowResult.refreshToken,
+            isAnonymous = false,
+        )
     }
 
     override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
@@ -369,6 +411,19 @@ internal class FirebaseRestAuthEngine(
     private fun String.urlEncoded(): String =
         URLEncoder.encode(this, StandardCharsets.UTF_8)
 }
+
+/**
+ * The GitLive Firebase options configured for this process, or an
+ * instructive failure. Populated by `KMPAuth.initialize { firebase(...) }`
+ * (see `KMPAuthFirebaseConfiguration`).
+ */
+internal fun firebaseOptionsOrFail(): dev.gitlive.firebase.FirebaseOptions =
+    runCatching { Firebase.app.options }.getOrNull()
+        ?: throw IllegalStateException(
+            "Firebase is not configured on Desktop. Add firebase(FirebaseBackendOptions(" +
+                "apiKey = ..., projectId = ..., applicationId = ...)) inside " +
+                "KMPAuth.initialize { } at application start."
+        )
 
 /** Default transport on the JDK's built-in HTTP client. */
 internal class JdkFirebaseRestTransport : FirebaseRestTransport {

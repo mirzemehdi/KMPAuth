@@ -192,3 +192,57 @@ class FirebaseRestAuthEngineTest {
         assertNull(engine.currentUser())
     }
 }
+
+class DesktopWebFlowTest {
+
+    @Test
+    fun webFlowCredentialAdoptsSessionFromLookup() = kotlinx.coroutines.test.runTest {
+        val calls = mutableListOf<Pair<String, String>>()
+        val transport = FirebaseRestTransport { url, body ->
+            calls += url to body
+            """{"users":[{"localId":"uid-w","email":"w@b.c","displayName":"Web"}]}"""
+        }
+        val engine = FirebaseRestAuthEngine(
+            transport = transport,
+            apiKeyProvider = { "test-key" },
+            webFlowRunner = { request ->
+                assertEquals("apple.com", request.providerId)
+                WebFlowResult(idToken = "web-id-token", refreshToken = "web-refresh")
+            },
+        )
+
+        val user = engine.signIn(
+            com.mmk.kmpauth.core.auth.AuthCredential.OAuthWebFlow(providerId = "apple.com")
+        ).getOrThrow()
+
+        assertEquals("uid-w", user.uid)
+        assertEquals("Web", user.displayName)
+        assertEquals("apple.com", user.providerId)
+        assertContains(calls.single().first, "accounts:lookup")
+        assertContains(calls.single().second, "web-id-token")
+        assertEquals("uid-w", engine.currentUser()?.uid)
+    }
+
+    @Test
+    fun signInPageEmbedsConfigAsJsonNotMarkup() {
+        val html = DesktopWebAuthFlow.buildSignInPageHtml(
+            DesktopWebAuthFlow.WebFlowPageConfig(
+                apiKey = "k",
+                authDomain = "p.firebaseapp.com",
+                projectId = "p",
+                applicationId = "1:1:web:x",
+            ),
+            WebFlowRequest(
+                providerId = "github.com",
+                scopes = listOf("user:email"),
+                // A hostile value must stay inert inside the JSON block.
+                customParameters = mapOf("prompt" to "</script><script>alert(1)</script>"),
+            ),
+        )
+
+        assertContains(html, "\"providerId\":\"github.com\"")
+        assertContains(html, "\"user:email\"")
+        assertContains(html, "application/json")
+        assertFalse(html.contains("</script><script>alert(1)</script>"))
+    }
+}

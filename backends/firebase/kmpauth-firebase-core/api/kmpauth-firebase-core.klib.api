@@ -15,6 +15,28 @@ abstract interface com.mmk.kmpauth.firebase.phone/PhoneAuthState : com.mmk.kmpau
     abstract fun submitCode(kotlin/String) // com.mmk.kmpauth.firebase.phone/PhoneAuthState.submitCode|submitCode(kotlin.String){}[0]
 }
 
+final class com.mmk.kmpauth.firebase/FirebaseBackendOptions { // com.mmk.kmpauth.firebase/FirebaseBackendOptions|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String = ...) // com.mmk.kmpauth.firebase/FirebaseBackendOptions.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String){}[0]
+
+    final val apiKey // com.mmk.kmpauth.firebase/FirebaseBackendOptions.apiKey|{}apiKey[0]
+        final fun <get-apiKey>(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.apiKey.<get-apiKey>|<get-apiKey>(){}[0]
+    final val applicationId // com.mmk.kmpauth.firebase/FirebaseBackendOptions.applicationId|{}applicationId[0]
+        final fun <get-applicationId>(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.applicationId.<get-applicationId>|<get-applicationId>(){}[0]
+    final val authDomain // com.mmk.kmpauth.firebase/FirebaseBackendOptions.authDomain|{}authDomain[0]
+        final fun <get-authDomain>(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.authDomain.<get-authDomain>|<get-authDomain>(){}[0]
+    final val projectId // com.mmk.kmpauth.firebase/FirebaseBackendOptions.projectId|{}projectId[0]
+        final fun <get-projectId>(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.projectId.<get-projectId>|<get-projectId>(){}[0]
+
+    final fun component1(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.component1|component1(){}[0]
+    final fun component2(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.component2|component2(){}[0]
+    final fun component3(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.component3|component3(){}[0]
+    final fun component4(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.component4|component4(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ...): com.mmk.kmpauth.firebase/FirebaseBackendOptions // com.mmk.kmpauth.firebase/FirebaseBackendOptions.copy|copy(kotlin.String;kotlin.String;kotlin.String;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.firebase/FirebaseBackendOptions.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.mmk.kmpauth.firebase/FirebaseBackendOptions.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.mmk.kmpauth.firebase/FirebaseBackendOptions.toString|toString(){}[0]
+}
+
 final object com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend : com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend|null[0]
     final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.currentUser|currentUser(){}[0]
     final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
@@ -29,13 +51,16 @@ final object com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend : com.mmk.kmpa
 }
 
 final val com.mmk.kmpauth.firebase.backend/com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop // com.mmk.kmpauth.firebase.backend/com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop|#static{}com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop[0]
+final val com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop // com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop|#static{}com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop[0]
 
+final fun (com.mmk.kmpauth.core/KMPAuthConfiguration).com.mmk.kmpauth.firebase/firebase(com.mmk.kmpauth.firebase/FirebaseBackendOptions) // com.mmk.kmpauth.firebase/firebase|firebase@com.mmk.kmpauth.core.KMPAuthConfiguration(com.mmk.kmpauth.firebase.FirebaseBackendOptions){}[0]
 final fun com.mmk.kmpauth.firebase.apple/rememberAppleAuthState(kotlin.collections/List<com.mmk.kmpauth.apple/AppleSignInRequestScope>?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.firebase.apple/rememberAppleAuthState|rememberAppleAuthState(kotlin.collections.List<com.mmk.kmpauth.apple.AppleSignInRequestScope>?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.firebase.backend/com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.firebase.backend/com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop_getter|com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop_getter(){}[0]
 final fun com.mmk.kmpauth.firebase.github/rememberGithubAuthState(kotlin.collections/List<kotlin/String>?, kotlin.collections/Map<kotlin/String, kotlin/String>?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.firebase.github/rememberGithubAuthState|rememberGithubAuthState(kotlin.collections.List<kotlin.String>?;kotlin.collections.Map<kotlin.String,kotlin.String>?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.firebase.microsoft/rememberMicrosoftAuthState(kotlin.collections/List<kotlin/String>?, kotlin.collections/Map<kotlin/String, kotlin/String>?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.firebase.microsoft/rememberMicrosoftAuthState|rememberMicrosoftAuthState(kotlin.collections.List<kotlin.String>?;kotlin.collections.Map<kotlin.String,kotlin.String>?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.firebase.oauth/rememberOAuthState(kotlin/String, kotlin.collections/List<kotlin/String>?, kotlin.collections/Map<kotlin/String, kotlin/String>?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.firebase.oauth/rememberOAuthState|rememberOAuthState(kotlin.String;kotlin.collections.List<kotlin.String>?;kotlin.collections.Map<kotlin.String,kotlin.String>?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.firebase.phone/rememberPhoneAuthState(kotlin/String, kotlin/Boolean, kotlin/Function0<kotlin/Unit>?, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.firebase.phone/PhoneAuthState // com.mmk.kmpauth.firebase.phone/rememberPhoneAuthState|rememberPhoneAuthState(kotlin.String;kotlin.Boolean;kotlin.Function0<kotlin.Unit>?;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop_getter|com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop_getter(){}[0]
 
 // Targets: [ios, js]
 final class com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService : com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService|null[0]
