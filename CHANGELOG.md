@@ -12,6 +12,16 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
 2.x → 3.0 guide.
 
 ### Changed
+- **`kmpauth-firebase` is the real Firebase module again** — the granular
+  `kmpauth-firebase-core` artifact introduced in the alphas is renamed to
+  `kmpauth-firebase` (backend + Apple/GitHub/Microsoft/OAuth/phone states),
+  and the 2.x aggregator it replaced is gone. The deprecated 2.x Google and
+  Facebook container composables remain published as compatibility shims
+  (`kmpauth-firebase-google`, `kmpauth-firebase-facebook`; removed in 4.0).
+  **2.x upgraders still using `GoogleButtonUiContainerFirebase` /
+  `FacebookButtonUiContainerFirebase` must add the matching shim artifact**
+  — `kmpauth-firebase` alone no longer bundles the Google sign-in stack
+  (MIGRATION §5).
 - **Backend-agnostic auth states — the `Firebase` prefix is gone** and the
   names now mark the two layers: `rememberXxxSignInState` returns the
   provider's credential (unchanged: `rememberGoogleSignInState`,
@@ -21,14 +31,14 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   `rememberGoogleAuthState` (in `kmpauth-google`), `rememberFacebookAuthState`
   (in `kmpauth-facebook`), `rememberAppleAuthState`, `rememberGithubAuthState`,
   `rememberMicrosoftAuthState`, `rememberOAuthState(provider)`,
-  `rememberPhoneAuthState` (in `kmpauth-firebase-core`),
+  `rememberPhoneAuthState` (in `kmpauth-firebase`),
   `rememberEmailAuthState` and `rememberAnonymousAuthState` (in
   `kmpauth-core`). Google/Facebook exchange states moved into their provider
   modules — SDK isolation is unchanged (no Facebook SDK unless you depend on
   `kmpauth-facebook`), and `kmpauth-firebase-google`/`-facebook` now carry
   only the deprecated 2.x containers.
 - **The Firebase backend registers itself automatically** when
-  `kmpauth-firebase-core` is in the dependencies: `ServiceLoader` discovery
+  `kmpauth-firebase` is in the dependencies: `ServiceLoader` discovery
   on JVM/Android (R8 keep rule ships in the consumer rules) and eager
   load-time registration on iOS/JS/wasm - no setup call needed.
   `KMPAuth.registerBackendProvider(backend)` exists for custom backends or

@@ -27,7 +27,7 @@ public class KMPAuthConfiguration internal constructor() {
 
     /**
      * Sets the auth backend serving the `rememberXxxAuthState` flows and
-     * the `KMPAuth` operations. Not needed with `kmpauth-firebase-core`,
+     * the `KMPAuth` operations. Not needed with `kmpauth-firebase`,
      * which registers itself automatically — use this for a custom backend
      * (e.g. Supabase) or to override the discovered default.
      */

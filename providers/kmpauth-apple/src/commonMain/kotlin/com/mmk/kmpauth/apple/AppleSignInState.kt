@@ -23,7 +23,7 @@ import com.mmk.kmpauth.core.SignInState
  * JVM, JS and wasmJs this state is a no-op that logs and never produces a
  * result - Apple's web OAuth flow returns an authorization code that must be
  * exchanged with a client secret server-side, which is not safe to do from a
- * client. Use `rememberFirebaseAppleSignInState` from `kmpauth-firebase-core`
+ * client. Use `rememberFirebaseAppleSignInState` from `kmpauth-firebase`
  * if you need Apple Sign-In on non-Apple targets.
  *
  * @param requestScopes Scopes requested from the user. Defaults to full name

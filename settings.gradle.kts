@@ -28,14 +28,14 @@ include(":providers:kmpauth-facebook")
 include(":providers:kmpauth-apple")
 
 // Session backends
-include(":backends:firebase:kmpauth-firebase-core")
-include(":backends:firebase:kmpauth-firebase-google")
-include(":backends:firebase:kmpauth-firebase-facebook")
+include(":backends:firebase:kmpauth-firebase")
 include(":backends:supabase:kmpauth-supabase")
 
-// Backward-compatibility aggregators for 2.x artifacts (folder signals
-// legacy status; artifact ids and coordinates are unchanged)
-include(":deprecated:kmpauth-firebase")
+// Backward-compatibility shims for the deprecated 2.x container composables
+// (folder signals legacy status; artifact ids and coordinates are unchanged).
+// Removal planned for 4.0.
+include(":deprecated:kmpauth-firebase-google")
+include(":deprecated:kmpauth-firebase-facebook")
 
 include(":sampleApp:shared")
 include(":sampleApp:androidApp")

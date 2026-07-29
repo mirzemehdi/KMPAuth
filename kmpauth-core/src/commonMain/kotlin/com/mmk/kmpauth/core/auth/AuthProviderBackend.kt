@@ -157,7 +157,7 @@ public interface AuthProviderBackend {
  * KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, password))
  * ```
  *
- * `kmpauth-firebase-core` registers its backend automatically (ServiceLoader
+ * `kmpauth-firebase` registers its backend automatically (ServiceLoader
  * on JVM/Android, eager load-time registration on iOS/JS/wasm); a Supabase
  * (or custom) backend calls [register] once at application start. The first
  * registration wins unless [replace] is set — an explicitly chosen backend
@@ -191,7 +191,7 @@ public object KMPAuthBackend : AuthProviderBackend {
 
     /**
      * Registers [backend] as an auto-provided **default** — used by backend
-     * modules' self-registration (`kmpauth-firebase-core`'s ServiceLoader /
+     * modules' self-registration (`kmpauth-firebase`'s ServiceLoader /
      * load-time hooks and lazy state-side registration). A default never
      * replaces anything already registered, and any explicit [register]
      * call supersedes it regardless of ordering — this is what lets
@@ -208,7 +208,7 @@ public object KMPAuthBackend : AuthProviderBackend {
 
     /**
      * The active backend: explicitly registered, or — on platforms that
-     * support it — discovered from the classpath (`kmpauth-firebase-core`
+     * support it — discovered from the classpath (`kmpauth-firebase`
      * publishes its backend as a `ServiceLoader` service on JVM/Android;
      * on iOS/JS it self-registers eagerly at load). Explicit registration
      * always wins over discovery.

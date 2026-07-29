@@ -18,11 +18,11 @@ public actual fun rememberAppleSignInState(
     return remember {
         // Apple's native flow is Apple-platform only. The web OAuth flow
         // needs a server-side client-secret exchange, so it is not offered
-        // here - use rememberAppleAuthState from kmpauth-firebase-core on
+        // here - use rememberAppleAuthState from kmpauth-firebase on
         // this platform.
         UnsupportedSignInState(
             reason = "Native Apple Sign-In is not supported on wasmJs; " +
-                "use rememberAppleAuthState (kmpauth-firebase-core) instead.",
+                "use rememberAppleAuthState (kmpauth-firebase) instead.",
             onFailure = { currentOnResult(Result.failure(it)) },
         )
     }
