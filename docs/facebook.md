@@ -1,7 +1,13 @@
 # Facebook Sign-In
 
-Module: `kmpauth-facebook`. Android and iOS only (the Facebook SDK has no
-other targets).
+Module: `kmpauth-facebook`. Android and iOS only — Meta ships its native
+SDK (app-switch login, Limited Login) for mobile exclusively.
+
+On other platforms use Facebook as a plain **browser OAuth provider**
+instead: `rememberOAuthState(provider = "facebook.com")` with
+[Firebase](firebase.md) (Desktop), or
+`KMPAuth.signIn(AuthCredential.OAuthWebFlow("facebook.com"))` with
+[Supabase](supabase.md) (Desktop and web).
 
 ## Usage
 
