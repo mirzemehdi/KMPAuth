@@ -49,6 +49,8 @@ kotlin {
         val desktopMain by getting
 
         androidMain.dependencies {
+            // Ktor engine for supabase-kt.
+            implementation(libs.ktor.client.cio)
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
@@ -65,10 +67,26 @@ kotlin {
             implementation(project(":backends:firebase:kmpauth-firebase-core"))
             implementation(project(":backends:firebase:kmpauth-firebase-google"))
             implementation(project(":backends:firebase:kmpauth-firebase-facebook"))
+            // Supabase backend demo (see AppInitializer.USE_SUPABASE_BACKEND).
+            implementation(project(":backends:supabase:kmpauth-supabase"))
             implementation(project(":kmpauth-uihelper"))
         }
         desktopMain.dependencies {
             implementation(compose.desktop.common)
+            // Ktor engine for supabase-kt.
+            implementation(libs.ktor.client.cio)
+        }
+        iosMain.dependencies {
+            // Ktor engine for supabase-kt.
+            implementation(libs.ktor.client.darwin)
+        }
+        jsMain.dependencies {
+            // Ktor engine for supabase-kt.
+            implementation(libs.ktor.client.js)
+        }
+        wasmJsMain.dependencies {
+            // Ktor engine for supabase-kt.
+            implementation(libs.ktor.client.js)
         }
     }
 }
