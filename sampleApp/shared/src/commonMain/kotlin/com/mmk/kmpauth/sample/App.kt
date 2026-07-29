@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.apple.rememberAppleSignInState
 import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
+import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.EmailAuthMode
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.core.auth.LocalKMPAuthBackend
@@ -36,6 +38,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.auth.rememberAnonymousAuthState
 import com.mmk.kmpauth.core.auth.rememberEmailAuthState
+import com.mmk.kmpauth.core.auth.rememberOAuthState
+import com.mmk.kmpauth.facebook.FacebookLoginTracking
 import com.mmk.kmpauth.facebook.rememberFacebookAuthState
 import com.mmk.kmpauth.facebook.rememberFacebookSignInState
 import com.mmk.kmpauth.apple.rememberAppleAuthState
@@ -146,6 +150,18 @@ private fun ProviderOnlySection(onStatus: (String) -> Unit) {
         })
         Button(onClick = { googleSignIn.launch() }) { Text("Google credential") }
 
+        // Access token needs a separate consent prompt on Android (#90/#129).
+        val googleWithAccessToken = rememberGoogleSignInState(
+            requestAccessToken = true,
+            onResult = { result ->
+                onStatus(result.fold(
+                    onSuccess = { "Google credential: accessToken=${it.accessToken?.take(8)}..." },
+                    onFailure = { "Google credential failed: ${it.message}" },
+                ))
+            },
+        )
+        Button(onClick = { googleWithAccessToken.launch() }) { Text("Google + access token") }
+
         // Apple platforms only; no-op state elsewhere.
         val appleSignIn = rememberAppleSignInState(onResult = { result ->
             onStatus(result.fold(
@@ -162,6 +178,19 @@ private fun ProviderOnlySection(onStatus: (String) -> Unit) {
             ))
         })
         Button(onClick = { facebookSignIn.launch() }) { Text("Facebook credential") }
+
+        // Classic login returns a Graph-API access token instead of the
+        // Limited-Login OIDC JWT (counts as tracking on iOS).
+        val facebookClassic = rememberFacebookSignInState(
+            loginTracking = FacebookLoginTracking.Enabled,
+            onResult = { result ->
+                onStatus(result.fold(
+                    onSuccess = { "Facebook classic: Graph access token received" },
+                    onFailure = { "Facebook classic failed: ${it.message}" },
+                ))
+            },
+        )
+        Button(onClick = { facebookClassic.launch() }) { Text("Facebook classic (Graph token)") }
     }
 }
 
@@ -186,6 +215,10 @@ private fun FirebaseSection(
 
         val microsoftAuth = rememberMicrosoftAuthState(onResult = report("Firebase/Microsoft"))
         Button(onClick = { microsoftAuth.launch() }) { Text("Microsoft") }
+
+        // Generic state: any provider enabled in the console.
+        val yahooAuth = rememberOAuthState(provider = "yahoo.com", onResult = report("Firebase/Yahoo"))
+        Button(onClick = { yahooAuth.launch() }) { Text("Yahoo (generic OAuth)") }
 
         val facebookAuth = rememberFacebookAuthState(onResult = report("Firebase/Facebook"))
         Button(onClick = { facebookAuth.launch() }) { Text("Facebook") }
@@ -226,6 +259,13 @@ private fun SupabaseSection(
         val githubAuth = rememberGithubAuthState(onResult = report("Supabase/GitHub"))
         Button(onClick = { githubAuth.launch() }) { Text("GitHub (web flow)") }
 
+        val microsoftAuth = rememberMicrosoftAuthState(onResult = report("Supabase/Microsoft"))
+        Button(onClick = { microsoftAuth.launch() }) { Text("Microsoft (web flow)") }
+
+        // GoTrue provider names work too ("gitlab", "discord", ...).
+        val gitlabAuth = rememberOAuthState(provider = "gitlab", onResult = report("Supabase/GitLab"))
+        Button(onClick = { gitlabAuth.launch() }) { Text("GitLab (GoTrue name)") }
+
         // Native Apple credential on iOS via the id_token grant; browser
         // flow elsewhere.
         val appleAuth = rememberAppleAuthState(onResult = report("Supabase/Apple"))
@@ -249,6 +289,8 @@ private fun EmailAuthBlock(
     val scope = rememberCoroutineScope()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var linkToCurrentUser by remember { mutableStateOf(false) }
+    var magicLink by remember { mutableStateOf("") }
 
     OutlinedTextField(
         value = email,
@@ -272,6 +314,7 @@ private fun EmailAuthBlock(
         email = email,
         password = password,
         mode = EmailAuthMode.SignIn,
+        linkAccount = linkToCurrentUser,
         onResult = report("$label/Email sign-in"),
     )
     val emailSignUp = rememberEmailAuthState(
@@ -283,6 +326,15 @@ private fun EmailAuthBlock(
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(onClick = { emailSignIn.launch() }) { Text("Sign in") }
         Button(onClick = { emailSignUp.launch() }) { Text("Sign up") }
+    }
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(checked = linkToCurrentUser, onCheckedChange = { linkToCurrentUser = it })
+        // Upgrade path: sign in as guest first, then sign in with email and
+        // this enabled - the anonymous uid and its data are kept.
+        Text("Link to current user (guest upgrade)", style = MaterialTheme.typography.bodySmall)
     }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(onClick = {
@@ -302,6 +354,42 @@ private fun EmailAuthBlock(
             }
         }) { Text("Reauthenticate") }
     }
+
+    // Passwordless magic link: step 1 sends the link; step 2 pastes the
+    // opened link back in (a real app completes it in its deep-link handler).
+    OutlinedButton(onClick = {
+        scope.launch {
+            backend.sendSignInLinkToEmail(
+                email = email,
+                actionCodeSettings = EmailActionCodeSettings(
+                    url = "https://kmpauthapp.firebaseapp.com",
+                    canHandleCodeInApp = true,
+                ),
+            ).fold(
+                onSuccess = { onStatus("$label: magic link sent - open it, then paste it below") },
+                onFailure = { onStatus("$label magic link failed: ${it.message}") },
+            )
+        }
+    }) { Text("Send magic link") }
+    OutlinedTextField(
+        value = magicLink,
+        onValueChange = { magicLink = it },
+        label = { Text("Paste opened magic link") },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+    )
+    OutlinedButton(onClick = {
+        scope.launch {
+            if (!backend.isSignInWithEmailLink(magicLink)) {
+                onStatus("$label: not a sign-in link for this backend")
+            } else {
+                backend.signInWithEmailLink(email, magicLink).fold(
+                    onSuccess = { onStatus("$label: magic link sign-in as ${it.email ?: it.uid}") },
+                    onFailure = { onStatus("$label magic link sign-in failed: ${it.message}") },
+                )
+            }
+        }
+    }) { Text("Complete link sign-in") }
 }
 
 @Composable
