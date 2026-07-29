@@ -31,6 +31,7 @@ include(":providers:kmpauth-apple")
 include(":backends:firebase:kmpauth-firebase-core")
 include(":backends:firebase:kmpauth-firebase-google")
 include(":backends:firebase:kmpauth-firebase-facebook")
+include(":backends:supabase:kmpauth-supabase")
 
 // Backward-compatibility aggregators for 2.x artifacts (folder signals
 // legacy status; artifact ids and coordinates are unchanged)

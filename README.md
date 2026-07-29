@@ -97,6 +97,9 @@ sourceSets {
     // ...or the 2.x-compatible bundle (aggregates -core and the deprecated 2.x containers):
     implementation("io.github.mirzemehdi:kmpauth-firebase:<version>")
 
+    // ...or the Supabase backend instead of Firebase (see the "Supabase backend" section):
+    implementation("io.github.mirzemehdi:kmpauth-supabase:<version>")
+
     implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") //UiHelper SignIn buttons (AppleSignIn, GoogleSignInButton)
 
   }
@@ -686,6 +689,70 @@ To later upgrade the guest to a permanent account, sign in with any provider
 state using `linkAccount = true` (e.g. `rememberEmailAuthState(...,
 linkAccount = true)`) - the credential is linked to the anonymous user, keeping
 its uid and data.
+
+### Supabase backend
+
+Firebase is not required — `kmpauth-supabase` serves the same
+backend-agnostic API from a [Supabase](https://supabase.com) project on
+every target (Android, iOS, Desktop/JVM, JS, wasm):
+
+```kotlin
+commonMain.dependencies {
+    implementation("io.github.mirzemehdi:kmpauth-supabase:<version>")
+}
+```
+
+`kmpauth-supabase` is built on the community
+[supabase-kt](https://github.com/supabase-community/supabase-kt) SDK, which
+needs a [Ktor client engine](https://ktor.io/docs/client-engines.html) on
+each platform's runtime classpath (e.g. `io.ktor:ktor-client-okhttp` on
+Android, `io.ktor:ktor-client-darwin` on iOS, `io.ktor:ktor-client-cio` on
+Desktop, `io.ktor:ktor-client-js` on JS/wasm) — same as any supabase-kt
+setup.
+
+Unlike Firebase there is no config-file auto-registration — a Supabase
+client cannot exist without the project URL and key, so registration is the
+one explicit call at app start:
+
+```kotlin
+KMPAuth.initialize {
+    supabase(SupabaseBackendOptions(url = projectUrl, apiKey = anonKey))
+    // apps that already use supabase-kt can pass their client instead:
+    // supabase(existingSupabaseClient)
+}
+```
+
+If `kmpauth-firebase-core` is *also* in the dependencies, pass
+`supabase(..., replace = true)` — on iOS/JS/wasm the Firebase backend
+registers eagerly at binary load, before `initialize` runs.
+
+After that the backend-generic flows run against Supabase (enable the
+matching providers in the Supabase dashboard):
+
+- **Works**: `rememberEmailAuthState` (sign-in and sign-up),
+  `rememberAnonymousAuthState`, `rememberGoogleAuthState` and
+  `rememberFacebookAuthState` (Limited Login/OIDC only — see below), plus the
+  `KMPAuth` operations: `signIn`, `signUp`, `signInAnonymously`,
+  `sendPasswordResetEmail`, `sendSignInLinkToEmail` /
+  `isSignInWithEmailLink` / `signInWithEmailLink` (Supabase magic links —
+  `token_hash`, PKCE `code` and implicit-flow redirects are all recognized),
+  `reauthenticate` (as a fresh sign-in; Supabase has no recent-login
+  requirement), `currentUser`, `signOut`. Linking an id-token credential to
+  the signed-in user (`linkAccount = true`) uses Supabase identity linking
+  and requires manual linking enabled on the project.
+- **Doesn't (by design)**: classic Facebook access tokens (Supabase's
+  `id_token` grant accepts only OIDC tokens — use Facebook Limited Login or
+  Supabase's own web flow), the `kmpauth-firebase-core`-resident web-flow
+  states (GitHub/Microsoft/OAuth/Apple-web/phone — use supabase-kt's
+  `signInWith(Github)` etc. directly via the client on
+  `SupabaseAuthBackend.supabaseClient`), and linking an email/password
+  credential (Supabase adds an email via `auth.updateUser` instead). All
+  unsupported paths report a failed `Result` explaining the
+  Supabase-idiomatic alternative.
+
+Of the `EmailActionCodeSettings` fields only `url` maps to Supabase (as the
+redirect URL, which must be in the project's allow-list); the
+iOS/Android-app fields are Firebase dynamic-link concepts.
 
 
 

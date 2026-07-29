@@ -30,6 +30,8 @@ firebaseAndroidBom = "34.15.0"
 androidLegacyPlayServices = "21.6.0"
 mavenPublish = "0.37.0"
 kotlinx-coroutines = "1.11.0"
+supabase = "3.7.0"
+ktor = "3.5.1" # test-only (MockEngine); keep on the Ktor generation supabase-kt ships
 
 
 [libraries]
@@ -71,6 +73,10 @@ compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.re
 #Firebase
 firebase-gitlive-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveAuth" }
 firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseAndroidBom" }
+
+#Supabase
+supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt", version.ref = "supabase" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
 #Facebook
 facebookAuthAndroid= { module = "com.facebook.android:facebook-login", version.ref = "facebookAuthAndroid" }
