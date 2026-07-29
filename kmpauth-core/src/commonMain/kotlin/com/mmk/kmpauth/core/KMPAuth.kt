@@ -10,8 +10,9 @@ import com.mmk.kmpauth.core.logger.currentLogger
 
 /**
  * KMPAuth's main entry point for everything that isn't a launchable
- * sign-in flow. Sign-in flows are the `rememberXxxSignInState`
- * composables; session and account operations live here:
+ * sign-in flow. Sign-in flows are the `rememberXxxSignInState` /
+ * `rememberXxxAuthState` composables; session and account operations
+ * live here:
  *
  * ```
  * KMPAuth.currentUser()

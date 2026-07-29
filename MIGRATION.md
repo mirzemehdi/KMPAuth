@@ -13,6 +13,9 @@ Step-by-step guide for upgrading from KMPAuth 2.x to 3.0.
       they are deleted in 3.0. Public entry points (`GoogleAuthProvider.create`,
       the `*UiContainer` composables) are unchanged and need no code changes.
 - [ ] Address `@Deprecated` warnings — each carries a `ReplaceWith` migration hint.
+- [ ] Moving off the deprecated containers? Use the `rememberXxxSignInState` /
+      `rememberXxxAuthState` composables (sections 4 and 11) — session
+      callbacks are `Result<KMPAuthUser>` instead of `Result<FirebaseUser?>`.
 
 ## What did NOT change
 
@@ -144,17 +147,21 @@ under `deprecated/` in the repository as a compatibility shim). Optionally slim 
 3.0 introduces `com.mmk.kmpauth.core.auth.AuthProviderBackend` with a
 backend-agnostic credential/user model (`AuthCredential`, `KMPAuthUser`).
 
-- **Existing Firebase users: no action.** `kmpauth-firebase` registers
-  `FirebaseAuthBackend` automatically the first time a container is used;
-  every composable keeps returning `Result<FirebaseUser?>` exactly as in 2.x.
-- **Custom/Supabase backends:** implement `AuthProviderBackend` and call
+- **Existing Firebase users: no action.** With `kmpauth-firebase-core` (or the
+  `kmpauth-firebase` aggregate) in the dependencies, `FirebaseAuthBackend`
+  registers itself automatically — `ServiceLoader` on JVM/Android, eager
+  load-time registration on iOS/JS/wasm. The deprecated containers keep
+  returning `Result<FirebaseUser?>` exactly as in 2.x.
+- **Supabase backend:** `KMPAuth.initialize { supabase(url = ..., apiKey = ...) }`
+  with the `kmpauth-supabase` artifact — see the README's Supabase section.
+- **Custom backends:** implement `AuthProviderBackend` and call
   `KMPAuth.registerBackendProvider(yourBackend)` at application start
-  (before any KMPAuth UI renders). The first registration wins, so an
-  explicit registration always beats the lazy Firebase default; pass
-  `replace = true` to swap an already-registered backend.
-- Web-flow providers (Apple on Android, GitHub, generic OAuth) are executed
-  by their dedicated container composables — a backend `signIn` call cannot
-  drive a browser flow.
+  (before any KMPAuth UI renders). An explicit registration always
+  supersedes the auto-registered Firebase default, regardless of order;
+  `replace = true` swaps an earlier explicit registration.
+- Web-flow providers (Apple on Android, GitHub, Microsoft, generic OAuth)
+  are driven by their platform auth states in `kmpauth-firebase-core` — a
+  backend `signIn` call cannot drive a browser flow.
 
 ## 7. Desktop (JVM) Google Sign-In redirect URI
 
@@ -271,50 +278,55 @@ provider directly.
   type is `Result<KMPAuthUser>` and the function is `rememberGoogleAuthState`
   in `kmpauth-google` (section 11).
 
-## 11. Firebase states return `KMPAuthUser` and are callable from commonMain (wasm included)
+## 11. Container composables → auth states with `Result<KMPAuthUser>` (callable from commonMain, wasm included)
 
-In 2.x (and the early 3.0 alphas) every Firebase state exposed GitLive's
-`FirebaseUser` in its `onResult` signature. Since GitLive has no wasm target,
-that made the whole Firebase API invisible to `commonMain` in projects with a
-wasm target. The states now use KMPAuth's own `KMPAuthUser` and live in
-`commonMain` on **all** targets — on wasm they report a failed `Result`
-instead of not compiling.
+In 2.x every session flow was a `*UiContainer` composable whose callback
+exposed GitLive's `FirebaseUser` (`Result<FirebaseUser?>`). Since GitLive
+has no wasm target, that made the whole Firebase API invisible to
+`commonMain` in projects with a wasm target — and `null` results carried no
+reason. The 3.0 replacements are backend-agnostic states using KMPAuth's own
+`KMPAuthUser`, live in `commonMain` on **all** targets (on wasm the
+Firebase-backed ones report a failed `Result` instead of not compiling), and
+their results are non-null: no user means a failure with a reason.
 
 ```kotlin
-// before (3.0 alphas)
-val onFirebaseResult: (Result<FirebaseUser?>) -> Unit = { result ->
+// 2.x (still works, deprecated)
+GoogleButtonUiContainerFirebase(onResult = { result: Result<FirebaseUser?> ->
     val name = result.getOrNull()?.displayName
+}) {
+    GoogleSignInButton { this.onClick() }
 }
 
-// after
-val onAuthResult: (Result<KMPAuthUser>) -> Unit = { result ->
-    val name = result.getOrNull()?.displayName // same properties: uid, email, displayName, photoUrl, providerId
+// 3.0
+val googleSignIn = rememberGoogleAuthState(onResult = { result: Result<KMPAuthUser> ->
+    val name = result.getOrNull()?.displayName // uid, email, displayName, photoUrl, providerId
     val nativeUser = result.getOrNull()?.raw as? dev.gitlive.firebase.auth.FirebaseUser // escape hatch
-}
+})
+GoogleSignInButton { googleSignIn.launch() }
 ```
 
-Also changed:
+What each 2.x container maps to (naming rule: `rememberXxxSignInState`
+returns the provider credential only; `rememberXxxAuthState` produces a
+session through the registered backend):
 
-- The sign-in states are backend-agnostic and renamed - the `Firebase` prefix
-  is gone, and "Auth" marks the states that produce a session:
-
-  | 3.0 alphas | Now | Module |
+  | 2.x | 3.0 | Module |
   |---|---|---|
-  | `rememberGoogleAuthState` | `rememberGoogleAuthState` | `kmpauth-google` |
-  | `rememberFacebookAuthState` | `rememberFacebookAuthState` | `kmpauth-facebook` |
-  | `rememberFirebaseAppleSignInState` | `rememberAppleAuthState` | `kmpauth-firebase-core` |
-  | `rememberFirebaseGithubSignInState` | `rememberGithubAuthState` | `kmpauth-firebase-core` |
-  | `rememberFirebaseMicrosoftSignInState` | `rememberMicrosoftAuthState` | `kmpauth-firebase-core` |
-  | `rememberFirebaseOAuthSignInState` | `rememberOAuthState(provider = "...")` | `kmpauth-firebase-core` |
-  | `rememberFirebaseEmailSignInState` | `rememberEmailAuthState` | `kmpauth-core` |
-  | `rememberFirebaseAnonymousSignInState` | `rememberAnonymousAuthState` | `kmpauth-core` |
-  | `rememberFirebasePhoneSignInState` | `rememberPhoneAuthState` | `kmpauth-firebase-core` |
+  | `GoogleButtonUiContainer` | `rememberGoogleSignInState` (credential only) | `kmpauth-google` |
+  | `GoogleButtonUiContainerFirebase` | `rememberGoogleAuthState` | `kmpauth-google` |
+  | `FacebookButtonUiContainer` | `rememberFacebookSignInState` (credential only) | `kmpauth-facebook` |
+  | `FacebookButtonUiContainerFirebase` | `rememberFacebookAuthState` | `kmpauth-facebook` |
+  | `AppleButtonUiContainer` | `rememberAppleAuthState` | `kmpauth-firebase-core` |
+  | `GithubButtonUiContainer` | `rememberGithubAuthState` | `kmpauth-firebase-core` |
+  | `OAuthContainer` | `rememberOAuthState(provider = "...")` | `kmpauth-firebase-core` |
 
-  The provider-only states (`rememberGoogleSignInState`,
-  `rememberFacebookSignInState`, `rememberAppleSignInState`) are unchanged -
-  they return the provider credential without a backend session.
-- Callbacks are `Result<KMPAuthUser>` (non-null): a backend returning no user
-  is a failure with a reason, never a null success.
+  New in 3.0, no 2.x equivalent: `rememberMicrosoftAuthState` and
+  `rememberPhoneAuthState` (`kmpauth-firebase-core`),
+  `rememberEmailAuthState` and `rememberAnonymousAuthState`
+  (`kmpauth-core`), `rememberAppleSignInState` (native Apple credential,
+  `kmpauth-apple`).
+
+Also changed in 3.0:
+
 - **One-stop init (optional)**: `KMPAuth.initialize { logger { ... }; google(credentials) }`
   replaces separate `GoogleAuthProvider.create` + logger calls -
   provider modules contribute extensions on the configuration scope.
@@ -322,10 +334,10 @@ Also changed:
 - **No backend setup needed with Firebase** - having `kmpauth-firebase-core`
   in the dependencies auto-registers the backend (ServiceLoader on
   JVM/Android, eager load-time registration on iOS/JS/wasm). Custom backends
-  register explicitly and always win:
+  register explicitly and always supersede the auto-registered default:
 
   ```kotlin
-  KMPAuth.registerBackendProvider(MyOwnBackend, replace = true)
+  KMPAuth.registerBackendProvider(MyOwnBackend)
   ```
 - Password reset, email-link sign-in and reauthentication are backend
   operations called directly on `KMPAuthBackend` (which delegates to the
@@ -333,9 +345,11 @@ Also changed:
   `KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, password))`.
   Link configuration uses `EmailActionCodeSettings` (KMPAuth's type, android
   fields flattened) instead of GitLive's `ActionCodeSettings`.
-- Desktop/JS: launching a flow that is not implemented there (OAuth/GitHub/
-  Apple web flow, Facebook) now reports a failed `Result` with the reason;
-  previously it silently did nothing.
+- Launching a flow on a platform where it is not available (e.g. Facebook on
+  Desktop, the browser flows on JS/web, any Firebase flow on wasm) now
+  reports a failed `Result` with the reason; previously it silently did
+  nothing. Desktop itself gained full Firebase support in 3.0 — email,
+  anonymous, token exchange and the browser flows all work there.
 
 **Not affected:** the deprecated 2.x `*UiContainer` composables keep their
 `Result<FirebaseUser?>` callbacks unchanged (and stay non-wasm), so 2.x code

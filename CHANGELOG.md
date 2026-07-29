@@ -5,7 +5,11 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0-beta01] — 2026-07-29
+
+The API surface for 3.0 is final with this release — remaining work before
+stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
+2.x → 3.0 guide.
 
 ### Changed
 - **Backend-agnostic auth states — the `Firebase` prefix is gone** and the
@@ -48,7 +52,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `kmpauth-core`) instead of GitLive's `ActionCodeSettings`.
 - On Desktop and JS, the unimplemented Firebase flows (OAuth/GitHub/Apple web
   flow, Facebook) now report a failed `Result` explaining why instead of
-  silently doing nothing when launched.
+  silently doing nothing when launched. The same applies to the native
+  `rememberAppleSignInState` (`kmpauth-apple`) on non-Apple targets, which
+  previously only logged.
 - The deprecated 2.x `*UiContainer` composables are unchanged: they keep their
   `Result<FirebaseUser?>` callbacks (unwrapping through `KMPAuthUser.raw`) and
   remain non-wasm.
@@ -154,8 +160,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Facebook Limited-Login OIDC credentials directly.
 
   All of these are served by the registered backend and report failures as
-  `Result` values. On Desktop (JVM) the underlying Firebase SDK does not
-  implement auth yet (#204), so they return failed `Result`s there.
+  `Result` values — including on Desktop (JVM), where the Firebase backend
+  talks to the Firebase Auth REST API (see the #204 entry above). Only phone
+  sign-in stays unavailable on Desktop/web, and on wasm the Firebase backend
+  reports failed `Result`s (no Firebase SDK there).
 
 ### Fixed
 - **Web (JS/wasm) Google sign-in returns an ID token** (#146). Google's GIS
@@ -195,21 +203,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GoogleUser` is now documented, including the per-platform availability of
   `accessToken` and `serverAuthCode` — the legacy Android fallback never returns
   an access token, which is why it appeared to be missing (#129).
-
-- **Web (JS/wasm) Google sign-in returns an ID token** (#146). Google's GIS
-  splits tokens across two flows - the OAuth token client used before only
-  ever returns an access token, so `GoogleUser.idToken` was always empty on
-  web and Firebase/backend exchange was impossible. The web implementations
-  now obtain the ID token via Sign in with Google (`google.accounts.id`,
-  FedCM-enabled) first, filling profile data from the JWT claims, and only
-  fall back to / additionally run the token flow when an access token is
-  requested (`requestAccessToken` or extra scopes) or the One Tap prompt is
-  suppressed.
-- **`filterByAuthorizedAccounts` documentation was inverted** (#117). The
-  KDoc claimed true shows all accounts; actually true limits the chooser to
-  accounts that previously signed in to the app, and when none exists the
-  flow deliberately retries with all accounts so first-time users can sign
-  in - which is why a device with two authorized accounts still shows both.
 - **Compose resources are packaged again on Android.** `kmpauth-uihelper`'s icons
   and font never reached consuming apps, so every sign-in button crashed at
   runtime with
