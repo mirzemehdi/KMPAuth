@@ -21,7 +21,7 @@ own backend), with every API callable from `commonMain` on every target.
 
 ## Pick your setup
 
-### 1. No backend — you verify the token yourself
+### 1. No backend — you verify the token yourself ([Google](docs/google.md) · [Facebook](docs/facebook.md) · [Apple](docs/apple.md))
 
 Only the provider modules (`kmpauth-google`, `kmpauth-facebook`,
 `kmpauth-apple`). The `rememberXxxSignInState` states hand you the
@@ -44,7 +44,7 @@ val facebookSignIn = rememberFacebookSignInState(onResult = { result: Result<Fac
 val appleSignIn = rememberAppleSignInState(onResult = { result: Result<AppleUser> -> })
 ```
 
-### 2. Firebase
+### 2. Firebase ([guide](docs/firebase.md))
 
 Add `kmpauth-firebase` — the backend registers itself, and on Android/iOS
 there is zero configuration (the SDK reads `google-services.json` /
@@ -76,13 +76,11 @@ KMPAuth.sendPasswordResetEmail(email)
 KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, password))
 ```
 
-→ [Firebase guide](docs/firebase.md)
+### 3. Supabase ([guide](docs/supabase.md))
 
-### 3. Supabase
-
-Add `kmpauth-supabase` — no Firebase anywhere, works on **every target
-including wasm**. Same states, same `KMPAuth` operations; only the
-registration differs:
+Add `kmpauth-supabase` (plus a Ktor client engine per platform — see the
+guide) — no Firebase anywhere, works on **every target including wasm**.
+Same states, same `KMPAuth` operations; only the registration differs:
 
 ```kotlin
 KMPAuth.initialize {
@@ -99,8 +97,6 @@ val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
 KMPAuth.sendPasswordResetEmail(email)
 KMPAuth.signOut()
 ```
-
-→ [Supabase guide](docs/supabase.md) (Ktor engine per platform, what maps to Supabase)
 
 Need Firebase **and** Supabase side by side? One `CompositionLocalProvider`
 wrapper — [Custom & multiple backends](docs/custom-backends.md).
