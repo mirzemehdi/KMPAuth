@@ -24,19 +24,6 @@ import java.net.URI
 import java.nio.charset.StandardCharsets
 import kotlin.time.Duration.Companion.minutes
 
-/** Firebase session handed back by the sign-in page. */
-internal data class WebFlowResult(
-    val idToken: String,
-    val refreshToken: String?,
-)
-
-/** Parameters of one web-flow sign-in attempt. */
-internal data class WebFlowRequest(
-    val providerId: String,
-    val scopes: List<String>,
-    val customParameters: Map<String, String>,
-)
-
 /**
  * Runs a Firebase OAuth web flow on Desktop: serves a local page on a
  * loopback port, opens it in the system browser, and lets the official

@@ -48,8 +48,13 @@ Desktop support is complete:
   the web config via `firebase(...)` as on Desktop). The browser-flow
   states (OAuth/GitHub/Microsoft/Apple) and phone are not implemented yet
   and report a failed `Result`.
-- **wasm**: the Firebase SDK has no wasm target — all Firebase flows report
-  a failed `Result`. Use the [Supabase backend](supabase.md) for wasm.
+- **wasm**: the Firebase SDK has no wasm target, so — as on Desktop — the
+  backend talks to the **Firebase Auth REST API** (over fetch): email/
+  password, anonymous, email link, password reset, reauthentication and
+  id-token exchange all work (web Google sign-in already produces the ID
+  token via One Tap). Configure via `firebase(apiKey = ..., ...)`. Browser
+  web flows and phone report a failed `Result` — the
+  [Supabase backend](supabase.md) covers those on wasm.
 
 ## Escape hatch
 

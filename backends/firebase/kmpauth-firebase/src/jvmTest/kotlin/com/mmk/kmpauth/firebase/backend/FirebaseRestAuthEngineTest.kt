@@ -22,7 +22,7 @@ class FirebaseRestAuthEngineTest {
         val calls = mutableListOf<Pair<String, String>>()
         val responses = ArrayDeque<String>()
 
-        override fun post(url: String, jsonBody: String): String {
+        override suspend fun post(url: String, jsonBody: String): String {
             calls += url to jsonBody
             return responses.removeFirstOrNull() ?: """{"error":{"message":"NO_SCRIPTED_RESPONSE"}}"""
         }
