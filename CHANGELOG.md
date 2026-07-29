@@ -54,6 +54,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   remain non-wasm.
 
 ### Added
+- **Supabase auth backend — `kmpauth-supabase`** (#138). The first
+  non-Firebase `AuthProviderBackend`, over the community
+  [supabase-kt](https://github.com/supabase-community/supabase-kt) SDK, on
+  every target including wasm. Registered explicitly —
+  `KMPAuth.initialize { supabase(SupabaseBackendOptions(url, apiKey)) }`
+  (or pass an existing `SupabaseClient`); there is no config-file
+  auto-registration because a Supabase client cannot exist without the
+  project URL and key. Serves email/password sign-in and sign-up, anonymous
+  sign-in, password reset, magic-link sign-in (`token_hash`, PKCE `code`
+  and implicit-flow links), reauthentication (as a fresh sign-in),
+  Google/Apple/Facebook-Limited-Login id-token exchange, and id-token
+  identity linking. Not mapped, failing with a reason: classic Facebook
+  access tokens (Supabase's `id_token` grant is OIDC-only), web-flow
+  providers (use supabase-kt's `signInWith(Github)` directly), and
+  email/password linking (Supabase uses `auth.updateUser`). Consumers add a
+  Ktor client engine per platform, as in any supabase-kt setup.
 - **Desktop (JVM) Firebase auth works** (#204). GitLive's firebase-java-sdk
   has no auth implementation, so on Desktop the Firebase backend now talks
   to the Firebase Auth REST API (Identity Toolkit) directly - JDK built-in

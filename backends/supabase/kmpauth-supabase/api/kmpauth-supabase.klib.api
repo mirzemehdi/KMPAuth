@@ -1,0 +1,61 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, js, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.mirzemehdi:kmpauth-supabase>
+final class com.mmk.kmpauth.supabase/SupabaseAuthBackend : com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.kmpauth.supabase/SupabaseAuthBackend|null[0]
+    constructor <init>(io.github.jan.supabase/SupabaseClient) // com.mmk.kmpauth.supabase/SupabaseAuthBackend.<init>|<init>(io.github.jan.supabase.SupabaseClient){}[0]
+
+    final val supabaseClient // com.mmk.kmpauth.supabase/SupabaseAuthBackend.supabaseClient|{}supabaseClient[0]
+        final fun <get-supabaseClient>(): io.github.jan.supabase/SupabaseClient // com.mmk.kmpauth.supabase/SupabaseAuthBackend.supabaseClient.<get-supabaseClient>|<get-supabaseClient>(){}[0]
+
+    final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.supabase/SupabaseAuthBackend.currentUser|currentUser(){}[0]
+    final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.supabase/SupabaseAuthBackend.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
+    final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
+    final suspend fun sendPasswordResetEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings?): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.sendPasswordResetEmail|sendPasswordResetEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings?){}[0]
+    final suspend fun sendSignInLinkToEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.sendSignInLinkToEmail|sendSignInLinkToEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings){}[0]
+    final suspend fun signIn(com.mmk.kmpauth.core.auth/AuthCredential, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signIn|signIn(com.mmk.kmpauth.core.auth.AuthCredential;kotlin.Boolean){}[0]
+    final suspend fun signInAnonymously(): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signInAnonymously|signInAnonymously(){}[0]
+    final suspend fun signInWithEmailLink(kotlin/String, kotlin/String, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signInWithEmailLink|signInWithEmailLink(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+    final suspend fun signOut() // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signOut|signOut(){}[0]
+    final suspend fun signUp(kotlin/String, kotlin/String): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signUp|signUp(kotlin.String;kotlin.String){}[0]
+}
+
+final class com.mmk.kmpauth.supabase/SupabaseBackendOptions { // com.mmk.kmpauth.supabase/SupabaseBackendOptions|null[0]
+    constructor <init>(kotlin/String, kotlin/String) // com.mmk.kmpauth.supabase/SupabaseBackendOptions.<init>|<init>(kotlin.String;kotlin.String){}[0]
+
+    final val apiKey // com.mmk.kmpauth.supabase/SupabaseBackendOptions.apiKey|{}apiKey[0]
+        final fun <get-apiKey>(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseBackendOptions.apiKey.<get-apiKey>|<get-apiKey>(){}[0]
+    final val url // com.mmk.kmpauth.supabase/SupabaseBackendOptions.url|{}url[0]
+        final fun <get-url>(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseBackendOptions.url.<get-url>|<get-url>(){}[0]
+
+    final fun component1(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseBackendOptions.component1|component1(){}[0]
+    final fun component2(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseBackendOptions.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ...): com.mmk.kmpauth.supabase/SupabaseBackendOptions // com.mmk.kmpauth.supabase/SupabaseBackendOptions.copy|copy(kotlin.String;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.supabase/SupabaseBackendOptions.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.mmk.kmpauth.supabase/SupabaseBackendOptions.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseBackendOptions.toString|toString(){}[0]
+}
+
+final class com.mmk.kmpauth.supabase/SupabaseKMPAuthUser : com.mmk.kmpauth.core.auth/KMPAuthUser { // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser|null[0]
+    constructor <init>(io.github.jan.supabase.auth.user/UserInfo) // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.<init>|<init>(io.github.jan.supabase.auth.user.UserInfo){}[0]
+
+    final val displayName // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.displayName|{}displayName[0]
+        final fun <get-displayName>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.displayName.<get-displayName>|<get-displayName>(){}[0]
+    final val email // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.email|{}email[0]
+        final fun <get-email>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.email.<get-email>|<get-email>(){}[0]
+    final val photoUrl // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.photoUrl|{}photoUrl[0]
+        final fun <get-photoUrl>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.photoUrl.<get-photoUrl>|<get-photoUrl>(){}[0]
+    final val providerId // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.providerId|{}providerId[0]
+        final fun <get-providerId>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.providerId.<get-providerId>|<get-providerId>(){}[0]
+    final val raw // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.raw|{}raw[0]
+        final fun <get-raw>(): kotlin/Any // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.raw.<get-raw>|<get-raw>(){}[0]
+    final val uid // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.uid|{}uid[0]
+        final fun <get-uid>(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.uid.<get-uid>|<get-uid>(){}[0]
+}
+
+final fun (com.mmk.kmpauth.core/KMPAuthConfiguration).com.mmk.kmpauth.supabase/supabase(com.mmk.kmpauth.supabase/SupabaseBackendOptions, kotlin/Boolean = ..., kotlin/Function1<io.github.jan.supabase/SupabaseClientBuilder, kotlin/Unit> = ...) // com.mmk.kmpauth.supabase/supabase|supabase@com.mmk.kmpauth.core.KMPAuthConfiguration(com.mmk.kmpauth.supabase.SupabaseBackendOptions;kotlin.Boolean;kotlin.Function1<io.github.jan.supabase.SupabaseClientBuilder,kotlin.Unit>){}[0]
+final fun (com.mmk.kmpauth.core/KMPAuthConfiguration).com.mmk.kmpauth.supabase/supabase(io.github.jan.supabase/SupabaseClient, kotlin/Boolean = ...) // com.mmk.kmpauth.supabase/supabase|supabase@com.mmk.kmpauth.core.KMPAuthConfiguration(io.github.jan.supabase.SupabaseClient;kotlin.Boolean){}[0]

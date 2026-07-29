@@ -1,0 +1,45 @@
+public final class com/mmk/kmpauth/supabase/KMPAuthSupabaseConfigurationKt {
+	public static final fun supabase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;ZLkotlin/jvm/functions/Function1;)V
+	public static final fun supabase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lio/github/jan/supabase/SupabaseClient;Z)V
+	public static synthetic fun supabase$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun supabase$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lio/github/jan/supabase/SupabaseClient;ZILjava/lang/Object;)V
+}
+
+public final class com/mmk/kmpauth/supabase/SupabaseAuthBackend : com/mmk/kmpauth/core/auth/AuthProviderBackend {
+	public fun <init> (Lio/github/jan/supabase/SupabaseClient;)V
+	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public final fun getSupabaseClient ()Lio/github/jan/supabase/SupabaseClient;
+	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
+	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/supabase/SupabaseBackendOptions {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;
+	public static synthetic fun copy$default (Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getApiKey ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/supabase/SupabaseKMPAuthUser : com/mmk/kmpauth/core/auth/KMPAuthUser {
+	public fun <init> (Lio/github/jan/supabase/auth/user/UserInfo;)V
+	public fun getDisplayName ()Ljava/lang/String;
+	public fun getEmail ()Ljava/lang/String;
+	public fun getPhotoUrl ()Ljava/lang/String;
+	public fun getProviderId ()Ljava/lang/String;
+	public fun getRaw ()Ljava/lang/Object;
+	public fun getUid ()Ljava/lang/String;
+}
+
