@@ -171,11 +171,6 @@ internal class DesktopWebAuthFlow(
                     button.remove();
                   };
 
-                  // Resume a redirect-fallback round trip, if one is pending.
-                  getRedirectResult(auth)
-                    .then((credential) => { if (credential) return finish(credential); })
-                    .catch(async (e) => { await complete({ error: (e && e.code) || String(e) }); });
-
                   button.addEventListener("click", async () => {
                     button.disabled = true;
                     status.textContent = "Waiting for the sign-in window...";
@@ -194,6 +189,32 @@ internal class DesktopWebAuthFlow(
                       button.disabled = false;
                     }
                   });
+
+                  // The click in the app can't authorize a popup here, but we
+                  // still try one immediately - when the browser permits it
+                  // (e.g. popups allowed for localhost) sign-in starts with no
+                  // extra click. If it's blocked, the button provides the
+                  // user gesture browsers require; nothing is reported back
+                  // for an auto attempt, so the flow just keeps waiting.
+                  const autoStart = async () => {
+                    button.disabled = true;
+                    status.textContent = "Opening the sign-in window...";
+                    try {
+                      await finish(await signInWithPopup(auth, provider));
+                    } catch (e) {
+                      status.textContent = "Click continue to open the sign-in window.";
+                      button.disabled = false;
+                    }
+                  };
+
+                  // Resume a redirect-fallback round trip if one is pending;
+                  // otherwise start the sign-in attempt right away.
+                  getRedirectResult(auth)
+                    .then((credential) => {
+                      if (credential) return finish(credential);
+                      return autoStart();
+                    })
+                    .catch(async (e) => { await complete({ error: (e && e.code) || String(e) }); });
                 </script>
                 </body>
                 </html>
