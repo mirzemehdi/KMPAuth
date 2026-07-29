@@ -159,6 +159,23 @@ KMPAuth.signOut()
 Need Firebase **and** Supabase side by side? One `CompositionLocalProvider`
 wrapper — [Custom & multiple backends](docs/custom-backends.md).
 
+### 4. UI helper buttons ([guide](docs/ui-helper.md))
+
+Add `kmpauth-uihelper` for pre-styled buttons following each brand's
+guidelines — they're plain composables, so they wire to any state from the
+setups above (and any clickable of your own works instead):
+
+```kotlin
+GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { googleSignIn.launch() }
+GoogleSignInButtonIconOnly(onClick = { googleSignIn.launch() })
+
+AppleSignInButton(modifier = Modifier.fillMaxWidth()) { appleSignIn.launch() }
+AppleSignInButtonIconOnly(onClick = { appleSignIn.launch() })
+
+FacebookSignInButton(modifier = Modifier.fillMaxWidth()) { facebookSignIn.launch() }
+FacebookSignInButtonIconOnly(onClick = { facebookSignIn.launch() })
+```
+
 ## Documentation
 
 Start here — read only what you need:
