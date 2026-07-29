@@ -661,14 +661,17 @@ KMPAuth.reauthenticate(
 ```
 
 > [!NOTE]
-> **Desktop (JVM)** is fully supported for email/password, email link,
-> anonymous, Google/Facebook/Apple token exchange and reauthentication - the
-> Firebase backend talks to the Firebase Auth REST API there (the GitLive
-> Java SDK has no auth implementation). Call GitLive's
-> `Firebase.initialize(options = FirebaseOptions(applicationId, apiKey, projectId))`
-> at desktop app start so the engine has your web API key. Browser-based
-> flows (GitHub/Microsoft/generic OAuth, Apple web flow) and phone are not
-> available on Desktop yet. On wasm, Firebase flows report a failed `Result`.
+> **Desktop (JVM)** is fully supported: email/password, email link, anonymous,
+> reauthentication, Google/Facebook/Apple token exchange (the Firebase
+> backend talks to the Firebase Auth REST API there), **and the browser
+> flows** - `rememberOAuthState`/`rememberGithubAuthState`/
+> `rememberMicrosoftAuthState`/`rememberAppleAuthState` open the system
+> browser on a local page that runs Firebase's official JS SDK against your
+> project's hosted auth handler, so every provider configured in the
+> Firebase console works, including Apple. Configure once via
+> `KMPAuth.initialize { firebase(FirebaseBackendOptions(apiKey, projectId, applicationId)) }`
+> (no-op on Android/iOS). Phone stays unavailable on Desktop (reCAPTCHA).
+> On wasm, Firebase flows report a failed `Result`.
 
 ### Anonymous Sign-In
 Enable the "Anonymous" sign-in method in the Firebase console. Lets users try
