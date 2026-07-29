@@ -54,6 +54,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   remain non-wasm.
 
 ### Added
+- **Desktop (JVM) Firebase auth works** (#204). GitLive's firebase-java-sdk
+  has no auth implementation, so on Desktop the Firebase backend now talks
+  to the Firebase Auth REST API (Identity Toolkit) directly - JDK built-in
+  HTTP client, no Ktor (#78). Supported on Desktop: email/password sign-in
+  and sign-up, anonymous, email link, password reset, reauthentication, and
+  Google/Facebook/Apple token exchange - `rememberGoogleAuthState` is now
+  fully functional on Desktop (the loopback already produced the ID token).
+  Requires GitLive's `Firebase.initialize(...)` with the web API key at
+  desktop app start; the session is held in memory (no disk persistence
+  yet). Browser-based flows (GitHub/Microsoft/generic OAuth, Apple web
+  flow) and phone remain unavailable on Desktop (#81). The desktop Google
+  loopback already sends and validates OAuth `state` (and a nonce), which
+  also resolves #80.
 - **`KMPAuth.initialize { }` one-stop setup**. Provider modules contribute
   their configuration as extensions on the scope - `kmpauth-google` adds
   `google(GoogleAuthCredentials(serverId))` (equivalent to

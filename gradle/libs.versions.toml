@@ -36,6 +36,7 @@ kotlinx-coroutines = "1.11.0"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version = "0.5.0" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.11.0" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }

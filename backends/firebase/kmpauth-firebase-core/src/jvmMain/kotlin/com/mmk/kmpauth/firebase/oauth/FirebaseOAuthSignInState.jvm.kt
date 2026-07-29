@@ -20,8 +20,8 @@ internal actual fun rememberFirebaseGitLiveOAuthSignInState(
     val currentOnResult by rememberUpdatedState(onResult)
     return remember {
         UnsupportedSignInState(
-            reason = "OAuth sign-in with Firebase is not implemented on Desktop " +
-                "(https://github.com/mirzemehdi/KMPAuth/issues/204).",
+            reason = "OAuth web-flow sign-in is not available on Desktop yet " +
+                "(https://github.com/mirzemehdi/KMPAuth/issues/81).",
             onFailure = { currentOnResult(Result.failure(it)) },
         )
     }

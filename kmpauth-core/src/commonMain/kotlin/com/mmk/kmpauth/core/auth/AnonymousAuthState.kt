@@ -28,9 +28,9 @@ import com.mmk.kmpauth.core.SignInState
  * ```
  *
  * With the Firebase backend: enable the "Anonymous" sign-in method in the
- * Firebase console; on Desktop (JVM) the underlying Firebase SDK does not
- * implement auth yet, and on wasm the SDK has no target — the flow reports
- * a failed [Result] there.
+ * Firebase console. Works on all targets including Desktop (JVM, via the
+ * Firebase REST API - call GitLive's `Firebase.initialize` there); on wasm
+ * the flow reports a failed [Result].
  *
  * @param onResult receives the signed-in anonymous [KMPAuthUser] or the
  * failure. The backend's native user stays reachable through
