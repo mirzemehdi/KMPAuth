@@ -31,6 +31,8 @@ import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.EmailAuthMode
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
+import com.mmk.kmpauth.core.auth.LocalKMPAuthBackend
+import androidx.compose.runtime.CompositionLocalProvider
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.auth.rememberAnonymousAuthState
 import com.mmk.kmpauth.core.auth.rememberEmailAuthState
@@ -191,12 +193,7 @@ private fun FirebaseSection(
         val anonymousAuth = rememberAnonymousAuthState(onResult = report("Firebase/Guest"))
         Button(onClick = { anonymousAuth.launch() }) { Text("Continue as guest") }
 
-        EmailAuthBlock(
-            label = "Firebase",
-            backend = KMPAuthBackend,
-            report = report,
-            onStatus = onStatus,
-        )
+        EmailAuthBlock(label = "Firebase", report = report, onStatus = onStatus)
         PhoneAuthBlock(report = report)
     }
 }
@@ -210,31 +207,23 @@ private fun SupabaseSection(
     report: (String) -> (Result<KMPAuthUser>) -> Unit,
     onStatus: (String) -> Unit,
 ) {
-    val backend = AppInitializer.supabaseBackend
+    // One wrapper scopes every auth state in this section to Supabase; the
+    // rest of the app keeps the registered default (Firebase).
+    CompositionLocalProvider(LocalKMPAuthBackend provides AppInitializer.supabaseBackend) {
     Section(title = "Supabase backend") {
-        val googleAuth = rememberGoogleAuthState(
-            backend = backend,
-            onResult = report("Supabase/Google"),
-        )
+        val googleAuth = rememberGoogleAuthState(onResult = report("Supabase/Google"))
         Button(onClick = { googleAuth.launch() }) { Text("Google") }
 
-        val anonymousAuth = rememberAnonymousAuthState(
-            backend = backend,
-            onResult = report("Supabase/Guest"),
-        )
+        val anonymousAuth = rememberAnonymousAuthState(onResult = report("Supabase/Guest"))
         Button(onClick = { anonymousAuth.launch() }) { Text("Continue as guest") }
 
-        EmailAuthBlock(
-            label = "Supabase",
-            backend = backend,
-            report = report,
-            onStatus = onStatus,
-        )
+        EmailAuthBlock(label = "Supabase", report = report, onStatus = onStatus)
         Text(
             "Web-flow providers (GitHub/Microsoft/Apple) are Firebase-driven; " +
                 "the Supabase backend reports them as unsupported.",
             style = MaterialTheme.typography.bodySmall,
         )
+    }
     }
 }
 
@@ -245,10 +234,11 @@ private fun SupabaseSection(
 @Composable
 private fun EmailAuthBlock(
     label: String,
-    backend: AuthProviderBackend,
     report: (String) -> (Result<KMPAuthUser>) -> Unit,
     onStatus: (String) -> Unit,
 ) {
+    // Same ambient backend the auth states use - reset/reauth run against it.
+    val backend = LocalKMPAuthBackend.current
     val scope = rememberCoroutineScope()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -275,14 +265,12 @@ private fun EmailAuthBlock(
         email = email,
         password = password,
         mode = EmailAuthMode.SignIn,
-        backend = backend,
         onResult = report("$label/Email sign-in"),
     )
     val emailSignUp = rememberEmailAuthState(
         email = email,
         password = password,
         mode = EmailAuthMode.SignUp,
-        backend = backend,
         onResult = report("$label/Email sign-up"),
     )
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

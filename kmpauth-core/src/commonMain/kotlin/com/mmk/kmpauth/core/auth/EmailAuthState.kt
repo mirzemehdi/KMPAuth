@@ -63,9 +63,6 @@ public enum class EmailAuthMode {
  * @param linkAccount true links the email/password credential to the
  * currently signed-in user instead of creating a new session — e.g. to
  * upgrade an anonymous user to a permanent account.
- * @param backend serves this state. Defaults to the registered process-wide
- * backend ([KMPAuthBackend]); pass a specific [AuthProviderBackend] instance
- * to use several backends side by side (e.g. Firebase and Supabase).
  * @param onResult receives the signed-in [KMPAuthUser] or the failure
  * (wrong password, user not found, weak password, email already in use, ...).
  * The backend's native user stays reachable through [KMPAuthUser.raw].
@@ -77,7 +74,6 @@ public fun rememberEmailAuthState(
     password: String,
     mode: EmailAuthMode = EmailAuthMode.SignIn,
     linkAccount: Boolean = false,
-    backend: AuthProviderBackend = KMPAuthBackend,
     onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
@@ -85,7 +81,7 @@ public fun rememberEmailAuthState(
     val currentPassword by rememberUpdatedState(password)
     val currentMode by rememberUpdatedState(mode)
     val currentLinkAccount by rememberUpdatedState(linkAccount)
-    val currentBackend by rememberUpdatedState(backend)
+    val currentBackend by rememberUpdatedState(LocalKMPAuthBackend.current)
     val currentOnResult by rememberUpdatedState(onResult)
 
     return remember {

@@ -25,7 +25,7 @@ public final class com/mmk/kmpauth/google/GoogleAuthProvider$Companion {
 }
 
 public final class com/mmk/kmpauth/google/GoogleAuthStateKt {
-	public static final fun rememberGoogleAuthState (ZZZLjava/util/List;Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberGoogleAuthState (ZZZLjava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public abstract interface class com/mmk/kmpauth/google/GoogleAuthUiProvider {
