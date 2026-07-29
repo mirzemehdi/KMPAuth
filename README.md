@@ -119,17 +119,26 @@ sourceSets {
 #### Backend registration
 
 The `rememberXxxAuthState` flows and the `KMPAuth.*` operations are served by
-a pluggable auth backend. Register it once at application start — swapping
-backends (e.g. to a future Supabase backend) means changing this one line:
+a pluggable auth backend. **With `kmpauth-firebase-core` in your dependencies
+the Firebase backend registers itself automatically** — via `ServiceLoader`
+on JVM/Android and eager load-time registration on iOS/JS/wasm — so no setup
+call is needed.
+
+Explicit registration exists for custom backends, or to override the default
+(an explicit registration always wins):
 
 ```kotlin
-// application start, e.g. next to GoogleAuthProvider.create(...)
-KMPAuth.registerBackendProvider(FirebaseAuthBackend)
+// only for custom backends / overriding, at application start
+KMPAuth.registerBackendProvider(MyOwnBackend, replace = true)
 ```
 
 The provider-only states (`rememberGoogleSignInState`,
 `rememberFacebookSignInState`, `rememberAppleSignInState`) don't need a
-backend — they hand you the provider's credential and stop there.
+backend at all — they hand you the provider's credential and stop there.
+
+> [!NOTE]
+> Minified Android builds: the auto-registration keep rule ships in
+> `kmpauth-firebase-core`'s consumer R8 rules — nothing to configure.
 
 Upgrading from 2.x? Follow the step-by-step [MIGRATION.md](MIGRATION.md). All notable changes live in [CHANGELOG.md](CHANGELOG.md).
 

@@ -31,9 +31,9 @@ private class PendingFacebookResult {
  * as a Compose state holder. For the Facebook credential alone — no
  * backend session — use [rememberFacebookSignInState].
  *
- * Make sure a backend is registered (e.g.
- * `KMPAuth.registerBackendProvider(FirebaseAuthBackend)` — see the
- * `kmpauth-firebase-core` module).
+ * With `kmpauth-firebase-core` in the dependencies the Firebase backend
+ * registers itself automatically; a custom backend is registered via
+ * `KMPAuth.registerBackendProvider`.
  *
  * The Facebook login token is exchanged according to [loginTracking]:
  * [FacebookLoginTracking.Limited] yields an OIDC token (JWT + nonce),

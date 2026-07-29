@@ -22,6 +22,21 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackend : com/mm
 	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackendService : com/mmk/kmpauth/core/auth/AuthProviderBackend {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
+	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class com/mmk/kmpauth/firebase/backend/FirebaseKMPAuthUser : com/mmk/kmpauth/core/auth/KMPAuthUser {
 	public static final field $stable I
 	public fun <init> (Ldev/gitlive/firebase/auth/FirebaseUser;)V

@@ -155,11 +155,11 @@ public interface AuthProviderBackend {
  * KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, password))
  * ```
  *
- * `kmpauth-firebase` registers its backend automatically the first time a
- * Firebase sign-in state is used; a Supabase (or custom) backend should
- * call [register] once at application start. The first registration wins
- * unless [replace] is set — this keeps a lazily self-registering default
- * from overriding an explicitly chosen backend.
+ * `kmpauth-firebase-core` registers its backend automatically (ServiceLoader
+ * on JVM/Android, eager load-time registration on iOS/JS/wasm); a Supabase
+ * (or custom) backend calls [register] once at application start. The first
+ * registration wins unless [replace] is set — an explicitly chosen backend
+ * is never overridden by the discovered default.
  *
  * When no backend is registered yet, `Result`-returning operations report
  * an [IllegalStateException] failure explaining how to register one;
@@ -168,6 +168,7 @@ public interface AuthProviderBackend {
 public object KMPAuthBackend : AuthProviderBackend {
 
     private var backend: AuthProviderBackend? = null
+    private var discoveryAttempted: Boolean = false
 
     /**
      * Registers [backend] as the process-wide auth backend.
@@ -181,8 +182,24 @@ public object KMPAuthBackend : AuthProviderBackend {
         }
     }
 
-    /** The active backend, or null if none has been registered yet. */
-    public fun getOrNull(): AuthProviderBackend? = backend
+    /**
+     * The active backend: explicitly registered, or — on platforms that
+     * support it — discovered from the classpath (`kmpauth-firebase-core`
+     * publishes its backend as a `ServiceLoader` service on JVM/Android;
+     * on iOS/JS it self-registers eagerly at load). Explicit registration
+     * always wins over discovery.
+     */
+    private fun activeBackend(): AuthProviderBackend? {
+        backend?.let { return it }
+        if (!discoveryAttempted) {
+            discoveryAttempted = true
+            loadPlatformBackends().firstOrNull()?.let { register(it) }
+        }
+        return backend
+    }
+
+    /** The active backend, or null if none is registered or discoverable. */
+    public fun getOrNull(): AuthProviderBackend? = activeBackend()
 
     /**
      * The active backend, or an [IllegalStateException] explaining how to
@@ -190,50 +207,50 @@ public object KMPAuthBackend : AuthProviderBackend {
      * backend operation.
      */
     public fun require(): AuthProviderBackend =
-        backend ?: throw IllegalStateException(NO_BACKEND_MESSAGE)
+        activeBackend() ?: throw IllegalStateException(NO_BACKEND_MESSAGE)
 
     override suspend fun signIn(
         credential: AuthCredential,
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> =
-        backend?.signIn(credential, linkWithCurrentUser) ?: noBackendFailure()
+        activeBackend()?.signIn(credential, linkWithCurrentUser) ?: noBackendFailure()
 
     override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
-        backend?.reauthenticate(credential) ?: noBackendFailure()
+        activeBackend()?.reauthenticate(credential) ?: noBackendFailure()
 
     override suspend fun signUp(email: String, password: String): Result<KMPAuthUser> =
-        backend?.signUp(email, password) ?: noBackendFailure()
+        activeBackend()?.signUp(email, password) ?: noBackendFailure()
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> =
-        backend?.signInAnonymously() ?: noBackendFailure()
+        activeBackend()?.signInAnonymously() ?: noBackendFailure()
 
     override suspend fun sendPasswordResetEmail(
         email: String,
         actionCodeSettings: EmailActionCodeSettings?,
     ): Result<Unit> =
-        backend?.sendPasswordResetEmail(email, actionCodeSettings) ?: noBackendFailure()
+        activeBackend()?.sendPasswordResetEmail(email, actionCodeSettings) ?: noBackendFailure()
 
     override suspend fun sendSignInLinkToEmail(
         email: String,
         actionCodeSettings: EmailActionCodeSettings,
     ): Result<Unit> =
-        backend?.sendSignInLinkToEmail(email, actionCodeSettings) ?: noBackendFailure()
+        activeBackend()?.sendSignInLinkToEmail(email, actionCodeSettings) ?: noBackendFailure()
 
     override fun isSignInWithEmailLink(link: String): Boolean =
-        backend?.isSignInWithEmailLink(link) ?: false
+        activeBackend()?.isSignInWithEmailLink(link) ?: false
 
     override suspend fun signInWithEmailLink(
         email: String,
         link: String,
         linkAccount: Boolean,
     ): Result<KMPAuthUser> =
-        backend?.signInWithEmailLink(email, link, linkAccount) ?: noBackendFailure()
+        activeBackend()?.signInWithEmailLink(email, link, linkAccount) ?: noBackendFailure()
 
     override suspend fun signOut() {
-        backend?.signOut()
+        activeBackend()?.signOut()
     }
 
-    override fun currentUser(): KMPAuthUser? = backend?.currentUser()
+    override fun currentUser(): KMPAuthUser? = activeBackend()?.currentUser()
 
     private const val NO_BACKEND_MESSAGE: String =
         "No AuthProviderBackend is registered. Add the kmpauth-firebase " +
@@ -243,3 +260,11 @@ public object KMPAuthBackend : AuthProviderBackend {
     private fun <T> noBackendFailure(): Result<T> =
         Result.failure(IllegalStateException(NO_BACKEND_MESSAGE))
 }
+
+/**
+ * Platform hook for discovering a default [AuthProviderBackend] when none
+ * was registered explicitly. JVM and Android use `ServiceLoader` (backend
+ * modules publish a `META-INF/services` entry); other platforms return
+ * nothing — there, backend modules self-register eagerly at load instead.
+ */
+internal expect fun loadPlatformBackends(): List<AuthProviderBackend>

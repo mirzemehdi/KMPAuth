@@ -315,16 +315,14 @@ Also changed:
   they return the provider credential without a backend session.
 - Callbacks are `Result<KMPAuthUser>` (non-null): a backend returning no user
   is a failure with a reason, never a null success.
-- **Register the backend once at application start** - the generic states and
-  `KMPAuth.*` operations are served by it:
+- **No backend setup needed with Firebase** - having `kmpauth-firebase-core`
+  in the dependencies auto-registers the backend (ServiceLoader on
+  JVM/Android, eager load-time registration on iOS/JS/wasm). Custom backends
+  register explicitly and always win:
 
   ```kotlin
-  KMPAuth.registerBackendProvider(FirebaseAuthBackend)
+  KMPAuth.registerBackendProvider(MyOwnBackend, replace = true)
   ```
-
-  The states living inside `kmpauth-firebase-core` (Apple/GitHub/Microsoft/
-  OAuth/phone) and the deprecated 2.x containers still self-register lazily,
-  so 2.x container code keeps working with zero config.
 - Password reset, email-link sign-in and reauthentication are backend
   operations called directly on `KMPAuthBackend` (which delegates to the
   registered backend): `KMPAuth.sendPasswordResetEmail(email)`,

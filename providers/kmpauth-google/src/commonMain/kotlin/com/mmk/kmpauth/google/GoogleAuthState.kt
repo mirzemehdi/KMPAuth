@@ -20,10 +20,10 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
  * as a Compose state holder. For the Google credential alone — no backend
  * session — use [rememberGoogleSignInState].
  *
- * Make sure [GoogleAuthProvider.create] was called at application start,
- * and that a backend is registered (e.g.
- * `KMPAuth.registerBackendProvider(FirebaseAuthBackend)` — see the
- * `kmpauth-firebase-core` module).
+ * Make sure [GoogleAuthProvider.create] was called at application start.
+ * With `kmpauth-firebase-core` in the dependencies the Firebase backend
+ * registers itself automatically; a custom backend is registered via
+ * `KMPAuth.registerBackendProvider`.
  *
  * Parameters are read at launch time: recomposing with new values (e.g.
  * toggling [linkAccount] between sign-in and sign-up modes) updates the

@@ -23,12 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modules — SDK isolation is unchanged (no Facebook SDK unless you depend on
   `kmpauth-facebook`), and `kmpauth-firebase-google`/`-facebook` now carry
   only the deprecated 2.x containers.
-- **Register the backend once at application start**:
-  `KMPAuth.registerBackendProvider(FirebaseAuthBackend)`. The generic states
-  and `KMPAuth.*` operations are served by it; swapping to another backend is
-  this one line. States living inside `kmpauth-firebase-core` and the
-  deprecated 2.x containers still self-register lazily, so 2.x container code
-  keeps zero-config behavior.
+- **The Firebase backend registers itself automatically** when
+  `kmpauth-firebase-core` is in the dependencies: `ServiceLoader` discovery
+  on JVM/Android (R8 keep rule ships in the consumer rules) and eager
+  load-time registration on iOS/JS/wasm - no setup call needed.
+  `KMPAuth.registerBackendProvider(backend)` exists for custom backends or
+  overriding the default; an explicit registration always wins.
 - **Every Firebase API is callable from `commonMain`, including on wasm**
   (#179-adjacent). No GitLive types in signatures: every `onResult` receives
   `Result<KMPAuthUser>` — non-null; a backend producing no user is a failure
