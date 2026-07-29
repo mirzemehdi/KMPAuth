@@ -4,6 +4,9 @@ import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 
+/** Id [FirebaseAuthBackend] registers under in the backend registry. */
+public const val FIREBASE_BACKEND_ID: String = "firebase"
+
 /**
  * Firebase implementation of [AuthProviderBackend], KMPAuth's default
  * backend. Registered automatically the first time a Firebase sign-in state

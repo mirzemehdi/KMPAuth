@@ -24,6 +24,8 @@ public class FirebaseKMPAuthUser(private val user: FirebaseUser) : KMPAuthUser {
 
 public actual object FirebaseAuthBackend : AuthProviderBackend {
 
+    override val backendId: String get() = FIREBASE_BACKEND_ID
+
     // Native Firebase SDK (GitLive) on Android/iOS/JS; the Firebase Auth
     // REST API on Desktop (JVM), where firebase-java-sdk lacks auth (#204).
     private val engine: AuthProviderBackend by lazy { createFirebaseAuthEngine() }

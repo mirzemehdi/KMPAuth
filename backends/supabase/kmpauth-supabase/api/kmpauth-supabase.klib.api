@@ -9,6 +9,8 @@
 final class com.mmk.kmpauth.supabase/SupabaseAuthBackend : com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.kmpauth.supabase/SupabaseAuthBackend|null[0]
     constructor <init>(io.github.jan.supabase/SupabaseClient) // com.mmk.kmpauth.supabase/SupabaseAuthBackend.<init>|<init>(io.github.jan.supabase.SupabaseClient){}[0]
 
+    final val backendId // com.mmk.kmpauth.supabase/SupabaseAuthBackend.backendId|{}backendId[0]
+        final fun <get-backendId>(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseAuthBackend.backendId.<get-backendId>|<get-backendId>(){}[0]
     final val supabaseClient // com.mmk.kmpauth.supabase/SupabaseAuthBackend.supabaseClient|{}supabaseClient[0]
         final fun <get-supabaseClient>(): io.github.jan.supabase/SupabaseClient // com.mmk.kmpauth.supabase/SupabaseAuthBackend.supabaseClient.<get-supabaseClient>|<get-supabaseClient>(){}[0]
 
@@ -57,6 +59,9 @@ final class com.mmk.kmpauth.supabase/SupabaseKMPAuthUser : com.mmk.kmpauth.core.
     final val uid // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.uid|{}uid[0]
         final fun <get-uid>(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.uid.<get-uid>|<get-uid>(){}[0]
 }
+
+final const val com.mmk.kmpauth.supabase/SUPABASE_BACKEND_ID // com.mmk.kmpauth.supabase/SUPABASE_BACKEND_ID|{}SUPABASE_BACKEND_ID[0]
+    final fun <get-SUPABASE_BACKEND_ID>(): kotlin/String // com.mmk.kmpauth.supabase/SUPABASE_BACKEND_ID.<get-SUPABASE_BACKEND_ID>|<get-SUPABASE_BACKEND_ID>(){}[0]
 
 final fun (com.mmk.kmpauth.core/KMPAuthConfiguration).com.mmk.kmpauth.supabase/supabase(com.mmk.kmpauth.supabase/SupabaseBackendOptions, kotlin/Function1<io.github.jan.supabase/SupabaseClientBuilder, kotlin/Unit> = ...) // com.mmk.kmpauth.supabase/supabase|supabase@com.mmk.kmpauth.core.KMPAuthConfiguration(com.mmk.kmpauth.supabase.SupabaseBackendOptions;kotlin.Function1<io.github.jan.supabase.SupabaseClientBuilder,kotlin.Unit>){}[0]
 final fun (com.mmk.kmpauth.core/KMPAuthConfiguration).com.mmk.kmpauth.supabase/supabase(io.github.jan.supabase/SupabaseClient) // com.mmk.kmpauth.supabase/supabase|supabase@com.mmk.kmpauth.core.KMPAuthConfiguration(io.github.jan.supabase.SupabaseClient){}[0]

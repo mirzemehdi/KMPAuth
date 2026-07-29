@@ -11,6 +11,14 @@ import com.mmk.kmpauth.core.KMPAuthInternalApi
 public interface AuthProviderBackend {
 
     /**
+     * Stable id this backend registers under in [KMPAuthBackend] —
+     * `"firebase"`, `"supabase"`, or your own for custom backends. Used to
+     * fetch a specific backend in multi-backend apps:
+     * `KMPAuth.requireBackendProvider("supabase")`.
+     */
+    public val backendId: String get() = "custom"
+
+    /**
      * Exchanges [credential] for a signed-in session.
      *
      * @param credential Credential obtained from an identity provider.
@@ -171,22 +179,30 @@ public interface AuthProviderBackend {
 }
 
 /**
- * Process-wide registry for the active [AuthProviderBackend] — and itself
- * an [AuthProviderBackend] delegating to the registered one, so backend
- * operations are called directly:
+ * Process-wide registry of [AuthProviderBackend]s, keyed by
+ * [AuthProviderBackend.backendId] — and itself an [AuthProviderBackend]
+ * delegating to the **default** backend, so backend operations are called
+ * directly:
  *
  * ```
  * KMPAuthBackend.currentUser()
  * KMPAuthBackend.signOut()
  * KMPAuthBackend.sendPasswordResetEmail(email)
- * KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, password))
  * ```
  *
- * `kmpauth-firebase` registers its backend automatically (ServiceLoader
- * on JVM/Android, eager load-time registration on iOS/JS/wasm); a Supabase
- * (or custom) backend calls [register] once at application start. The first
- * registration wins unless [replace] is set — an explicitly chosen backend
- * is never overridden by the discovered default.
+ * Registration:
+ * - `kmpauth-firebase` registers itself automatically (ServiceLoader on
+ *   JVM/Android, eager load-time registration on iOS/JS/wasm).
+ * - Other backends register in `KMPAuth.initialize { }` —
+ *   `supabase(url, apiKey)` — or via `KMPAuth.registerBackendProvider`.
+ *
+ * The **default** backend serves every non-keyed call (and the auth
+ * states' `LocalKMPAuthBackend` fallback). The first registered backend
+ * becomes the default; registering more backends does NOT change it — with
+ * Firebase and Supabase both present, Firebase (registered first at load)
+ * stays the default and Supabase is fetched with [getOrNull]/[require] by
+ * id. Pick a different default with [setDefault] (or
+ * `defaultBackendProvider("supabase")` inside `KMPAuth.initialize { }`).
  *
  * When no backend is registered yet, `Result`-returning operations report
  * an [IllegalStateException] failure explaining how to register one;
@@ -194,70 +210,95 @@ public interface AuthProviderBackend {
  */
 public object KMPAuthBackend : AuthProviderBackend {
 
-    private var backend: AuthProviderBackend? = null
-    private var backendIsDefault: Boolean = false
+    private val backends = LinkedHashMap<String, AuthProviderBackend>()
+    private var defaultId: String? = null
     private var discoveryAttempted: Boolean = false
 
     /**
-     * Registers [backend] as the process-wide auth backend — an explicit
-     * app choice, which always supersedes an auto-registered default
-     * (Firebase's classpath/load-time self-registration).
+     * Registers [backend] under its [AuthProviderBackend.backendId]. The
+     * first registered backend becomes the default; later registrations
+     * are added alongside it without changing the default (re-registering
+     * the same id swaps the instance in place).
      *
-     * @param replace When false (default), registration is ignored if
-     * another **explicitly registered** backend is already active; pass
-     * true to swap it.
+     * @param replace true additionally makes [backend] the default even if
+     * a different backend currently is.
      */
     public fun register(backend: AuthProviderBackend, replace: Boolean = false) {
-        if (this.backend == null || backendIsDefault || replace) {
-            this.backend = backend
-            backendIsDefault = false
-        }
+        discoverIfNeeded()
+        backends[backend.backendId] = backend
+        if (defaultId == null || replace) defaultId = backend.backendId
     }
 
     /**
-     * Registers [backend] as an auto-provided **default** — used by backend
+     * Registers [backend] as an auto-provided entry — used by backend
      * modules' self-registration (`kmpauth-firebase`'s ServiceLoader /
-     * load-time hooks and lazy state-side registration). A default never
-     * replaces anything already registered, and any explicit [register]
-     * call supersedes it regardless of ordering — this is what lets
-     * `supabase(...)` win even though Firebase self-registers at binary
-     * load before `KMPAuth.initialize { }` runs.
+     * load-time hooks and lazy state-side registration). Never replaces an
+     * instance the app registered explicitly for the same id, and becomes
+     * the default only when none exists yet.
      */
     @KMPAuthInternalApi
     public fun registerDefault(backend: AuthProviderBackend) {
-        if (this.backend == null) {
-            this.backend = backend
-            backendIsDefault = true
-        }
+        if (backends[backend.backendId] == null) backends[backend.backendId] = backend
+        if (defaultId == null) defaultId = backend.backendId
     }
 
     /**
-     * The active backend: explicitly registered, or — on platforms that
-     * support it — discovered from the classpath (`kmpauth-firebase`
-     * publishes its backend as a `ServiceLoader` service on JVM/Android;
-     * on iOS/JS it self-registers eagerly at load). Explicit registration
-     * always wins over discovery.
+     * Makes the backend registered under [id] the default one — the target
+     * of every non-keyed operation and of the auth states unless scoped via
+     * `LocalKMPAuthBackend`.
+     *
+     * @throws IllegalStateException when no backend with [id] is registered.
      */
-    @OptIn(KMPAuthInternalApi::class)
-    private fun activeBackend(): AuthProviderBackend? {
-        backend?.let { return it }
-        if (!discoveryAttempted) {
-            discoveryAttempted = true
-            loadPlatformBackends().firstOrNull()?.let { registerDefault(it) }
+    public fun setDefault(id: String) {
+        discoverIfNeeded()
+        check(backends.containsKey(id)) {
+            "No AuthProviderBackend registered under id '$id'. Registered: " +
+                (backends.keys.takeIf { it.isNotEmpty() }?.joinToString() ?: "none")
         }
-        return backend
+        defaultId = id
     }
 
-    /** The active backend, or null if none is registered or discoverable. */
+    @OptIn(KMPAuthInternalApi::class)
+    private fun discoverIfNeeded() {
+        if (discoveryAttempted) return
+        discoveryAttempted = true
+        // On JVM/Android backend modules publish a ServiceLoader service;
+        // on iOS/JS/wasm they self-register eagerly at load instead.
+        loadPlatformBackends().forEach { registerDefault(it) }
+    }
+
+    private fun activeBackend(): AuthProviderBackend? {
+        discoverIfNeeded()
+        return defaultId?.let { backends[it] }
+    }
+
+    /** The default backend, or null if none is registered or discoverable. */
     public fun getOrNull(): AuthProviderBackend? = activeBackend()
 
+    /** The backend registered under [id], or null. */
+    public fun getOrNull(id: String): AuthProviderBackend? {
+        discoverIfNeeded()
+        return backends[id]
+    }
+
     /**
-     * The active backend, or an [IllegalStateException] explaining how to
+     * The default backend, or an [IllegalStateException] explaining how to
      * register one. Rarely needed — [KMPAuthBackend] itself delegates every
      * backend operation.
      */
     public fun require(): AuthProviderBackend =
         activeBackend() ?: throw IllegalStateException(NO_BACKEND_MESSAGE)
+
+    /**
+     * The backend registered under [id], or an [IllegalStateException]
+     * naming the ids that are registered.
+     */
+    public fun require(id: String): AuthProviderBackend =
+        getOrNull(id) ?: throw IllegalStateException(
+            "No AuthProviderBackend registered under id '$id'. Registered: " +
+                (backends.keys.takeIf { it.isNotEmpty() }?.joinToString() ?: "none") +
+                ". Register backends in KMPAuth.initialize { } (e.g. supabase(url, apiKey))."
+        )
 
     override suspend fun signIn(
         credential: AuthCredential,

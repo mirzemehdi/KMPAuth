@@ -92,10 +92,17 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   `firebase(apiKey = ..., projectId = ..., applicationId = ...)`,
   `supabase(url = ..., apiKey = ...)` — no wrapper objects needed at the
   call site (the options-object overloads remain).
-- **Backend priority**: auto-registered defaults (Firebase's
-  ServiceLoader/load-time self-registration) never beat an explicit choice —
-  `supabase(...)` in `KMPAuth.initialize { }` always becomes the active
-  backend, no `replace` flag needed (the parameter is gone).
+- **Keyed backend registry**: backends register under
+  `AuthProviderBackend.backendId` (`FIREBASE_BACKEND_ID`,
+  `SUPABASE_BACKEND_ID`, custom ids) and several can be registered at once
+  from `KMPAuth.initialize { }`. The first registered backend is the
+  default (with Firebase + Supabase together, Firebase); switch it with
+  `defaultBackendProvider("supabase")` in the DSL or
+  `KMPAuth.setDefaultBackendProvider(id)`, and fetch any backend with
+  `KMPAuth.getBackendProvider(id)` / `requireBackendProvider(id)`. Scoping
+  a compose subtree to a registered backend is
+  `ProvideKMPAuthBackend("supabase") { ... }` — no backend instances held
+  in app code.
 - **Supabase auth backend — `kmpauth-supabase`** (#138). The first
   non-Firebase `AuthProviderBackend`, over the community
   [supabase-kt](https://github.com/supabase-community/supabase-kt) SDK, on

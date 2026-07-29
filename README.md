@@ -171,8 +171,10 @@ KMPAuth.sendPasswordResetEmail(email)
 KMPAuth.signOut()
 ```
 
-Need Firebase **and** Supabase side by side? One `CompositionLocalProvider`
-wrapper — [Custom & multiple backends](docs/custom-backends.md).
+Need Firebase **and** Supabase side by side? Register both in
+`initialize { }` (the first — Firebase — stays the default) and scope
+subtrees with `ProvideKMPAuthBackend("supabase") { ... }` —
+[Custom & multiple backends](docs/custom-backends.md).
 
 ### 4. UI helper buttons ([guide](docs/ui-helper.md))
 

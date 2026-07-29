@@ -30,6 +30,9 @@ final class com.mmk.kmpauth.firebase/FirebaseBackendOptions { // com.mmk.kmpauth
 }
 
 final object com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend : com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend|null[0]
+    final val backendId // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.backendId|{}backendId[0]
+        final fun <get-backendId>(): kotlin/String // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.backendId.<get-backendId>|<get-backendId>(){}[0]
+
     final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.currentUser|currentUser(){}[0]
     final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
     final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
@@ -43,6 +46,9 @@ final object com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend : com.mmk.kmpa
     final suspend fun signUp(kotlin/String, kotlin/String): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signUp|signUp(kotlin.String;kotlin.String){}[0]
 }
 
+final const val com.mmk.kmpauth.firebase.backend/FIREBASE_BACKEND_ID // com.mmk.kmpauth.firebase.backend/FIREBASE_BACKEND_ID|{}FIREBASE_BACKEND_ID[0]
+    final fun <get-FIREBASE_BACKEND_ID>(): kotlin/String // com.mmk.kmpauth.firebase.backend/FIREBASE_BACKEND_ID.<get-FIREBASE_BACKEND_ID>|<get-FIREBASE_BACKEND_ID>(){}[0]
+
 final val com.mmk.kmpauth.firebase.backend/com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop // com.mmk.kmpauth.firebase.backend/com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop|#static{}com_mmk_kmpauth_firebase_backend_FirebaseAuthBackend$stableprop[0]
 final val com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop // com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop|#static{}com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop[0]
 
@@ -54,6 +60,9 @@ final fun com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptio
 // Targets: [ios, js]
 final class com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService : com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService|null[0]
     constructor <init>() // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.<init>|<init>(){}[0]
+
+    final val backendId // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.backendId|{}backendId[0]
+        final fun <get-backendId>(): kotlin/String // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.backendId.<get-backendId>|<get-backendId>(){}[0]
 
     final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.currentUser|currentUser(){}[0]
     final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]

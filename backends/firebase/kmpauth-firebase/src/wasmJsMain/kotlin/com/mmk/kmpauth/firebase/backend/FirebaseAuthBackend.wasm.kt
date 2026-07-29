@@ -40,6 +40,8 @@ internal fun wasmApiKeyOrFail(): String =
  */
 public actual object FirebaseAuthBackend : AuthProviderBackend {
 
+    override val backendId: String get() = FIREBASE_BACKEND_ID
+
     private val engine: AuthProviderBackend by lazy {
         FirebaseRestAuthEngine(
             transport = FetchFirebaseRestTransport(),

@@ -72,8 +72,24 @@ public object KMPAuth {
         KMPAuthBackend.register(backend, replace)
     }
 
-    /** The registered backend provider, or null if none is registered yet. */
+    /** The default backend provider, or null if none is registered yet. */
     public fun getBackendProvider(): AuthProviderBackend? = KMPAuthBackend.getOrNull()
+
+    /**
+     * The backend registered under [id] (`"firebase"`, `"supabase"`, or a
+     * custom backend's [AuthProviderBackend.backendId]), or null.
+     */
+    public fun getBackendProvider(id: String): AuthProviderBackend? =
+        KMPAuthBackend.getOrNull(id)
+
+    /**
+     * Makes the backend registered under [id] the default — the one behind
+     * every `KMPAuth.*` operation and the auth states (unless scoped via
+     * `LocalKMPAuthBackend`). With several backends registered the first
+     * one is the default until this is called; also available inside
+     * [initialize] as `defaultBackendProvider(id)`.
+     */
+    public fun setDefaultBackendProvider(id: String): Unit = KMPAuthBackend.setDefault(id)
 
     /**
      * The registered backend provider, or an [IllegalStateException]
@@ -81,6 +97,20 @@ public object KMPAuth {
      * [KMPAuth] already delegate to it.
      */
     public fun requireBackendProvider(): AuthProviderBackend = KMPAuthBackend.require()
+
+    /**
+     * The backend registered under [id], or an [IllegalStateException]
+     * naming the registered ids — the multi-backend companion of
+     * [requireBackendProvider]:
+     *
+     * ```
+     * CompositionLocalProvider(
+     *     LocalKMPAuthBackend provides KMPAuth.requireBackendProvider("supabase")
+     * ) { /* auth states in here run against Supabase */ }
+     * ```
+     */
+    public fun requireBackendProvider(id: String): AuthProviderBackend =
+        KMPAuthBackend.require(id)
 
     /** Currently signed-in user, or null when signed out. */
     public fun currentUser(): KMPAuthUser? = KMPAuthBackend.currentUser()

@@ -15,9 +15,12 @@ KMPAuth.initialize {
 ```
 
 There is no config-file auto-registration — a Supabase client cannot exist
-without the project URL and key, so registration is this one explicit call
-(which always supersedes Firebase's auto-registered default, so having both
-dependencies is fine).
+without the project URL and key, so registration is this one explicit call.
+In a Supabase-only app it becomes the default backend automatically; with
+Firebase also present, Firebase (registered first) stays the default and
+Supabase is reachable by id — add `defaultBackendProvider("supabase")` to
+prefer Supabase, or scope subtrees with `ProvideKMPAuthBackend` (see
+[Custom & multiple backends](custom-backends.md)).
 
 `kmpauth-supabase` is built on the community
 [supabase-kt](https://github.com/supabase-community/supabase-kt) SDK, which

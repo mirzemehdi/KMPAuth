@@ -1,7 +1,10 @@
 package com.mmk.kmpauth.supabase
 
 import com.mmk.kmpauth.core.KMPAuth
+import com.mmk.kmpauth.core.auth.AuthCredential
+import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import io.github.jan.supabase.auth.auth
 import kotlin.test.Test
 import kotlin.test.assertIs
@@ -10,9 +13,11 @@ import kotlin.test.assertSame
 
 /**
  * Locks the registration contract of `KMPAuth.initialize { supabase(...) }`:
- * the DSL call is an explicit choice that supersedes auto-registered
- * defaults and earlier configuration (last explicit configuration wins).
- * KMPAuthBackend is a process-wide singleton, so tests re-configure freely.
+ * the backend registers under id "supabase" and becomes the default only
+ * when it is the first backend; alongside another backend it stays
+ * fetchable by id and `defaultBackendProvider("supabase")` promotes it.
+ * Re-configuring the same id swaps the instance in place. KMPAuthBackend is
+ * a process-wide singleton, so tests re-configure freely.
  */
 class SupabaseBackendRegistrationTest {
 
@@ -35,6 +40,33 @@ class SupabaseBackendRegistrationTest {
 
         KMPAuth.initialize { supabase(second.client) }
         assertSame(second.client, assertIs<SupabaseAuthBackend>(KMPAuthBackend.getOrNull()).supabaseClient)
+    }
+
+    @Test
+    fun alongsideAnotherBackendSupabaseIsSecondaryUntilPromoted() {
+        // Simulates Firebase's self-registration having happened first.
+        val firstBackend = object : AuthProviderBackend {
+            override val backendId: String get() = "firebase"
+            override suspend fun signIn(
+                credential: AuthCredential,
+                linkWithCurrentUser: Boolean,
+            ): Result<KMPAuthUser> = Result.failure(UnsupportedOperationException("fake"))
+
+            override suspend fun signOut() = Unit
+            override fun currentUser(): KMPAuthUser? = null
+        }
+        KMPAuth.registerBackendProvider(firstBackend, replace = true)
+
+        val engine = RecordingMockEngine { jsonResponse("{}") }
+        KMPAuth.initialize { supabase(engine.client) }
+
+        // First backend keeps the default; Supabase is reachable by id.
+        assertSame(firstBackend, KMPAuthBackend.getOrNull())
+        assertIs<SupabaseAuthBackend>(KMPAuth.requireBackendProvider("supabase"))
+
+        // Explicit promotion switches the default.
+        KMPAuth.initialize { defaultBackendProvider("supabase") }
+        assertIs<SupabaseAuthBackend>(KMPAuthBackend.getOrNull())
     }
 
     @Test

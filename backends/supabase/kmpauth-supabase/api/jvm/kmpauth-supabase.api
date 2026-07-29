@@ -13,6 +13,7 @@ public final class com/mmk/kmpauth/supabase/KMPAuthSupabaseConfigurationKt {
 public final class com/mmk/kmpauth/supabase/SupabaseAuthBackend : com/mmk/kmpauth/core/auth/AuthProviderBackend {
 	public fun <init> (Lio/github/jan/supabase/SupabaseClient;)V
 	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun getBackendId ()Ljava/lang/String;
 	public final fun getSupabaseClient ()Lio/github/jan/supabase/SupabaseClient;
 	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -24,6 +25,10 @@ public final class com/mmk/kmpauth/supabase/SupabaseAuthBackend : com/mmk/kmpaut
 	public fun signInWithPhone-BWLJW6A (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/supabase/SupabaseAuthBackendKt {
+	public static final field SUPABASE_BACKEND_ID Ljava/lang/String;
 }
 
 public final class com/mmk/kmpauth/supabase/SupabaseBackendOptions {

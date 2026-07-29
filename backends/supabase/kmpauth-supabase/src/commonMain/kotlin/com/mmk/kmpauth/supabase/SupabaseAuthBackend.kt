@@ -54,10 +54,15 @@ import kotlin.time.Duration.Companion.minutes
  * Note that supabase-kt restores a stored session asynchronously at start —
  * [currentUser] may be null until `auth.awaitInitialization()` completes.
  */
+/** Id [SupabaseAuthBackend] registers under in the backend registry. */
+public const val SUPABASE_BACKEND_ID: String = "supabase"
+
 @OptIn(KMPAuthInternalApi::class)
 public class SupabaseAuthBackend(
     public val supabaseClient: SupabaseClient,
 ) : AuthProviderBackend {
+
+    override val backendId: String get() = SUPABASE_BACKEND_ID
 
     /**
      * Exchanges [credential] for a Supabase session.

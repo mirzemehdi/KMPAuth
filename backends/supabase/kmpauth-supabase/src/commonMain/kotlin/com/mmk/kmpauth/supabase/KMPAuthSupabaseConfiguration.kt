@@ -76,9 +76,12 @@ public fun KMPAuthConfiguration.supabase(
 public fun KMPAuthConfiguration.supabase(
     client: SupabaseClient,
 ) {
-    // The DSL call is an explicit choice: it supersedes any auto-registered
-    // default and any earlier configuration.
-    KMPAuthBackend.register(SupabaseAuthBackend(client), replace = true)
+    // Registers under id "supabase". The first registered backend becomes
+    // the default, so a Supabase-only app needs nothing more; with Firebase
+    // also present (self-registered at load), Firebase stays the default
+    // and this backend is fetched via KMPAuth.requireBackendProvider("supabase")
+    // - or made the default with defaultBackendProvider("supabase").
+    KMPAuthBackend.register(SupabaseAuthBackend(client))
 }
 
 /**

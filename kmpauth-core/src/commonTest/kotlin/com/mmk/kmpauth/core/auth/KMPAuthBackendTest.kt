@@ -16,6 +16,8 @@ import kotlin.test.assertTrue
 class KMPAuthBackendTest {
 
     private class FakeBackend(private val name: String) : AuthProviderBackend {
+        override val backendId: String get() = name
+
         override suspend fun signIn(
             credential: AuthCredential,
             linkWithCurrentUser: Boolean,
@@ -36,7 +38,8 @@ class KMPAuthBackendTest {
             )
         }
 
-        // 2. First registration wins; a second default registration is a no-op.
+        // 2. First registration becomes the default; a second backend under
+        // a different id registers alongside without changing the default.
         val first = FakeBackend("first")
         val second = FakeBackend("second")
         KMPAuthBackend.register(first)
@@ -44,9 +47,18 @@ class KMPAuthBackendTest {
         assertSame(first, KMPAuthBackend.getOrNull())
         assertSame(first, KMPAuthBackend.require())
 
-        // 3. replace=true overrides — explicit choice beats lazy default.
-        KMPAuthBackend.register(second, replace = true)
+        // 3. Both stay individually reachable by id.
+        assertSame(first, KMPAuthBackend.getOrNull("first"))
+        assertSame(second, KMPAuthBackend.require("second"))
+        val unknown = assertFailsWith<IllegalStateException> { KMPAuthBackend.require("nope") }
+        assertTrue("nope" in unknown.message.orEmpty())
+
+        // 4. The default is switchable - setDefault by id, or replace=true.
+        KMPAuthBackend.setDefault("second")
         assertSame(second, KMPAuthBackend.getOrNull())
+        KMPAuthBackend.register(first, replace = true)
+        assertSame(first, KMPAuthBackend.getOrNull())
+        assertFailsWith<IllegalStateException> { KMPAuthBackend.setDefault("missing") }
     }
 
     @Test
