@@ -23,6 +23,8 @@ kotlin {
         }
 
         jvmTest.dependencies {
+            // Real engine for the @Ignore-d manual live harness.
+            implementation(libs.ktor.client.cio)
             implementation(libs.kotlinx.coroutines.test)
             // Test-only Ktor MockEngine to exercise the backend against
             // canned GoTrue responses without network. Never shipped.
