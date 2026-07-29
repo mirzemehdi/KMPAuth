@@ -33,7 +33,7 @@ public actual fun rememberPhoneAuthState(
     return remember {
         // Lazy default registration: no-op when the app already registered
         // a backend at startup (first registration wins).
-        KMPAuthBackend.register(FirebaseAuthBackend)
+        KMPAuthBackend.registerDefault(FirebaseAuthBackend)
         PhoneAuthStateImpl(
             scope = scope,
             phoneNumber = { currentPhoneNumber },

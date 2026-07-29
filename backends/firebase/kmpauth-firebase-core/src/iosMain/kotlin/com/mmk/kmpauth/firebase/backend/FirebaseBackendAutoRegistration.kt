@@ -10,8 +10,8 @@ import kotlin.native.EagerInitialization
  * still wins when registered first (and `replace = true` always wins).
  */
 @Suppress("DEPRECATION", "unused")
-@OptIn(ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class, com.mmk.kmpauth.core.KMPAuthInternalApi::class)
 @EagerInitialization
 private val firebaseBackendAutoRegistration: Unit = run {
-    KMPAuthBackend.register(FirebaseAuthBackend)
+    KMPAuthBackend.registerDefault(FirebaseAuthBackend)
 }

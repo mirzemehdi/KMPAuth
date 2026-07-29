@@ -200,6 +200,7 @@ final object com.mmk.kmpauth.core.auth/KMPAuthBackend : com.mmk.kmpauth.core.aut
     final fun getOrNull(): com.mmk.kmpauth.core.auth/AuthProviderBackend? // com.mmk.kmpauth.core.auth/KMPAuthBackend.getOrNull|getOrNull(){}[0]
     final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.core.auth/KMPAuthBackend.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
     final fun register(com.mmk.kmpauth.core.auth/AuthProviderBackend, kotlin/Boolean = ...) // com.mmk.kmpauth.core.auth/KMPAuthBackend.register|register(com.mmk.kmpauth.core.auth.AuthProviderBackend;kotlin.Boolean){}[0]
+    final fun registerDefault(com.mmk.kmpauth.core.auth/AuthProviderBackend) // com.mmk.kmpauth.core.auth/KMPAuthBackend.registerDefault|registerDefault(com.mmk.kmpauth.core.auth.AuthProviderBackend){}[0]
     final fun require(): com.mmk.kmpauth.core.auth/AuthProviderBackend // com.mmk.kmpauth.core.auth/KMPAuthBackend.require|require(){}[0]
     final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core.auth/KMPAuthBackend.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
     final suspend fun sendPasswordResetEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings?): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core.auth/KMPAuthBackend.sendPasswordResetEmail|sendPasswordResetEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings?){}[0]

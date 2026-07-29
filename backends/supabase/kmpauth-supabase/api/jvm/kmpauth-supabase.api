@@ -3,12 +3,11 @@ public final class com/mmk/kmpauth/supabase/KMPAuthSupabaseConfigurationKt {
 	public static final fun SupabaseAuthBackend (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lcom/mmk/kmpauth/supabase/SupabaseAuthBackend;
 	public static synthetic fun SupabaseAuthBackend$default (Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/mmk/kmpauth/supabase/SupabaseAuthBackend;
 	public static synthetic fun SupabaseAuthBackend$default (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/mmk/kmpauth/supabase/SupabaseAuthBackend;
-	public static final fun supabase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;ZLkotlin/jvm/functions/Function1;)V
-	public static final fun supabase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lio/github/jan/supabase/SupabaseClient;Z)V
-	public static final fun supabase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;)V
-	public static synthetic fun supabase$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public static synthetic fun supabase$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lio/github/jan/supabase/SupabaseClient;ZILjava/lang/Object;)V
-	public static synthetic fun supabase$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun supabase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;Lkotlin/jvm/functions/Function1;)V
+	public static final fun supabase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lio/github/jan/supabase/SupabaseClient;)V
+	public static final fun supabase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun supabase$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/supabase/SupabaseBackendOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun supabase$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
 public final class com/mmk/kmpauth/supabase/SupabaseAuthBackend : com/mmk/kmpauth/core/auth/AuthProviderBackend {

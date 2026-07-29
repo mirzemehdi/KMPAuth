@@ -26,7 +26,7 @@ internal fun rememberOAuthStateViaGitLive(
 ): SignInState {
     // Lazy default registration: no-op when the app already registered
     // a backend at startup (first registration wins).
-    KMPAuthBackend.register(FirebaseAuthBackend)
+    KMPAuthBackend.registerDefault(FirebaseAuthBackend)
     val oAuthProvider = OAuthProvider(
         provider = provider,
         scopes = requestScopes,

@@ -131,8 +131,9 @@ Explicit registration exists for custom backends, or to override the default
 (an explicit registration always wins):
 
 ```kotlin
-// only for custom backends / overriding, at application start
-KMPAuth.registerBackendProvider(MyOwnBackend, replace = true)
+// only for custom backends, at application start - an explicit registration
+// always supersedes the auto-registered Firebase default
+KMPAuth.registerBackendProvider(MyOwnBackend)
 ```
 
 The provider-only states (`rememberGoogleSignInState`,
@@ -721,10 +722,6 @@ KMPAuth.initialize {
     // supabase(existingSupabaseClient)
 }
 ```
-
-If `kmpauth-firebase-core` is *also* in the dependencies, pass
-`supabase(..., replace = true)` — on iOS/JS/wasm the Firebase backend
-registers eagerly at binary load, before `initialize` runs.
 
 #### Using several backends at once
 
