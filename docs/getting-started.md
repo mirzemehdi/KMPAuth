@@ -16,17 +16,17 @@ Pick what you need in your shared module's `commonMain`
 ```kotlin
 sourceSets {
     commonMain.dependencies {
-        // Identity providers (credential only - no backend required):
+        // Identity providers - native SDK sign-in, no backend required:
         implementation("io.github.mirzemehdi:kmpauth-google:<version>")
-        implementation("io.github.mirzemehdi:kmpauth-facebook:<version>")
-        implementation("io.github.mirzemehdi:kmpauth-apple:<version>")
+        implementation("io.github.mirzemehdi:kmpauth-apple:<version>")    // if needed
+        implementation("io.github.mirzemehdi:kmpauth-facebook:<version>") // if needed
+
+        // Pre-styled "Sign in with ..." buttons:
+        implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") // if needed
 
         // Session backend - pick one (or both, see the backend guides):
         implementation("io.github.mirzemehdi:kmpauth-firebase:<version>")
-        implementation("io.github.mirzemehdi:kmpauth-supabase:<version>")
-
-        // Pre-styled "Sign in with ..." buttons:
-        implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>")
+        implementation("io.github.mirzemehdi:kmpauth-supabase:<version>") // if needed
     }
 }
 ```
@@ -36,7 +36,7 @@ sourceSets {
 | `kmpauth-google` | Google sign-in — [guide](google.md) |
 | `kmpauth-facebook` | Facebook login — [guide](facebook.md) |
 | `kmpauth-apple` | Native Sign in with Apple (Apple platforms, no backend) — [guide](apple.md) |
-| `kmpauth-firebase` | Firebase auth backend + Apple/GitHub/Microsoft/OAuth/phone states — [guide](firebase.md) |
+| `kmpauth-firebase` | Firebase auth backend (serves every `rememberXxxAuthState` and `KMPAuth.*` operation) — [guide](firebase.md) |
 | `kmpauth-supabase` | Supabase auth backend — [guide](supabase.md) |
 | `kmpauth-uihelper` | Google/Apple/Facebook buttons per each brand's guidelines — [guide](ui-helper.md) |
 | `kmpauth-firebase-google`, `kmpauth-firebase-facebook` | **Deprecated** 2.x container shims only — not needed in new code, removed in 4.0 |

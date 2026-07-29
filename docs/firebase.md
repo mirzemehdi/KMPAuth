@@ -1,9 +1,10 @@
 # Firebase backend
 
 Module: `kmpauth-firebase`. Serves every `rememberXxxAuthState` flow and
-`KMPAuth.*` operation, and hosts the
-[Apple/GitHub/Microsoft/OAuth](oauth-providers.md) and [phone](phone.md)
-states.
+`KMPAuth.*` operation — including the
+[Apple](apple.md), [GitHub/Microsoft/OAuth](oauth-providers.md) and
+[phone](phone.md) states, which live in `kmpauth-core`/`kmpauth-apple` and
+run against whichever backend is registered.
 
 ## Registration is automatic
 

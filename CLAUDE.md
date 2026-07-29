@@ -23,7 +23,7 @@ Layout: identity **providers** (credential sources) live under `providers/`; ses
 | `:kmpauth-uihelper` | Pre-styled Compose sign-in buttons (Google/Apple/Facebook) | core |
 | `sampleApp/shared` + `androidApp`/`desktopApp`/`webApp`/`iosApp` | Demo: shared UI module + per-platform entry points (webApp builds both js and wasm variants — the wasm one is the smoke test for the wasm-callable Firebase API) | all |
 
-Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared by the convention plugin for every module. Firebase modules declare their public API in `commonMain` using KMPAuth's own types (`KMPAuthUser`, never GitLive types — GitLive has no wasm target), so consumers call everything from commonMain on every target including wasm. GitLive-facing implementations and the deprecated 2.x containers (which expose `FirebaseUser`) live in a `nonWasmMain` intermediate source set; wasm actuals of the web-flow states report failed `Result`s; backend ops on wasm go through the REST engine. No iosX64 (dropped in 3.0; Compose Multiplatform 1.11+ does not ship it).
+Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared by the convention plugin for every module. Firebase modules declare their public API in `commonMain` using KMPAuth's own types (`KMPAuthUser`, never GitLive types — GitLive has no wasm target), so consumers call everything from commonMain on every target including wasm. GitLive-facing implementations and the deprecated 2.x containers (which expose `FirebaseUser`) live in a `nonWasmMain` intermediate source set; on wasm the backend runs on the REST engine, and web-flow/phone ops fail there with a reason. No iosX64 (dropped in 3.0; Compose Multiplatform 1.11+ does not ship it).
 
 ## Build conventions
 
