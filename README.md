@@ -15,32 +15,95 @@ Apple, Facebook, GitHub, Microsoft, email/password, magic links, phone
 number or anonymously** — backed by **Firebase** or **Supabase** (or your
 own backend), with every API callable from `commonMain` on every target.
 
-```kotlin
-// initialize once at app start:
-KMPAuth.initialize {
-    google(serverId = WebClientId)
-    // Firebase backend registers itself automatically
-}
-
-// then next to any button:
-@Composable
-fun SignInButtons(onResult: (Result<KMPAuthUser>) -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        val googleSignIn = rememberGoogleAuthState(onResult = onResult)
-        GoogleSignInButton { googleSignIn.launch() }
-
-        val appleSignIn = rememberAppleAuthState(onResult = onResult)
-        AppleSignInButton { appleSignIn.launch() }
-
-        val githubSignIn = rememberGithubAuthState(onResult = onResult)
-        Button(onClick = { githubSignIn.launch() }) { Text("Sign in with GitHub") }
-    }
-}
-```
-
 <p style="text-align: center;">
   <img src="https://github.com/mirzemehdi/KMPAuth/assets/32781662/f5a3cd28-6ef2-46bf-9b07-a045ce217b34)" width="200" alt="SampleApp"/>
 </p>
+
+## Pick your setup
+
+### 1. No backend — you verify the token yourself
+
+Only the provider modules (`kmpauth-google`, `kmpauth-facebook`,
+`kmpauth-apple`). The `rememberXxxSignInState` states hand you the
+provider's credential and stop there — send it to your own server:
+
+```kotlin
+KMPAuth.initialize {
+    google(serverId = WebClientId)
+}
+
+val googleSignIn = rememberGoogleSignInState(onResult = { result ->
+    result.onSuccess { googleUser ->
+        api.login(googleUser.idToken) // verify server-side
+    }.onFailure { error -> /* cancelled, misconfigured, ... */ }
+})
+GoogleSignInButton { googleSignIn.launch() }
+
+// same shape for Facebook and native Apple:
+val facebookSignIn = rememberFacebookSignInState(onResult = { result: Result<FacebookUser> -> })
+val appleSignIn = rememberAppleSignInState(onResult = { result: Result<AppleUser> -> })
+```
+
+### 2. Firebase
+
+Add `kmpauth-firebase` — the backend registers itself, and on Android/iOS
+there is zero configuration (the SDK reads `google-services.json` /
+`GoogleService-Info.plist`). The `rememberXxxAuthState` states exchange the
+credential for a Firebase session; account operations live on `KMPAuth`:
+
+```kotlin
+KMPAuth.initialize {
+    google(serverId = WebClientId)
+    // Desktop/Web only - Android/iOS use the bundled config files:
+    firebase(apiKey = "...", projectId = "...", applicationId = "...")
+}
+
+val onResult: (Result<KMPAuthUser>) -> Unit = { result -> /* ... */ }
+
+val googleSignIn = rememberGoogleAuthState(onResult = onResult)
+GoogleSignInButton { googleSignIn.launch() }
+
+val appleSignIn = rememberAppleAuthState(onResult = onResult)       // native on iOS, web flow elsewhere
+val githubSignIn = rememberGithubAuthState(onResult = onResult)     // Firebase OAuth web flow
+val microsoftSignIn = rememberMicrosoftAuthState(onResult = onResult)
+val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
+val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult)
+val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
+
+KMPAuth.currentUser()
+KMPAuth.signOut()
+KMPAuth.sendPasswordResetEmail(email)
+KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, password))
+```
+
+→ [Firebase guide](docs/firebase.md)
+
+### 3. Supabase
+
+Add `kmpauth-supabase` — no Firebase anywhere, works on **every target
+including wasm**. Same states, same `KMPAuth` operations; only the
+registration differs:
+
+```kotlin
+KMPAuth.initialize {
+    google(serverId = WebClientId)
+    supabase(url = projectUrl, apiKey = publishableKey)
+}
+
+val onResult: (Result<KMPAuthUser>) -> Unit = { result -> /* ... */ }
+
+val googleSignIn = rememberGoogleAuthState(onResult = onResult)     // id-token grant
+val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
+val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
+
+KMPAuth.sendPasswordResetEmail(email)
+KMPAuth.signOut()
+```
+
+→ [Supabase guide](docs/supabase.md) (Ktor engine per platform, what maps to Supabase)
+
+Need Firebase **and** Supabase side by side? One `CompositionLocalProvider`
+wrapper — [Custom & multiple backends](docs/custom-backends.md).
 
 ## Documentation
 
