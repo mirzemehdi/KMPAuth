@@ -48,6 +48,7 @@ import com.mmk.kmpauth.core.auth.rememberMicrosoftAuthState
 import com.mmk.kmpauth.core.auth.rememberPhoneAuthState
 import com.mmk.kmpauth.google.rememberGoogleAuthState
 import com.mmk.kmpauth.google.rememberGoogleSignInState
+import com.mmk.kmpauth.supabase.SupabaseAuthBackend
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButton
@@ -66,6 +67,15 @@ import kotlinx.coroutines.launch
 fun App() {
     MaterialTheme {
         var status by remember { mutableStateOf("Not signed in") }
+        // Multi-backend pattern from docs/custom-backends.md: Firebase is
+        // the registered default; the second backend is a standalone
+        // instance scoped to its subtree via LocalKMPAuthBackend.
+        val supabaseBackend = remember {
+            SupabaseAuthBackend(
+                url = "https://mlhefwyzasscsqjqtvhk.supabase.co",
+                apiKey = "sb_publishable_dCWSZWxJqYcdsi6Hm0gXcQ_aeM91-z2",
+            )
+        }
         val report: (source: String) -> (Result<KMPAuthUser>) -> Unit = { source ->
             { result ->
                 status = result.fold(
@@ -82,10 +92,10 @@ fun App() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            StatusCard(status = status, onStatus = { status = it })
+            StatusCard(supabaseBackend = supabaseBackend, status = status, onStatus = { status = it })
             ProviderOnlySection(onStatus = { status = it })
             FirebaseSection(report = report, onStatus = { status = it })
-            SupabaseSection(report = report, onStatus = { status = it })
+            SupabaseSection(supabaseBackend = supabaseBackend, report = report, onStatus = { status = it })
             UiHelperSection(report = report)
         }
     }
@@ -96,13 +106,17 @@ fun App() {
 // ---------------------------------------------------------------------------
 
 @Composable
-private fun StatusCard(status: String, onStatus: (String) -> Unit) {
+private fun StatusCard(
+    supabaseBackend: AuthProviderBackend,
+    status: String,
+    onStatus: (String) -> Unit,
+) {
     val scope = rememberCoroutineScope()
     Section(title = "Status") {
         Text(status, style = MaterialTheme.typography.bodyMedium)
         Text(
             "Firebase user: ${KMPAuthBackend.currentUser()?.uid ?: "-"} · " +
-                "Supabase user: ${AppInitializer.supabaseBackend.currentUser()?.uid ?: "-"}",
+                "Supabase user: ${supabaseBackend.currentUser()?.uid ?: "-"}",
             style = MaterialTheme.typography.bodySmall,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -114,7 +128,7 @@ private fun StatusCard(status: String, onStatus: (String) -> Unit) {
             }) { Text("Sign out (Firebase)") }
             OutlinedButton(onClick = {
                 scope.launch {
-                    AppInitializer.supabaseBackend.signOut()
+                    supabaseBackend.signOut()
                     onStatus("Signed out of Supabase")
                 }
             }) { Text("Sign out (Supabase)") }
@@ -237,12 +251,13 @@ private fun FirebaseSection(
 
 @Composable
 private fun SupabaseSection(
+    supabaseBackend: AuthProviderBackend,
     report: (String) -> (Result<KMPAuthUser>) -> Unit,
     onStatus: (String) -> Unit,
 ) {
     // One wrapper scopes every auth state in this section to Supabase; the
     // rest of the app keeps the registered default (Firebase).
-    CompositionLocalProvider(LocalKMPAuthBackend provides AppInitializer.supabaseBackend) {
+    CompositionLocalProvider(LocalKMPAuthBackend provides supabaseBackend) {
     Section(title = "Supabase backend") {
         val googleAuth = rememberGoogleAuthState(onResult = report("Supabase/Google"))
         Button(onClick = { googleAuth.launch() }) { Text("Google") }
