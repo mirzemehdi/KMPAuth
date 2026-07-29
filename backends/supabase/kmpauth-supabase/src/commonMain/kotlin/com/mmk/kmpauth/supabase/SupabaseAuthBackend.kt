@@ -18,6 +18,11 @@ import io.github.jan.supabase.auth.providers.IDTokenProvider
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.providers.builtin.IDToken
 import io.github.jan.supabase.auth.providers.builtin.OTP
+import io.github.jan.supabase.auth.status.SessionStatus
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Supabase implementation of [AuthProviderBackend], over a configured
@@ -106,12 +111,53 @@ public class SupabaseAuthBackend(
                 }
             }
 
-            is AuthCredential.OAuthWebFlow -> throw UnsupportedOperationException(
-                "SupabaseAuthBackend cannot drive a browser OAuth flow for " +
-                    "provider '${credential.providerId}'. Use supabase-kt's own " +
-                    "flow directly, e.g. supabaseClient.auth.signInWith(Github)."
-            )
+            is AuthCredential.OAuthWebFlow -> {
+                if (linkWithCurrentUser) throw UnsupportedOperationException(
+                    "Linking a browser OAuth identity goes through supabase-kt " +
+                        "directly: supabaseClient.auth.linkIdentity(Github) { ... }."
+                )
+                val provider = supabaseOAuthProviderOrNull(credential.providerId)
+                    ?: throw IllegalArgumentException(
+                        "Unknown OAuth provider id '${credential.providerId}'. " +
+                            "Use a Firebase-style id (github.com, microsoft.com) " +
+                            "or a GoTrue provider name (github, azure, gitlab, ...)."
+                    )
+                val previousAccessToken = supabaseClient.auth.currentSessionOrNull()?.accessToken
+                supabaseClient.auth.signInWith(provider) {
+                    scopes.addAll(credential.scopes)
+                    queryParams.putAll(credential.customParameters)
+                }
+                awaitOAuthSession(previousAccessToken)
+            }
         }
+    }
+
+    /**
+     * Waits for the browser OAuth round-trip to produce a session. On
+     * Desktop supabase-kt's `signInWith` suspends until its built-in
+     * localhost callback server receives the redirect, so the session is
+     * usually already there; on Android/iOS the flow returns immediately
+     * and the session arrives asynchronously through the app's deep link
+     * (configure `scheme`/`host` on the Supabase client and forward the
+     * deep link per supabase-kt's setup). On web the page redirects away —
+     * the session is restored when the app reloads, so no result can be
+     * delivered here.
+     */
+    private suspend fun awaitOAuthSession(previousAccessToken: String?): KMPAuthUser {
+        val session = withTimeoutOrNull(OAUTH_FLOW_TIMEOUT) {
+            supabaseClient.auth.sessionStatus
+                .map { (it as? SessionStatus.Authenticated)?.session }
+                .first { it != null && it.accessToken != previousAccessToken }
+        } ?: throw IllegalStateException(
+            "The OAuth flow did not complete within $OAUTH_FLOW_TIMEOUT. On " +
+                "Android/iOS make sure the Supabase deep link is configured " +
+                "(scheme/host on the client, plus the platform manifest entry) " +
+                "and the redirect URL is allow-listed in the Supabase dashboard."
+        )
+        return session!!.user?.let(::SupabaseKMPAuthUser)
+            ?: SupabaseKMPAuthUser(
+                supabaseClient.auth.retrieveUserForCurrentSession(updateSession = true)
+            )
     }
 
     /**
@@ -296,6 +342,11 @@ public class SupabaseAuthBackend(
     private fun requireCurrentUser(): KMPAuthUser =
         supabaseClient.auth.currentUserOrNull()?.let(::SupabaseKMPAuthUser)
             ?: throw IllegalStateException("Supabase returned no user for the signed-in session")
+
+    private companion object {
+        /** Upper bound for the browser OAuth round-trip. */
+        val OAUTH_FLOW_TIMEOUT = 5.minutes
+    }
 
     private fun AuthCredential.IdToken.toSupabaseIdTokenProvider(): IDTokenProvider =
         when (providerId) {
