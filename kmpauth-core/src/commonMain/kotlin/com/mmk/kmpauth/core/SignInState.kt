@@ -47,6 +47,21 @@ public object NoOpSignInState : SignInState {
 }
 
 /**
+ * [SignInState] for platforms where a flow cannot work (e.g. a Firebase
+ * flow on wasm, where the Firebase SDK has no target). [launch] reports
+ * [reason] through [onFailure] as a failed result instead of silently doing
+ * nothing, so apps can surface why nothing happened.
+ */
+@KMPAuthInternalApi
+public class UnsupportedSignInState(
+    private val reason: String,
+    private val onFailure: (Throwable) -> Unit,
+) : SignInState {
+    override val isInProgress: Boolean = false
+    override fun launch(): Unit = onFailure(UnsupportedOperationException(reason))
+}
+
+/**
  * Shared [SignInState] implementation used by the provider modules: runs
  * [block] in [scope], guarding against concurrent launches and driving
  * [isInProgress]. [block] reads its parameters through

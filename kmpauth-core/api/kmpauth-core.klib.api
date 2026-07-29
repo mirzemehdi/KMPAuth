@@ -10,6 +10,17 @@ open annotation class com.mmk.kmpauth.core/KMPAuthInternalApi : kotlin/Annotatio
     constructor <init>() // com.mmk.kmpauth.core/KMPAuthInternalApi.<init>|<init>(){}[0]
 }
 
+final enum class com.mmk.kmpauth.core.auth/EmailAuthMode : kotlin/Enum<com.mmk.kmpauth.core.auth/EmailAuthMode> { // com.mmk.kmpauth.core.auth/EmailAuthMode|null[0]
+    enum entry SignIn // com.mmk.kmpauth.core.auth/EmailAuthMode.SignIn|null[0]
+    enum entry SignUp // com.mmk.kmpauth.core.auth/EmailAuthMode.SignUp|null[0]
+
+    final val entries // com.mmk.kmpauth.core.auth/EmailAuthMode.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.mmk.kmpauth.core.auth/EmailAuthMode> // com.mmk.kmpauth.core.auth/EmailAuthMode.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.mmk.kmpauth.core.auth/EmailAuthMode // com.mmk.kmpauth.core.auth/EmailAuthMode.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.mmk.kmpauth.core.auth/EmailAuthMode> // com.mmk.kmpauth.core.auth/EmailAuthMode.values|values#static(){}[0]
+}
+
 abstract fun interface com.mmk.kmpauth.core.logger/KMPAuthLogger { // com.mmk.kmpauth.core.logger/KMPAuthLogger|null[0]
     abstract fun log(kotlin/String?) // com.mmk.kmpauth.core.logger/KMPAuthLogger.log|log(kotlin.String?){}[0]
 }
@@ -18,6 +29,13 @@ abstract interface com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.km
     abstract fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.core.auth/AuthProviderBackend.currentUser|currentUser(){}[0]
     abstract suspend fun signIn(com.mmk.kmpauth.core.auth/AuthCredential, kotlin/Boolean = ...): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core.auth/AuthProviderBackend.signIn|signIn(com.mmk.kmpauth.core.auth.AuthCredential;kotlin.Boolean){}[0]
     abstract suspend fun signOut() // com.mmk.kmpauth.core.auth/AuthProviderBackend.signOut|signOut(){}[0]
+    open fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.core.auth/AuthProviderBackend.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
+    open suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core.auth/AuthProviderBackend.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
+    open suspend fun sendPasswordResetEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings? = ...): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core.auth/AuthProviderBackend.sendPasswordResetEmail|sendPasswordResetEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings?){}[0]
+    open suspend fun sendSignInLinkToEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core.auth/AuthProviderBackend.sendSignInLinkToEmail|sendSignInLinkToEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings){}[0]
+    open suspend fun signInAnonymously(): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core.auth/AuthProviderBackend.signInAnonymously|signInAnonymously(){}[0]
+    open suspend fun signInWithEmailLink(kotlin/String, kotlin/String, kotlin/Boolean = ...): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core.auth/AuthProviderBackend.signInWithEmailLink|signInWithEmailLink(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+    open suspend fun signUp(kotlin/String, kotlin/String): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core.auth/AuthProviderBackend.signUp|signUp(kotlin.String;kotlin.String){}[0]
 }
 
 abstract interface com.mmk.kmpauth.core.auth/KMPAuthUser { // com.mmk.kmpauth.core.auth/KMPAuthUser|null[0]
@@ -49,6 +67,24 @@ abstract interface com.mmk.kmpauth.core/UiContainerScope { // com.mmk.kmpauth.co
 sealed interface com.mmk.kmpauth.core.auth/AuthCredential { // com.mmk.kmpauth.core.auth/AuthCredential|null[0]
     abstract val providerId // com.mmk.kmpauth.core.auth/AuthCredential.providerId|{}providerId[0]
         abstract fun <get-providerId>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthCredential.providerId.<get-providerId>|<get-providerId>(){}[0]
+
+    final class EmailPassword : com.mmk.kmpauth.core.auth/AuthCredential { // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword|null[0]
+        constructor <init>(kotlin/String, kotlin/String) // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.<init>|<init>(kotlin.String;kotlin.String){}[0]
+
+        final val email // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.email|{}email[0]
+            final fun <get-email>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.email.<get-email>|<get-email>(){}[0]
+        final val password // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.password|{}password[0]
+            final fun <get-password>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.password.<get-password>|<get-password>(){}[0]
+        final val providerId // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.providerId|{}providerId[0]
+            final fun <get-providerId>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.providerId.<get-providerId>|<get-providerId>(){}[0]
+
+        final fun component1(): kotlin/String // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.component1|component1(){}[0]
+        final fun component2(): kotlin/String // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.component2|component2(){}[0]
+        final fun copy(kotlin/String = ..., kotlin/String = ...): com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.copy|copy(kotlin.String;kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.mmk.kmpauth.core.auth/AuthCredential.EmailPassword.toString|toString(){}[0]
+    }
 
     final class IdToken : com.mmk.kmpauth.core.auth/AuthCredential { // com.mmk.kmpauth.core.auth/AuthCredential.IdToken|null[0]
         constructor <init>(kotlin/String, kotlin/String, kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.core.auth/AuthCredential.IdToken.<init>|<init>(kotlin.String;kotlin.String;kotlin.String?;kotlin.String?){}[0]
@@ -92,6 +128,42 @@ sealed interface com.mmk.kmpauth.core.auth/AuthCredential { // com.mmk.kmpauth.c
     }
 }
 
+final class com.mmk.kmpauth.core.auth/EmailActionCodeSettings { // com.mmk.kmpauth.core.auth/EmailActionCodeSettings|null[0]
+    constructor <init>(kotlin/String, kotlin/Boolean = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/Boolean = ..., kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.<init>|<init>(kotlin.String;kotlin.Boolean;kotlin.String?;kotlin.String?;kotlin.Boolean;kotlin.String?;kotlin.String?){}[0]
+
+    final val androidInstallIfNotAvailable // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.androidInstallIfNotAvailable|{}androidInstallIfNotAvailable[0]
+        final fun <get-androidInstallIfNotAvailable>(): kotlin/Boolean // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.androidInstallIfNotAvailable.<get-androidInstallIfNotAvailable>|<get-androidInstallIfNotAvailable>(){}[0]
+    final val androidMinimumVersion // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.androidMinimumVersion|{}androidMinimumVersion[0]
+        final fun <get-androidMinimumVersion>(): kotlin/String? // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.androidMinimumVersion.<get-androidMinimumVersion>|<get-androidMinimumVersion>(){}[0]
+    final val androidPackageName // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.androidPackageName|{}androidPackageName[0]
+        final fun <get-androidPackageName>(): kotlin/String? // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.androidPackageName.<get-androidPackageName>|<get-androidPackageName>(){}[0]
+    final val canHandleCodeInApp // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.canHandleCodeInApp|{}canHandleCodeInApp[0]
+        final fun <get-canHandleCodeInApp>(): kotlin/Boolean // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.canHandleCodeInApp.<get-canHandleCodeInApp>|<get-canHandleCodeInApp>(){}[0]
+    final val iOSBundleId // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.iOSBundleId|{}iOSBundleId[0]
+        final fun <get-iOSBundleId>(): kotlin/String? // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.iOSBundleId.<get-iOSBundleId>|<get-iOSBundleId>(){}[0]
+    final val linkDomain // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.linkDomain|{}linkDomain[0]
+        final fun <get-linkDomain>(): kotlin/String? // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.linkDomain.<get-linkDomain>|<get-linkDomain>(){}[0]
+    final val url // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.url|{}url[0]
+        final fun <get-url>(): kotlin/String // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.url.<get-url>|<get-url>(){}[0]
+
+    final fun component1(): kotlin/String // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.component1|component1(){}[0]
+    final fun component2(): kotlin/Boolean // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.component4|component4(){}[0]
+    final fun component5(): kotlin/Boolean // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.component5|component5(){}[0]
+    final fun component6(): kotlin/String? // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.component6|component6(){}[0]
+    final fun component7(): kotlin/String? // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.component7|component7(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/Boolean = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/Boolean = ..., kotlin/String? = ..., kotlin/String? = ...): com.mmk.kmpauth.core.auth/EmailActionCodeSettings // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.copy|copy(kotlin.String;kotlin.Boolean;kotlin.String?;kotlin.String?;kotlin.Boolean;kotlin.String?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.toString|toString(){}[0]
+}
+
+final class com.mmk.kmpauth.core/KMPAuthConfiguration { // com.mmk.kmpauth.core/KMPAuthConfiguration|null[0]
+    final fun backendProvider(com.mmk.kmpauth.core.auth/AuthProviderBackend, kotlin/Boolean = ...) // com.mmk.kmpauth.core/KMPAuthConfiguration.backendProvider|backendProvider(com.mmk.kmpauth.core.auth.AuthProviderBackend;kotlin.Boolean){}[0]
+    final fun logger(com.mmk.kmpauth.core.logger/KMPAuthLogger) // com.mmk.kmpauth.core/KMPAuthConfiguration.logger|logger(com.mmk.kmpauth.core.logger.KMPAuthLogger){}[0]
+}
+
 final class com.mmk.kmpauth.core/LaunchingSignInState : com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.core/LaunchingSignInState|null[0]
     constructor <init>(kotlinx.coroutines/CoroutineScope, kotlin.coroutines/SuspendFunction0<kotlin/Unit>) // com.mmk.kmpauth.core/LaunchingSignInState.<init>|<init>(kotlinx.coroutines.CoroutineScope;kotlin.coroutines.SuspendFunction0<kotlin.Unit>){}[0]
 
@@ -101,9 +173,20 @@ final class com.mmk.kmpauth.core/LaunchingSignInState : com.mmk.kmpauth.core/Sig
     final fun launch() // com.mmk.kmpauth.core/LaunchingSignInState.launch|launch(){}[0]
 }
 
+final class com.mmk.kmpauth.core/UnsupportedSignInState : com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.core/UnsupportedSignInState|null[0]
+    constructor <init>(kotlin/String, kotlin/Function1<kotlin/Throwable, kotlin/Unit>) // com.mmk.kmpauth.core/UnsupportedSignInState.<init>|<init>(kotlin.String;kotlin.Function1<kotlin.Throwable,kotlin.Unit>){}[0]
+
+    final val isInProgress // com.mmk.kmpauth.core/UnsupportedSignInState.isInProgress|{}isInProgress[0]
+        final fun <get-isInProgress>(): kotlin/Boolean // com.mmk.kmpauth.core/UnsupportedSignInState.isInProgress.<get-isInProgress>|<get-isInProgress>(){}[0]
+
+    final fun launch() // com.mmk.kmpauth.core/UnsupportedSignInState.launch|launch(){}[0]
+}
+
 final object com.mmk.kmpauth.core.auth/AuthProviderIds { // com.mmk.kmpauth.core.auth/AuthProviderIds|null[0]
     final const val APPLE // com.mmk.kmpauth.core.auth/AuthProviderIds.APPLE|{}APPLE[0]
         final fun <get-APPLE>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthProviderIds.APPLE.<get-APPLE>|<get-APPLE>(){}[0]
+    final const val EMAIL // com.mmk.kmpauth.core.auth/AuthProviderIds.EMAIL|{}EMAIL[0]
+        final fun <get-EMAIL>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthProviderIds.EMAIL.<get-EMAIL>|<get-EMAIL>(){}[0]
     final const val FACEBOOK // com.mmk.kmpauth.core.auth/AuthProviderIds.FACEBOOK|{}FACEBOOK[0]
         final fun <get-FACEBOOK>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthProviderIds.FACEBOOK.<get-FACEBOOK>|<get-FACEBOOK>(){}[0]
     final const val GITHUB // com.mmk.kmpauth.core.auth/AuthProviderIds.GITHUB|{}GITHUB[0]
@@ -112,14 +195,38 @@ final object com.mmk.kmpauth.core.auth/AuthProviderIds { // com.mmk.kmpauth.core
         final fun <get-GOOGLE>(): kotlin/String // com.mmk.kmpauth.core.auth/AuthProviderIds.GOOGLE.<get-GOOGLE>|<get-GOOGLE>(){}[0]
 }
 
-final object com.mmk.kmpauth.core.auth/KMPAuthBackend { // com.mmk.kmpauth.core.auth/KMPAuthBackend|null[0]
+final object com.mmk.kmpauth.core.auth/KMPAuthBackend : com.mmk.kmpauth.core.auth/AuthProviderBackend { // com.mmk.kmpauth.core.auth/KMPAuthBackend|null[0]
+    final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.core.auth/KMPAuthBackend.currentUser|currentUser(){}[0]
     final fun getOrNull(): com.mmk.kmpauth.core.auth/AuthProviderBackend? // com.mmk.kmpauth.core.auth/KMPAuthBackend.getOrNull|getOrNull(){}[0]
+    final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.core.auth/KMPAuthBackend.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
     final fun register(com.mmk.kmpauth.core.auth/AuthProviderBackend, kotlin/Boolean = ...) // com.mmk.kmpauth.core.auth/KMPAuthBackend.register|register(com.mmk.kmpauth.core.auth.AuthProviderBackend;kotlin.Boolean){}[0]
     final fun require(): com.mmk.kmpauth.core.auth/AuthProviderBackend // com.mmk.kmpauth.core.auth/KMPAuthBackend.require|require(){}[0]
+    final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core.auth/KMPAuthBackend.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
+    final suspend fun sendPasswordResetEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings?): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core.auth/KMPAuthBackend.sendPasswordResetEmail|sendPasswordResetEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings?){}[0]
+    final suspend fun sendSignInLinkToEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core.auth/KMPAuthBackend.sendSignInLinkToEmail|sendSignInLinkToEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings){}[0]
+    final suspend fun signIn(com.mmk.kmpauth.core.auth/AuthCredential, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core.auth/KMPAuthBackend.signIn|signIn(com.mmk.kmpauth.core.auth.AuthCredential;kotlin.Boolean){}[0]
+    final suspend fun signInAnonymously(): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core.auth/KMPAuthBackend.signInAnonymously|signInAnonymously(){}[0]
+    final suspend fun signInWithEmailLink(kotlin/String, kotlin/String, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core.auth/KMPAuthBackend.signInWithEmailLink|signInWithEmailLink(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+    final suspend fun signOut() // com.mmk.kmpauth.core.auth/KMPAuthBackend.signOut|signOut(){}[0]
+    final suspend fun signUp(kotlin/String, kotlin/String): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core.auth/KMPAuthBackend.signUp|signUp(kotlin.String;kotlin.String){}[0]
 }
 
 final object com.mmk.kmpauth.core/KMPAuth { // com.mmk.kmpauth.core/KMPAuth|null[0]
+    final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.core/KMPAuth.currentUser|currentUser(){}[0]
+    final fun getBackendProvider(): com.mmk.kmpauth.core.auth/AuthProviderBackend? // com.mmk.kmpauth.core/KMPAuth.getBackendProvider|getBackendProvider(){}[0]
+    final fun initialize(kotlin/Function1<com.mmk.kmpauth.core/KMPAuthConfiguration, kotlin/Unit>) // com.mmk.kmpauth.core/KMPAuth.initialize|initialize(kotlin.Function1<com.mmk.kmpauth.core.KMPAuthConfiguration,kotlin.Unit>){}[0]
+    final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.core/KMPAuth.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
+    final fun registerBackendProvider(com.mmk.kmpauth.core.auth/AuthProviderBackend, kotlin/Boolean = ...) // com.mmk.kmpauth.core/KMPAuth.registerBackendProvider|registerBackendProvider(com.mmk.kmpauth.core.auth.AuthProviderBackend;kotlin.Boolean){}[0]
+    final fun requireBackendProvider(): com.mmk.kmpauth.core.auth/AuthProviderBackend // com.mmk.kmpauth.core/KMPAuth.requireBackendProvider|requireBackendProvider(){}[0]
     final fun setLogger(com.mmk.kmpauth.core.logger/KMPAuthLogger) // com.mmk.kmpauth.core/KMPAuth.setLogger|setLogger(com.mmk.kmpauth.core.logger.KMPAuthLogger){}[0]
+    final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core/KMPAuth.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
+    final suspend fun sendPasswordResetEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings? = ...): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core/KMPAuth.sendPasswordResetEmail|sendPasswordResetEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings?){}[0]
+    final suspend fun sendSignInLinkToEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.core/KMPAuth.sendSignInLinkToEmail|sendSignInLinkToEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings){}[0]
+    final suspend fun signIn(com.mmk.kmpauth.core.auth/AuthCredential, kotlin/Boolean = ...): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core/KMPAuth.signIn|signIn(com.mmk.kmpauth.core.auth.AuthCredential;kotlin.Boolean){}[0]
+    final suspend fun signInAnonymously(): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core/KMPAuth.signInAnonymously|signInAnonymously(){}[0]
+    final suspend fun signInWithEmailLink(kotlin/String, kotlin/String, kotlin/Boolean = ...): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core/KMPAuth.signInWithEmailLink|signInWithEmailLink(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+    final suspend fun signOut() // com.mmk.kmpauth.core/KMPAuth.signOut|signOut(){}[0]
+    final suspend fun signUp(kotlin/String, kotlin/String): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.core/KMPAuth.signUp|signUp(kotlin.String;kotlin.String){}[0]
 }
 
 final object com.mmk.kmpauth.core/NoOpSignInState : com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.core/NoOpSignInState|null[0]
@@ -129,8 +236,34 @@ final object com.mmk.kmpauth.core/NoOpSignInState : com.mmk.kmpauth.core/SignInS
     final fun launch() // com.mmk.kmpauth.core/NoOpSignInState.launch|launch(){}[0]
 }
 
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_EmailPassword$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_EmailPassword$stableprop|#static{}com_mmk_kmpauth_core_auth_AuthCredential_EmailPassword$stableprop[0]
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_IdToken$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_IdToken$stableprop|#static{}com_mmk_kmpauth_core_auth_AuthCredential_IdToken$stableprop[0]
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_OAuthWebFlow$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_OAuthWebFlow$stableprop|#static{}com_mmk_kmpauth_core_auth_AuthCredential_OAuthWebFlow$stableprop[0]
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop|#static{}com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop[0]
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop|#static{}com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop[0]
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop|#static{}com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop[0]
+final val com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuth$stableprop // com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuth$stableprop|#static{}com_mmk_kmpauth_core_KMPAuth$stableprop[0]
+final val com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop // com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop|#static{}com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop[0]
+final val com.mmk.kmpauth.core/com_mmk_kmpauth_core_LaunchingSignInState$stableprop // com.mmk.kmpauth.core/com_mmk_kmpauth_core_LaunchingSignInState$stableprop|#static{}com_mmk_kmpauth_core_LaunchingSignInState$stableprop[0]
+final val com.mmk.kmpauth.core/com_mmk_kmpauth_core_NoOpSignInState$stableprop // com.mmk.kmpauth.core/com_mmk_kmpauth_core_NoOpSignInState$stableprop|#static{}com_mmk_kmpauth_core_NoOpSignInState$stableprop[0]
+final val com.mmk.kmpauth.core/com_mmk_kmpauth_core_UnsupportedSignInState$stableprop // com.mmk.kmpauth.core/com_mmk_kmpauth_core_UnsupportedSignInState$stableprop|#static{}com_mmk_kmpauth_core_UnsupportedSignInState$stableprop[0]
+
 final var com.mmk.kmpauth.core.logger/currentLogger // com.mmk.kmpauth.core.logger/currentLogger|{}currentLogger[0]
     final fun <get-currentLogger>(): com.mmk.kmpauth.core.logger/KMPAuthLogger // com.mmk.kmpauth.core.logger/currentLogger.<get-currentLogger>|<get-currentLogger>(){}[0]
     final fun <set-currentLogger>(com.mmk.kmpauth.core.logger/KMPAuthLogger) // com.mmk.kmpauth.core.logger/currentLogger.<set-currentLogger>|<set-currentLogger>(com.mmk.kmpauth.core.logger.KMPAuthLogger){}[0]
 
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_EmailPassword$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_EmailPassword$stableprop_getter|com_mmk_kmpauth_core_auth_AuthCredential_EmailPassword$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_IdToken$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_IdToken$stableprop_getter|com_mmk_kmpauth_core_auth_AuthCredential_IdToken$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_OAuthWebFlow$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_OAuthWebFlow$stableprop_getter|com_mmk_kmpauth_core_auth_AuthCredential_OAuthWebFlow$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop_getter|com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop_getter|com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop_getter|com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core.auth/rememberAnonymousAuthState(kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.core.auth/rememberAnonymousAuthState|rememberAnonymousAuthState(kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.core.auth/rememberEmailAuthState(kotlin/String, kotlin/String, com.mmk.kmpauth.core.auth/EmailAuthMode?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.core.auth/rememberEmailAuthState|rememberEmailAuthState(kotlin.String;kotlin.String;com.mmk.kmpauth.core.auth.EmailAuthMode?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.core.di/isAndroidPlatform(): kotlin/Boolean // com.mmk.kmpauth.core.di/isAndroidPlatform|isAndroidPlatform(){}[0]
+final fun com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuth$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuth$stableprop_getter|com_mmk_kmpauth_core_KMPAuth$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop_getter|com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core/com_mmk_kmpauth_core_LaunchingSignInState$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core/com_mmk_kmpauth_core_LaunchingSignInState$stableprop_getter|com_mmk_kmpauth_core_LaunchingSignInState$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core/com_mmk_kmpauth_core_NoOpSignInState$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core/com_mmk_kmpauth_core_NoOpSignInState$stableprop_getter|com_mmk_kmpauth_core_NoOpSignInState$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core/com_mmk_kmpauth_core_UnsupportedSignInState$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core/com_mmk_kmpauth_core_UnsupportedSignInState$stableprop_getter|com_mmk_kmpauth_core_UnsupportedSignInState$stableprop_getter(){}[0]
+final inline fun <#A: kotlin/Any?> com.mmk.kmpauth.core/runCatchingCancellable(kotlin/Function0<#A>): kotlin/Result<#A> // com.mmk.kmpauth.core/runCatchingCancellable|runCatchingCancellable(kotlin.Function0<0:0>){0§<kotlin.Any?>}[0]

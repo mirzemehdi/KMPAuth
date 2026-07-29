@@ -36,14 +36,12 @@ kotlin {
     }
 
     sourceSets {
-        // Same shape as kmpauth-firebase-core: the Firebase API surface
-        // exists on android/ios/jvm/js only; wasm resolves as an empty klib.
+        // Same shape as kmpauth-firebase-core: the public API lives in
+        // commonMain (KMPAuthUser-based) so wasm consumers can call it; only
+        // the deprecated 2.x container, which exposes GitLive's FirebaseUser,
+        // stays in nonWasmMain.
         val nonWasmMain by creating {
             dependsOn(commonMain.get())
-            dependencies {
-                api(project(":backends:firebase:kmpauth-firebase-core"))
-                implementation(project(":providers:kmpauth-google"))
-            }
         }
         androidMain.get().dependsOn(nonWasmMain)
         iosMain.get().dependsOn(nonWasmMain)
@@ -54,6 +52,8 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             api(project(":kmpauth-core"))
+            api(project(":backends:firebase:kmpauth-firebase-core"))
+            api(project(":providers:kmpauth-google"))
         }
 
         commonTest.dependencies {

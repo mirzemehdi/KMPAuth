@@ -9,7 +9,7 @@
 ![badge-desktop](http://img.shields.io/badge/platform-desktop-FF8E8E.svg?style=flat)
 
 
-Simple and easy to use Kotlin Multiplatform Authentication library targeting iOS, Android, Desktop and Web. All modules resolve on every target; the Firebase modules expose their API on android/iOS/jvm/js (not wasm — the underlying Firebase SDK has no wasm support). Supporting **Google**, **Apple**, **Github**, **Facebook** authentication integrations using Firebase.   
+Simple and easy to use Kotlin Multiplatform Authentication library targeting iOS, Android, Desktop and Web. Every API is callable from `commonMain` on every target — including wasm, where the Firebase-backed flows report a failed `Result` (the underlying Firebase SDK has no wasm support yet). Supporting **Google**, **Apple**, **Github**, **Facebook**, **Microsoft**, **email**, **phone** and **anonymous** authentication using Firebase.   
 Because I am using KMPAuth in [FindTravelNow](https://github.com/mirzemehdi/FindTravelNow-KMM/) production KMP project, I'll support development of this library :).   
 Related blog post: [Integrating Google Sign-In into Kotlin Multiplatform](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891)  
 You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full library api information.
@@ -23,32 +23,35 @@ You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full
 @Composable
 fun AuthUiHelperButtonsAndFirebaseAuth(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser>) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
         //Google Sign-In Button and authentication with Firebase
-        val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+        val googleSignIn = rememberGoogleAuthState(onResult = onFirebaseResult)
         GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { googleSignIn.launch() }
 
         //Apple Sign-In Button and authentication with Firebase
-        val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+        val appleSignIn = rememberAppleAuthState(onResult = onFirebaseResult)
         AppleSignInButton(modifier = Modifier.fillMaxWidth()) { appleSignIn.launch() }
 
         //Facebook Sign-In Button and authentication with Firebase
-        val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
+        val facebookSignIn = rememberFacebookAuthState(onResult = onFirebaseResult)
         FacebookSignInButton(onClick = { facebookSignIn.launch() })
 
         //Github Sign-In with Custom Button and authentication with Firebase
-        val githubSignIn = rememberFirebaseGithubSignInState(onResult = onFirebaseResult)
+        val githubSignIn = rememberGithubAuthState(onResult = onFirebaseResult)
         Button(onClick = { githubSignIn.launch() }) { Text("Github Sign-In (Custom Design)") }
 
     }
 }
 ```
 
-Every `rememberXxxSignInState` returns a `SignInState` with `launch()` and an
-observable `isInProgress` — wire it to any clickable and drive loading UI from
+Two layers of states, both returning a `SignInState` with `launch()` and an
+observable `isInProgress`: `rememberXxxSignInState` hands you the provider's
+credential (no backend), while `rememberXxxAuthState` exchanges it for a
+session through the registered auth backend (Firebase today) and reports
+`Result<KMPAuthUser>`. Wire either to any clickable and drive loading UI from
 it. Parameters (e.g. `linkAccount`) are read at launch time, so toggling them
 via recomposition just works. The 2.x `*UiContainer { this.onClick() }`
 composables still work but are deprecated (removal planned for 4.0).
@@ -64,6 +67,10 @@ You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob
 - ✅ [Apple Sign-In with Firebase](#apple-sign-in), and native Apple Sign-In without Firebase on Apple platforms
 - ✅ [Github Sign-In with Firebase](#github-sign-in)
 - ✅ [Facebook Sign-In (android and ios) with Firebase](#facebook-sign-in)
+- ✅ [Microsoft Sign-In with Firebase](#microsoft-sign-in)
+- ✅ [Email authentication with Firebase](#email-authentication) - password sign-in/sign-up, password reset, passwordless email link, reauthentication
+- ✅ [Phone number Sign-In with Firebase](#phone-sign-in) (android and ios)
+- ✅ [Anonymous (guest) Sign-In with Firebase](#anonymous-sign-in)
 - ✅ Apple, Google, Facebook "Sign in with " UiHelper buttons (according to each brand's guideline)
 - 📱 Multiplatform (android, iOS, jvm and web (js,wasm))
 
@@ -84,11 +91,10 @@ sourceSets {
     implementation("io.github.mirzemehdi:kmpauth-facebook:<version>") //Facebook Login (no backend required)
     implementation("io.github.mirzemehdi:kmpauth-apple:<version>") //Native Sign in with Apple, Apple platforms only (no backend required)
 
-    // Firebase — pick granular artifacts (3.0+):
-    implementation("io.github.mirzemehdi:kmpauth-firebase-core:<version>") //Firebase backend + Apple/Github/OAuth sign-in
-    implementation("io.github.mirzemehdi:kmpauth-firebase-google:<version>") //Google Sign-In with Firebase
-    implementation("io.github.mirzemehdi:kmpauth-firebase-facebook:<version>") //Facebook Sign-In with Firebase
-    // ...or the 2.x-compatible bundle (aggregates -core and -google):
+    // Firebase backend (3.0+) - serves the rememberXxxAuthState flows and KMPAuth.* operations,
+    // and hosts the Apple/Github/Microsoft/OAuth/phone auth states:
+    implementation("io.github.mirzemehdi:kmpauth-firebase-core:<version>")
+    // ...or the 2.x-compatible bundle (aggregates -core and the deprecated 2.x containers):
     implementation("io.github.mirzemehdi:kmpauth-firebase:<version>")
 
     implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") //UiHelper SignIn buttons (AppleSignIn, GoogleSignInButton)
@@ -110,6 +116,30 @@ sourceSets {
 | JVM runtime (desktop apps) | 17 |
 | Android compileSdk | 37 |
 
+#### Backend registration
+
+The `rememberXxxAuthState` flows and the `KMPAuth.*` operations are served by
+a pluggable auth backend. **With `kmpauth-firebase-core` in your dependencies
+the Firebase backend registers itself automatically** — via `ServiceLoader`
+on JVM/Android and eager load-time registration on iOS/JS/wasm — so no setup
+call is needed.
+
+Explicit registration exists for custom backends, or to override the default
+(an explicit registration always wins):
+
+```kotlin
+// only for custom backends / overriding, at application start
+KMPAuth.registerBackendProvider(MyOwnBackend, replace = true)
+```
+
+The provider-only states (`rememberGoogleSignInState`,
+`rememberFacebookSignInState`, `rememberAppleSignInState`) don't need a
+backend at all — they hand you the provider's credential and stop there.
+
+> [!NOTE]
+> Minified Android builds: the auto-registration keep rule ships in
+> `kmpauth-firebase-core`'s consumer R8 rules — nothing to configure.
+
 Upgrading from 2.x? Follow the step-by-step [MIGRATION.md](MIGRATION.md). All notable changes live in [CHANGELOG.md](CHANGELOG.md).
 
 
@@ -125,11 +155,19 @@ it will automatically generate OAuth client IDs for each platform,
 and one will be **_Web Client ID_** which will be needed for identifying signed-in users in backend server.
 
 #### Platform Setup
-Create GoogleAuthProvider instance by providing _**Web Client Id**_ as a serverID on Application start.
+Initialize KMPAuth once at application start - provider modules plug their
+setup into the same block (`kmpauth-google` contributes `google(...)`, taking
+your _**Web Client Id**_ as `serverId`):
 ```kotlin
-GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = WebClientId))
-
+KMPAuth.initialize {
+    logger { println("KMPAuthLog: $it") } // optional
+    google(GoogleAuthCredentials(serverId = WebClientId))
+    // backendProvider(MyOwnBackend) - custom backends only; Firebase registers itself
+}
 ```
+The 2.x `GoogleAuthProvider.create(credentials)` call still works and does the
+same thing.
+
 <details>
   <summary>Android</summary>
 
@@ -302,13 +340,13 @@ platforms, which already return one.
 
 Google Sign-In Button and authentication with Firebase. You need to implement `kmpauth-uihelper` dependency
 ```kotlin
-val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+val googleSignIn = rememberGoogleAuthState(onResult = onFirebaseResult)
 GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { googleSignIn.launch() }
 ```
 
 Google Sign-In IconOnly Button and authentication with Firebase. You need to implement `kmpauth-uihelper` dependency
 ```kotlin
-val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+val googleSignIn = rememberGoogleAuthState(onResult = onFirebaseResult)
 GoogleSignInButtonIconOnly(onClick = { googleSignIn.launch() })
 ```
 
@@ -316,19 +354,19 @@ GoogleSignInButtonIconOnly(onClick = { googleSignIn.launch() })
 After enabling and configuring Apple Sign-In in Firebase, make sure you added "Sign In with Apple" capability in XCode. Then, you can use it as below in your @Composable function:
 ```kotlin
 //Apple Sign-In with Custom Button and authentication with Firebase
-val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+val appleSignIn = rememberAppleAuthState(onResult = onFirebaseResult)
 Button(onClick = { appleSignIn.launch() }) { Text("Apple Sign-In (Custom Design)") }
 ```
 
 Apple Sign-In with AppleSignInButton. You need to implement `kmpauth-uihelper` dependency
 ```kotlin
-val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+val appleSignIn = rememberAppleAuthState(onResult = onFirebaseResult)
 AppleSignInButton(modifier = Modifier.fillMaxWidth()) { appleSignIn.launch() }
 ```
 
 Apple Sign-In IconOnly Button. You need to implement `kmpauth-uihelper` dependency
 ```kotlin
-val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+val appleSignIn = rememberAppleAuthState(onResult = onFirebaseResult)
 AppleSignInButtonIconOnly(onClick = { appleSignIn.launch() })
 ```
 
@@ -350,7 +388,7 @@ AppleSignInButton(modifier = Modifier.fillMaxWidth()) { appleSignIn.launch() }
 > JS and wasmJs `rememberAppleSignInState` is a no-op that logs — Apple's web
 > OAuth flow returns an authorization code that must be exchanged with a
 > **client secret server-side**, which is not safe from a client. Use
-> `rememberFirebaseAppleSignInState` (`kmpauth-firebase-core`) if you need Apple
+> `rememberAppleAuthState` (`kmpauth-firebase-core`) if you need Apple
 > Sign-In on non-Apple targets; Firebase performs that exchange for you.
 >
 > `email` and `fullName` are returned by Apple **only on the user's first
@@ -362,7 +400,7 @@ Requires the "Sign In with Apple" capability in Xcode.
 After enabling and configuring Github Sign-In in Firebase, you can use it as below in your @Composable function:
 ```kotlin
 //Github Sign-In with Custom Button and authentication with Firebase
-val githubSignIn = rememberFirebaseGithubSignInState(onResult = onFirebaseResult)
+val githubSignIn = rememberGithubAuthState(onResult = onFirebaseResult)
 Button(onClick = { githubSignIn.launch() }) { Text("Github Sign-In (Custom Design)") }
 ```
 ### Facebook Sign-In
@@ -370,9 +408,9 @@ Button(onClick = { githubSignIn.launch() }) { Text("Github Sign-In (Custom Desig
 
 #### Usage Example
 ```kotlin
-val facebookSignIn = rememberFirebaseFacebookSignInState(
+val facebookSignIn = rememberFacebookAuthState(
     linkAccount = false,
-    onResult = { result -> /* handle FirebaseUser result or error */ },
+    onResult = { result -> /* handle KMPAuthUser result or error */ },
 )
 
 //Facebook button with icon
@@ -522,6 +560,125 @@ func application(
 - Facebook Login for Android - https://developers.facebook.com/docs/facebook-login/ios
 - Firebase Authentication with Facebook - https://firebase.google.com/docs/auth/android/facebook-login
 - Firebase Authentication with Facebook iOS - https://firebase.google.com/docs/auth/ios/facebook-login
+
+### Microsoft Sign-In
+Enable the Microsoft provider in the Firebase console and register the app in
+the Azure portal — Firebase drives the OAuth web flow, no Microsoft SDK needed:
+
+```kotlin
+val microsoftSignIn = rememberMicrosoftAuthState(onResult = onFirebaseResult)
+Button(onClick = { microsoftSignIn.launch() }) { Text("Microsoft Sign-In") }
+```
+
+To restrict sign-in to one Azure AD tenant, pass
+`customParameters = mapOf("tenant" to "your-tenant-id")`.
+
+### Phone Sign-In
+Enable the "Phone" sign-in method in the Firebase console. Two-step flow: launch
+sends the SMS, `submitCode` completes sign-in. Supported on Android (with
+automatic SMS verification when Play services can) and iOS:
+
+```kotlin
+var phoneNumber by remember { mutableStateOf("") }
+var smsCode by remember { mutableStateOf("") }
+val phoneSignIn = rememberPhoneAuthState(
+    phoneNumber = phoneNumber, // E.164 format, e.g. +15551234567
+    onResult = onFirebaseResult,
+)
+
+if (!phoneSignIn.isCodeSent) {
+    Button(onClick = { phoneSignIn.launch() }) { Text("Send code") }
+} else {
+    OutlinedTextField(value = smsCode, onValueChange = { smsCode = it })
+    Button(onClick = { phoneSignIn.submitCode(smsCode) }) { Text("Verify") }
+}
+```
+
+`phoneSignIn.cancel()` abandons the flow (e.g. the user dismissed the code
+input). On Desktop and JS/web, launching reports a failed `Result` — the
+Firebase Java SDK does not implement phone auth, and the web flow would need a
+reCAPTCHA verifier KMPAuth does not provide yet.
+
+### Email Authentication
+Enable the "Email/Password" sign-in method in the Firebase console. The state
+lives in `kmpauth-core` and is served by the registered backend (see
+[Backend registration](#backend-registration)):
+
+```kotlin
+var email by remember { mutableStateOf("") }
+var password by remember { mutableStateOf("") }
+
+// Field values are read at launch time - create the state once and reuse it as the user types.
+val emailSignIn = rememberEmailAuthState(
+    email = email,
+    password = password,
+    mode = EmailAuthMode.SignIn, // or EmailAuthMode.SignUp to create the account
+    onResult = onFirebaseResult, // Result<KMPAuthUser>
+)
+Button(onClick = { emailSignIn.launch() }, enabled = !emailSignIn.isInProgress) {
+    Text("Sign in with email")
+}
+```
+
+Password reset and passwordless email-link (magic link) sign-in are
+provider-agnostic operations on the `KMPAuth` entry point, like `signOut()`
+and `currentUser()`:
+
+```kotlin
+// Password reset
+KMPAuth.sendPasswordResetEmail(email)
+
+// Passwordless: step 1 - send the link (enable "Email link" in the Firebase console)
+KMPAuth.sendSignInLinkToEmail(
+    email = email,
+    actionCodeSettings = EmailActionCodeSettings(
+        url = "https://example.com/finish-sign-in",
+        canHandleCodeInApp = true,
+        iOSBundleId = "com.example.app",
+        androidPackageName = "com.example.app",
+    ),
+)
+// Persist `email` locally - you need it again after the user opens the link.
+
+// Passwordless: step 2 - in your deep/universal link handler
+if (KMPAuth.isSignInWithEmailLink(link)) {
+    val result = KMPAuth.signInWithEmailLink(persistedEmail, link)
+}
+```
+
+Before security-sensitive operations (deleting the account, changing the
+password), Firebase requires a recent sign-in — reauthenticate first:
+
+```kotlin
+// Email/password users
+KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, currentPassword))
+    .onSuccess { /* now delete the account / update the password */ }
+
+// Google/Apple/Facebook users: rerun the provider flow for a fresh token, then
+KMPAuth.reauthenticate(
+    AuthCredential.IdToken(AuthProviderIds.GOOGLE, googleUser.idToken)
+)
+```
+
+> [!NOTE]
+> On Desktop (JVM) the underlying Firebase SDK does not implement auth yet
+> ([#204](https://github.com/mirzemehdi/KMPAuth/issues/204)), and on wasm the
+> Firebase SDK has no target - email and anonymous flows report a failed
+> `Result` there.
+
+### Anonymous Sign-In
+Enable the "Anonymous" sign-in method in the Firebase console. Lets users try
+the app before creating an account:
+
+```kotlin
+val anonymousSignIn = rememberAnonymousAuthState(onResult = onFirebaseResult)
+Button(onClick = { anonymousSignIn.launch() }) { Text("Continue as guest") }
+```
+
+To later upgrade the guest to a permanent account, sign in with any provider
+state using `linkAccount = true` (e.g. `rememberEmailAuthState(...,
+linkAccount = true)`) - the credential is linked to the anonymous user, keeping
+its uid and data.
 
 
 

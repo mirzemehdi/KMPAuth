@@ -5,22 +5,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.facebook.FacebookLoginTracking
 import com.mmk.kmpauth.facebook.FacebookSignInRequestScope
+import com.mmk.kmpauth.facebook.rememberFacebookAuthState
+import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
 import dev.gitlive.firebase.auth.FirebaseUser
 
 /**
  * Legacy container API for Facebook Sign-In with Firebase. Superseded by
- * [rememberFirebaseFacebookSignInState], which returns a
+ * [rememberFacebookAuthState] (in `kmpauth-facebook`), which returns a
  * [com.mmk.kmpauth.core.SignInState] you can wire to any clickable without
  * the receiver-scope indirection.
  */
 @Deprecated(
-    "Use rememberFirebaseFacebookSignInState(...) and call launch() from your own button's onClick. " +
-        "Scheduled for removal in 4.0.",
+    "Use rememberFacebookAuthState(...) from kmpauth-facebook and call launch() from your own " +
+        "button's onClick. Scheduled for removal in 4.0.",
     ReplaceWith(
-        "rememberFirebaseFacebookSignInState(requestScopes, linkAccount, onResult)",
-        "com.mmk.kmpauth.firebase.facebook.rememberFirebaseFacebookSignInState"
+        "rememberFacebookAuthState(requestScopes, linkAccount, loginTracking, onResult)",
+        "com.mmk.kmpauth.facebook.rememberFacebookAuthState"
     ),
     DeprecationLevel.WARNING
 )
@@ -36,11 +39,16 @@ public fun FacebookButtonUiContainerFirebase(
     loginTracking: FacebookLoginTracking = FacebookLoginTracking.Limited,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
-    val signInState = rememberFirebaseFacebookSignInState(
+    // 2.x apps never registered a backend explicitly; keep the container
+    // zero-config by lazily registering the Firebase default.
+    KMPAuthBackend.register(FirebaseAuthBackend)
+    val signInState = rememberFacebookAuthState(
         requestScopes = requestScopes,
         linkAccount = linkAccount,
         loginTracking = loginTracking,
-        onResult = onResult,
+        // The state reports KMPAuthUser; this 2.x-compat container keeps its
+        // Result<FirebaseUser?> callback by unwrapping the native user.
+        onResult = { result -> onResult(result.map { it.raw as? FirebaseUser }) },
     )
     val uiContainerScope = remember(signInState) {
         object : UiContainerScope {

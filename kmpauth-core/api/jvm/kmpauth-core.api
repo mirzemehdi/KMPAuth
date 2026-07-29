@@ -1,21 +1,53 @@
 public final class com/mmk/kmpauth/core/KMPAuth {
+	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/KMPAuth;
+	public final fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public final fun getBackendProvider ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
+	public final fun initialize (Lkotlin/jvm/functions/Function1;)V
+	public final fun isSignInWithEmailLink (Ljava/lang/String;)Z
+	public final fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun registerBackendProvider (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Z)V
+	public static synthetic fun registerBackendProvider$default (Lcom/mmk/kmpauth/core/KMPAuth;Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZILjava/lang/Object;)V
+	public final fun requireBackendProvider ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
+	public final fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendPasswordResetEmail-0E7RQCE$default (Lcom/mmk/kmpauth/core/KMPAuth;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun setLogger (Lcom/mmk/kmpauth/core/logger/KMPAuthLogger;)V
+	public final fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signIn-0E7RQCE$default (Lcom/mmk/kmpauth/core/KMPAuth;Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/core/KMPAuth;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/core/KMPAuthConfiguration {
+	public static final field $stable I
+	public final fun backendProvider (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Z)V
+	public static synthetic fun backendProvider$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZILjava/lang/Object;)V
+	public final fun logger (Lcom/mmk/kmpauth/core/logger/KMPAuthLogger;)V
 }
 
 public abstract interface annotation class com/mmk/kmpauth/core/KMPAuthInternalApi : java/lang/annotation/Annotation {
 }
 
 public final class com/mmk/kmpauth/core/LaunchingSignInState : com/mmk/kmpauth/core/SignInState {
+	public static final field $stable I
 	public fun <init> (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;)V
 	public fun isInProgress ()Z
 	public fun launch ()V
 }
 
 public final class com/mmk/kmpauth/core/NoOpSignInState : com/mmk/kmpauth/core/SignInState {
+	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/NoOpSignInState;
 	public fun isInProgress ()Z
 	public fun launch ()V
+}
+
+public final class com/mmk/kmpauth/core/RunCatchingCancellableKt {
+	public static final fun runCatchingCancellable (Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
 }
 
 public abstract interface class com/mmk/kmpauth/core/SignInState {
@@ -27,11 +59,38 @@ public abstract interface class com/mmk/kmpauth/core/UiContainerScope {
 	public abstract fun onClick ()V
 }
 
+public final class com/mmk/kmpauth/core/UnsupportedSignInState : com/mmk/kmpauth/core/SignInState {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public fun isInProgress ()Z
+	public fun launch ()V
+}
+
+public final class com/mmk/kmpauth/core/auth/AnonymousAuthStateKt {
+	public static final fun rememberAnonymousAuthState (Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/mmk/kmpauth/core/SignInState;
+}
+
 public abstract interface class com/mmk/kmpauth/core/auth/AuthCredential {
 	public abstract fun getProviderId ()Ljava/lang/String;
 }
 
+public final class com/mmk/kmpauth/core/auth/AuthCredential$EmailPassword : com/mmk/kmpauth/core/auth/AuthCredential {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/mmk/kmpauth/core/auth/AuthCredential$EmailPassword;
+	public static synthetic fun copy$default (Lcom/mmk/kmpauth/core/auth/AuthCredential$EmailPassword;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mmk/kmpauth/core/auth/AuthCredential$EmailPassword;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEmail ()Ljava/lang/String;
+	public final fun getPassword ()Ljava/lang/String;
+	public fun getProviderId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/mmk/kmpauth/core/auth/AuthCredential$IdToken : com/mmk/kmpauth/core/auth/AuthCredential {
+	public static final field $stable I
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -50,6 +109,7 @@ public final class com/mmk/kmpauth/core/auth/AuthCredential$IdToken : com/mmk/km
 }
 
 public final class com/mmk/kmpauth/core/auth/AuthCredential$OAuthWebFlow : com/mmk/kmpauth/core/auth/AuthCredential {
+	public static final field $stable I
 	public fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/Map;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -67,29 +127,97 @@ public final class com/mmk/kmpauth/core/auth/AuthCredential$OAuthWebFlow : com/m
 
 public abstract interface class com/mmk/kmpauth/core/auth/AuthProviderBackend {
 	public abstract fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
+	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendPasswordResetEmail-0E7RQCE$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun signIn-0E7RQCE$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/mmk/kmpauth/core/auth/AuthProviderBackend$DefaultImpls {
+	public static fun isSignInWithEmailLink (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;)Z
+	public static fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static fun sendPasswordResetEmail-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendPasswordResetEmail-0E7RQCE$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun sendSignInLinkToEmail-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun signIn-0E7RQCE$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun signInAnonymously-IoAF18A (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static fun signInWithEmailLink-BWLJW6A (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun signUp-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/mmk/kmpauth/core/auth/AuthProviderIds {
+	public static final field $stable I
 	public static final field APPLE Ljava/lang/String;
+	public static final field EMAIL Ljava/lang/String;
 	public static final field FACEBOOK Ljava/lang/String;
 	public static final field GITHUB Ljava/lang/String;
 	public static final field GOOGLE Ljava/lang/String;
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/auth/AuthProviderIds;
 }
 
-public final class com/mmk/kmpauth/core/auth/KMPAuthBackend {
+public final class com/mmk/kmpauth/core/auth/EmailActionCodeSettings {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Z
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Z
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;
+	public static synthetic fun copy$default (Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAndroidInstallIfNotAvailable ()Z
+	public final fun getAndroidMinimumVersion ()Ljava/lang/String;
+	public final fun getAndroidPackageName ()Ljava/lang/String;
+	public final fun getCanHandleCodeInApp ()Z
+	public final fun getIOSBundleId ()Ljava/lang/String;
+	public final fun getLinkDomain ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/core/auth/EmailAuthMode : java/lang/Enum {
+	public static final field SignIn Lcom/mmk/kmpauth/core/auth/EmailAuthMode;
+	public static final field SignUp Lcom/mmk/kmpauth/core/auth/EmailAuthMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mmk/kmpauth/core/auth/EmailAuthMode;
+	public static fun values ()[Lcom/mmk/kmpauth/core/auth/EmailAuthMode;
+}
+
+public final class com/mmk/kmpauth/core/auth/EmailAuthStateKt {
+	public static final fun rememberEmailAuthState (Ljava/lang/String;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailAuthMode;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+}
+
+public final class com/mmk/kmpauth/core/auth/KMPAuthBackend : com/mmk/kmpauth/core/auth/AuthProviderBackend {
+	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/auth/KMPAuthBackend;
+	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
 	public final fun getOrNull ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
+	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
+	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun register (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Z)V
 	public static synthetic fun register$default (Lcom/mmk/kmpauth/core/auth/KMPAuthBackend;Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZILjava/lang/Object;)V
 	public final fun require ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
+	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class com/mmk/kmpauth/core/auth/KMPAuthUser {

@@ -1,7 +1,3 @@
-public final class com/mmk/kmpauth/firebase/google/FirebaseGoogleSignInStateKt {
-	public static final fun rememberFirebaseGoogleSignInState (ZZZLjava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
-}
-
 public final class com/mmk/kmpauth/firebase/google/GoogleButtonUiContainerFirebaseKt {
 	public static final fun GoogleButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun GoogleButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;ZZZLjava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V

@@ -10,6 +10,9 @@ public object AuthProviderIds {
     public const val APPLE: String = "apple.com"
     public const val GITHUB: String = "github.com"
     public const val FACEBOOK: String = "facebook.com"
+
+    /** Email/password provider (Firebase's `EmailAuthProvider` id). */
+    public const val EMAIL: String = "password"
 }
 
 /**
@@ -53,4 +56,15 @@ public sealed interface AuthCredential {
         val scopes: List<String> = emptyList(),
         val customParameters: Map<String, String> = emptyMap(),
     ) : AuthCredential
+
+    /**
+     * Email/password credential, e.g. for sign-in or reauthentication
+     * before a security-sensitive operation.
+     */
+    public data class EmailPassword(
+        val email: String,
+        val password: String,
+    ) : AuthCredential {
+        override val providerId: String get() = AuthProviderIds.EMAIL
+    }
 }

@@ -32,11 +32,11 @@ kotlin {
     }
 
     sourceSets {
-        // GitLive firebase-auth has no wasm target, and its FirebaseUser
-        // type sits in this module's public signatures. All Firebase API
-        // therefore lives in nonWasmMain (android/ios/jvm/js); the wasmJs
-        // variant compiles as an empty klib so consumers targeting wasm can
-        // still put this module in commonMain dependencies.
+        // GitLive firebase-auth has no wasm target. The public API lives in
+        // commonMain using KMPAuth's own types (KMPAuthUser), so wasm
+        // consumers can call it from their commonMain; everything touching
+        // GitLive types sits in nonWasmMain (android/ios/jvm/js), and the
+        // wasmJs actuals report failed Results.
         val nonWasmMain by creating {
             dependsOn(commonMain.get())
             dependencies {

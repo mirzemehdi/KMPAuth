@@ -22,7 +22,7 @@ import kotlin.coroutines.suspendCoroutine
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun rememberFirebaseOAuthSignInState(
+internal actual fun rememberFirebaseGitLiveOAuthSignInState(
     oAuthProvider: OAuthProvider,
     linkAccount: Boolean,
     onResult: (Result<FirebaseUser?>) -> Unit,

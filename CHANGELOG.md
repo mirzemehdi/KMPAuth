@@ -5,6 +5,99 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **Backend-agnostic auth states — the `Firebase` prefix is gone** and the
+  names now mark the two layers: `rememberXxxSignInState` returns the
+  provider's credential (unchanged: `rememberGoogleSignInState`,
+  `rememberFacebookSignInState`, `rememberAppleSignInState`), while
+  `rememberXxxAuthState` exchanges it for a session through the registered
+  `AuthProviderBackend` (Firebase today, Supabase-ready):
+  `rememberGoogleAuthState` (in `kmpauth-google`), `rememberFacebookAuthState`
+  (in `kmpauth-facebook`), `rememberAppleAuthState`, `rememberGithubAuthState`,
+  `rememberMicrosoftAuthState`, `rememberOAuthState(provider)`,
+  `rememberPhoneAuthState` (in `kmpauth-firebase-core`),
+  `rememberEmailAuthState` and `rememberAnonymousAuthState` (in
+  `kmpauth-core`). Google/Facebook exchange states moved into their provider
+  modules — SDK isolation is unchanged (no Facebook SDK unless you depend on
+  `kmpauth-facebook`), and `kmpauth-firebase-google`/`-facebook` now carry
+  only the deprecated 2.x containers.
+- **The Firebase backend registers itself automatically** when
+  `kmpauth-firebase-core` is in the dependencies: `ServiceLoader` discovery
+  on JVM/Android (R8 keep rule ships in the consumer rules) and eager
+  load-time registration on iOS/JS/wasm - no setup call needed.
+  `KMPAuth.registerBackendProvider(backend)` exists for custom backends or
+  overriding the default; an explicit registration always wins.
+- **Every Firebase API is callable from `commonMain`, including on wasm**
+  (#179-adjacent). No GitLive types in signatures: every `onResult` receives
+  `Result<KMPAuthUser>` — non-null; a backend producing no user is a failure
+  with a reason, never a null success. The native
+  `dev.gitlive.firebase.auth.FirebaseUser` stays reachable through
+  `KMPAuthUser.raw`. On wasm (no Firebase SDK target) flows report a failed
+  `Result` instead of not compiling.
+- **`KMPAuth` is the single client-facing entry point** for everything that
+  isn't a launchable sign-in state: `currentUser()`, `signOut()`,
+  `signIn(credential)`, `signUp(email, password)`, `signInAnonymously()`,
+  `reauthenticate(credential)`, `sendPasswordResetEmail`, email-link sign-in
+  (`sendSignInLinkToEmail` / `isSignInWithEmailLink` / `signInWithEmailLink`),
+  plus `registerBackendProvider(backend)` / `getBackendProvider()` /
+  `requireBackendProvider()`. With no backend registered, `Result`-returning
+  operations fail with a how-to-register message instead of throwing. Link
+  configuration uses `EmailActionCodeSettings` (KMPAuth's own type in
+  `kmpauth-core`) instead of GitLive's `ActionCodeSettings`.
+- On Desktop and JS, the unimplemented Firebase flows (OAuth/GitHub/Apple web
+  flow, Facebook) now report a failed `Result` explaining why instead of
+  silently doing nothing when launched.
+- The deprecated 2.x `*UiContainer` composables are unchanged: they keep their
+  `Result<FirebaseUser?>` callbacks (unwrapping through `KMPAuthUser.raw`) and
+  remain non-wasm.
+
+### Added
+- **`KMPAuth.initialize { }` one-stop setup**. Provider modules contribute
+  their configuration as extensions on the scope - `kmpauth-google` adds
+  `google(GoogleAuthCredentials(serverId))` (equivalent to
+  `GoogleAuthProvider.create`, which still works); `logger { }` and
+  `backendProvider(backend)` (custom backends only) are built in.
+- **Email authentication** (#97, #110).
+  `rememberEmailAuthState(email, password, mode, linkAccount, onResult)`
+  signs in or — with `EmailAuthMode.SignUp` — creates the account; field values
+  are read at launch time, so the state is created once and reused as the user
+  types. The flows that don't fit a launchable state are `KMPAuth`
+  operations: `sendPasswordResetEmail`, and passwordless email-link (magic
+  link) sign-in via `sendSignInLinkToEmail` / `isSignInWithEmailLink` /
+  `signInWithEmailLink`.
+- **Phone number sign-in** (#111).
+  `rememberPhoneAuthState(phoneNumber, ...)` returns a
+  `PhoneAuthState`: `launch()` sends the SMS, `isCodeSent`/`onCodeSent`
+  signal when to show the code input, `submitCode(code)` completes sign-in and
+  `cancel()` abandons the flow. Android supports automatic SMS verification
+  (Play services); iOS falls back to Firebase's reCAPTCHA when needed. On
+  Desktop and JS/web launching reports a failed `Result` — the Firebase Java
+  SDK does not implement phone auth, and the web flow would need a reCAPTCHA
+  verifier KMPAuth does not provide yet.
+- **Microsoft sign-in** (#173, #95).
+  `rememberMicrosoftAuthState(requestScopes, customParameters,
+  linkAccount, onResult)` — Firebase drives the OAuth web flow, no Microsoft
+  SDK involved. Restrict to one Azure AD tenant via
+  `customParameters = mapOf("tenant" to "...")`.
+- **Anonymous (guest) sign-in**.
+  `rememberAnonymousAuthState(onResult)` creates or resumes a
+  temporary account; upgrade it later by signing in with any auth state
+  using `linkAccount = true`, which keeps the anonymous uid and its data.
+- **Reauthentication** (#167). Firebase requires a recent sign-in before
+  security-sensitive operations (account deletion, password change). The
+  provider-agnostic `KMPAuth.reauthenticate(credential)` accepts
+  any credential — `AuthCredential.EmailPassword`, or a fresh
+  `AuthCredential.IdToken` from rerunning the Google/Apple/Facebook flow.
+  `AuthCredential` gains the `EmailPassword` variant, and the Firebase
+  backend can now also exchange Apple `IdToken` (idToken + rawNonce) and
+  Facebook Limited-Login OIDC credentials directly.
+
+  All of these are served by the registered backend and report failures as
+  `Result` values. On Desktop (JVM) the underlying Firebase SDK does not
+  implement auth yet (#204), so they return failed `Result`s there.
+
 ## [3.0.0-alpha04] — 2026-07-19
 
 ### Added

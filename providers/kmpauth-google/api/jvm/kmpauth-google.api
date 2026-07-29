@@ -24,6 +24,10 @@ public final class com/mmk/kmpauth/google/GoogleAuthProvider$Companion {
 	public final fun get ()Lcom/mmk/kmpauth/google/GoogleAuthProvider;
 }
 
+public final class com/mmk/kmpauth/google/GoogleAuthStateKt {
+	public static final fun rememberGoogleAuthState (ZZZLjava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+}
+
 public abstract interface class com/mmk/kmpauth/google/GoogleAuthUiProvider {
 	public static final field Companion Lcom/mmk/kmpauth/google/GoogleAuthUiProvider$Companion;
 	public fun signIn-0E7RQCE (ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -72,5 +76,11 @@ public final class com/mmk/kmpauth/google/GoogleUser {
 	public final fun getServerAuthCode ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/google/KMPAuthGoogleConfigurationKt {
+	public static final fun google (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/google/GoogleAuthCredentials;)V
+	public static final fun google (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun google$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 }
 
