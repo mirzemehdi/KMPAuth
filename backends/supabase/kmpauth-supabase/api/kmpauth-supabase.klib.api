@@ -20,6 +20,7 @@ final class com.mmk.kmpauth.supabase/SupabaseAuthBackend : com.mmk.kmpauth.core.
     final suspend fun signIn(com.mmk.kmpauth.core.auth/AuthCredential, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signIn|signIn(com.mmk.kmpauth.core.auth.AuthCredential;kotlin.Boolean){}[0]
     final suspend fun signInAnonymously(): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signInAnonymously|signInAnonymously(){}[0]
     final suspend fun signInWithEmailLink(kotlin/String, kotlin/String, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signInWithEmailLink|signInWithEmailLink(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+    final suspend fun signInWithPhone(kotlin/String, com.mmk.kmpauth.core.auth/PhoneVerificationUi, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signInWithPhone|signInWithPhone(kotlin.String;com.mmk.kmpauth.core.auth.PhoneVerificationUi;kotlin.Boolean){}[0]
     final suspend fun signOut() // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signOut|signOut(){}[0]
     final suspend fun signUp(kotlin/String, kotlin/String): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.signUp|signUp(kotlin.String;kotlin.String){}[0]
 }

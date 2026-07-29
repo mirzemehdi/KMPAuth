@@ -6,6 +6,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.core.runCatchingCancellable
 import dev.gitlive.firebase.Firebase
@@ -15,6 +16,7 @@ import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FacebookAuthProvider
 import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.OAuthProvider
+import dev.gitlive.firebase.auth.PhoneAuthProvider
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.CancellationException
 
@@ -83,6 +85,31 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> = runCatchingCancellable {
         Firebase.auth.signInAnonymously().user?.let(::FirebaseKMPAuthUser)
+            ?: throw IllegalStateException("Firebase Null user")
+    }
+
+    override suspend fun signInWithPhone(
+        phoneNumber: String,
+        verificationUi: PhoneVerificationUi,
+        linkWithCurrentUser: Boolean,
+    ): Result<KMPAuthUser> = runCatchingCancellable {
+        val verificationProvider = gitLivePhoneVerificationProvider(verificationUi)
+            ?: throw UnsupportedOperationException(
+                "Firebase phone sign-in is available on Android and iOS only: " +
+                    "the web flow needs a reCAPTCHA verifier KMPAuth does not " +
+                    "provide yet. The Supabase backend serves phone OTP on every " +
+                    "target."
+            )
+        val credential =
+            PhoneAuthProvider().verifyPhoneNumber(phoneNumber, verificationProvider)
+        val auth = Firebase.auth
+        val currentUser = auth.currentUser
+        val result = if (linkWithCurrentUser && currentUser != null) {
+            currentUser.linkWithCredential(credential)
+        } else {
+            auth.signInWithCredential(credential)
+        }
+        result.user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
     }
 

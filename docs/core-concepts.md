@@ -50,6 +50,7 @@ KMPAuth.signOut()
 KMPAuth.signIn(credential)            // exchange a credential you obtained yourself
 KMPAuth.signUp(email, password)
 KMPAuth.signInAnonymously()
+KMPAuth.signInWithPhone(phoneNumber, verificationUi)
 KMPAuth.sendPasswordResetEmail(email)
 KMPAuth.sendSignInLinkToEmail(email, actionCodeSettings)
 KMPAuth.isSignInWithEmailLink(link)

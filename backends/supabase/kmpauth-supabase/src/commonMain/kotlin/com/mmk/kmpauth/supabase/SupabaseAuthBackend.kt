@@ -6,8 +6,10 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.runCatchingCancellable
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.Apple
 import io.github.jan.supabase.auth.providers.Facebook
@@ -36,6 +38,8 @@ import io.github.jan.supabase.auth.providers.builtin.OTP
  *   access tokens are rejected — Supabase accepts only OIDC tokens.
  * - Email-link (magic link / OTP) sign-in maps onto Supabase's OTP flow;
  *   see [sendSignInLinkToEmail] and [signInWithEmailLink].
+ * - Phone sign-in maps onto Supabase's SMS OTP flow ([signInWithPhone]) —
+ *   works on every target, including where Firebase phone auth cannot run.
  * - [AuthCredential.OAuthWebFlow] is unsupported: browser flows are driven
  *   by supabase-kt itself (`supabaseClient.auth.signInWith(Github)` etc.),
  *   with its own deep-link handling, not through this backend.
@@ -150,6 +154,38 @@ public class SupabaseAuthBackend(
     /** Requires anonymous sign-ins to be enabled on the Supabase project. */
     override suspend fun signInAnonymously(): Result<KMPAuthUser> = runCatchingCancellable {
         supabaseClient.auth.signInAnonymously()
+        requireCurrentUser()
+    }
+
+    /**
+     * Phone OTP sign-in: sends the SMS via Supabase's OTP flow, obtains the
+     * code through [PhoneVerificationUi.awaitVerificationCode] and verifies
+     * it. Requires the Phone provider and an SMS sender (Twilio, Vonage,
+     * ...) to be configured in the Supabase dashboard. Plain REST — works
+     * on every target, no platform verification UI involved.
+     *
+     * Linking is unsupported: Supabase adds a phone number to the
+     * signed-in account via `auth.updateUser` instead.
+     */
+    override suspend fun signInWithPhone(
+        phoneNumber: String,
+        verificationUi: PhoneVerificationUi,
+        linkWithCurrentUser: Boolean,
+    ): Result<KMPAuthUser> = runCatchingCancellable {
+        if (linkWithCurrentUser) throw UnsupportedOperationException(
+            "Supabase cannot link a phone credential to the current user. Add " +
+                "the phone number to the signed-in account with " +
+                "supabaseClient.auth.updateUser { phone = ... } instead."
+        )
+        supabaseClient.auth.signInWith(OTP) {
+            phone = phoneNumber
+        }
+        val code = verificationUi.awaitVerificationCode()
+        supabaseClient.auth.verifyPhoneOtp(
+            type = OtpType.Phone.SMS,
+            phone = phoneNumber,
+            token = code,
+        )
         requireCurrentUser()
     }
 

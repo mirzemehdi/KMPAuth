@@ -18,6 +18,8 @@ public final class com/mmk/kmpauth/core/KMPAuth {
 	public final fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/core/KMPAuth;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun signInWithPhone-BWLJW6A (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signInWithPhone-BWLJW6A$default (Lcom/mmk/kmpauth/core/KMPAuth;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -137,6 +139,8 @@ public abstract interface class com/mmk/kmpauth/core/auth/AuthProviderBackend {
 	public fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public fun signInWithPhone-BWLJW6A (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signInWithPhone-BWLJW6A$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -151,6 +155,8 @@ public final class com/mmk/kmpauth/core/auth/AuthProviderBackend$DefaultImpls {
 	public static fun signInAnonymously-IoAF18A (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static fun signInWithEmailLink-BWLJW6A (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun signInWithPhone-BWLJW6A (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signInWithPhone-BWLJW6A$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static fun signUp-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -217,6 +223,7 @@ public final class com/mmk/kmpauth/core/auth/KMPAuthBackend : com/mmk/kmpauth/co
 	public fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInWithPhone-BWLJW6A (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -232,6 +239,25 @@ public abstract interface class com/mmk/kmpauth/core/auth/KMPAuthUser {
 
 public final class com/mmk/kmpauth/core/auth/LocalKMPAuthBackendKt {
 	public static final fun getLocalKMPAuthBackend ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public abstract interface class com/mmk/kmpauth/core/auth/PhoneAuthState : com/mmk/kmpauth/core/SignInState {
+	public abstract fun cancel ()V
+	public abstract fun isCodeSent ()Z
+	public abstract fun submitCode (Ljava/lang/String;)V
+}
+
+public final class com/mmk/kmpauth/core/auth/PhoneAuthStateKt {
+	public static final fun rememberPhoneAuthState (Ljava/lang/String;ZLkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/auth/PhoneAuthState;
+}
+
+public abstract interface class com/mmk/kmpauth/core/auth/PhoneVerificationUi {
+	public abstract fun awaitVerificationCode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getPlatformUiContext ()Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/core/auth/PhoneVerificationUi$DefaultImpls {
+	public static fun getPlatformUiContext (Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;)Ljava/lang/Object;
 }
 
 public final class com/mmk/kmpauth/core/di/PlatformModule_jvmKt {

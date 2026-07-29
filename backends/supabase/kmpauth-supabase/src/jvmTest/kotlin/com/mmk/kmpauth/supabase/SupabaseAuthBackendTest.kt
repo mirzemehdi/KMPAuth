@@ -150,6 +150,52 @@ class SupabaseAuthBackendTest {
     }
 
     @Test
+    fun signInWithPhoneSendsOtpThenVerifiesCode() = runTest {
+        val engine = RecordingMockEngine { request ->
+            if (request.url.encodedPath.endsWith("/auth/v1/otp")) jsonResponse("{}")
+            else jsonResponse(TEST_SESSION_JSON)
+        }
+        val backend = SupabaseAuthBackend(engine.client)
+
+        val result = backend.signInWithPhone(
+            phoneNumber = "+15551234567",
+            verificationUi = object : com.mmk.kmpauth.core.auth.PhoneVerificationUi {
+                override suspend fun awaitVerificationCode(): String = "123456"
+            },
+        )
+
+        assertEquals("user-123", result.getOrThrow().uid)
+        assertEquals(2, engine.requests.size)
+        val otpRequest = engine.requests[0]
+        assertTrue(otpRequest.url.encodedPath.endsWith("/auth/v1/otp"))
+        assertTrue("+15551234567" in otpRequest.body.toByteArray().decodeToString())
+        val verifyRequest = engine.requests[1]
+        assertTrue(verifyRequest.url.encodedPath.endsWith("/auth/v1/verify"))
+        val verifyBody = verifyRequest.body.toByteArray().decodeToString()
+        assertTrue("123456" in verifyBody)
+        assertTrue("sms" in verifyBody)
+    }
+
+    @Test
+    fun signInWithPhoneRejectsLinkingBeforeAnyRequest() = runTest {
+        val engine = RecordingMockEngine { jsonResponse(TEST_SESSION_JSON) }
+        val backend = SupabaseAuthBackend(engine.client)
+
+        val result = backend.signInWithPhone(
+            phoneNumber = "+15551234567",
+            verificationUi = object : com.mmk.kmpauth.core.auth.PhoneVerificationUi {
+                override suspend fun awaitVerificationCode(): String = "123456"
+            },
+            linkWithCurrentUser = true,
+        )
+
+        val error = result.exceptionOrNull()
+        assertIs<UnsupportedOperationException>(error)
+        assertTrue("updateUser" in error.message.orEmpty())
+        assertTrue(engine.requests.isEmpty())
+    }
+
+    @Test
     fun sendPasswordResetEmailHitsRecoverWithRedirectUrl() = runTest {
         val engine = RecordingMockEngine { jsonResponse("{}") }
         val backend = SupabaseAuthBackend(engine.client)
