@@ -30,9 +30,19 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   `AuthProviderBackend` (Firebase today, Supabase-ready):
   `rememberGoogleAuthState` (in `kmpauth-google`), `rememberFacebookAuthState`
   (in `kmpauth-facebook`), `rememberAppleAuthState`, `rememberGithubAuthState`,
-  `rememberMicrosoftAuthState`, `rememberOAuthState(provider)` (in
-  `kmpauth-firebase`), `rememberEmailAuthState`, `rememberAnonymousAuthState`
-  and `rememberPhoneAuthState` (in `kmpauth-core`). Google/Facebook exchange states moved into their provider
+  `rememberAppleAuthState` (in `kmpauth-apple`),
+  `rememberGithubAuthState`, `rememberMicrosoftAuthState`,
+  `rememberOAuthState(provider)`, `rememberEmailAuthState`,
+  `rememberAnonymousAuthState` and `rememberPhoneAuthState` (in
+  `kmpauth-core`). Every `rememberXxxAuthState` is **backend-generic**: the
+  browser OAuth states drive the new backend `signIn(OAuthWebFlow)`
+  operation (Firebase runs its native web-flow UI on Android/iOS, the
+  hosted-handler loopback on Desktop; Supabase runs supabase-kt's browser
+  flow), and Apple's state exchanges the native iOS credential through the
+  backend's `id_token` grant — carrying the first-authorization full name
+  via the new `AuthCredential.IdToken.displayName` field — with the web
+  flow everywhere else. The same composable works against Firebase or
+  Supabase, whichever is registered. Google/Facebook exchange states moved into their provider
   modules — SDK isolation is unchanged (no Facebook SDK unless you depend on
   `kmpauth-facebook`), and `kmpauth-firebase-google`/`-facebook` now carry
   only the deprecated 2.x containers.

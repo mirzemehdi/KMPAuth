@@ -1,6 +1,7 @@
 package com.mmk.kmpauth.firebase.apple
 
 import com.mmk.kmpauth.apple.AppleSignInRequestScope
+import com.mmk.kmpauth.apple.rememberAppleAuthState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -20,7 +21,7 @@ import dev.gitlive.firebase.auth.FirebaseUser
         "Scheduled for removal in 4.0.",
     ReplaceWith(
         "rememberAppleAuthState(requestScopes, linkAccount, onResult)",
-        "com.mmk.kmpauth.firebase.apple.rememberAppleAuthState"
+        "com.mmk.kmpauth.apple.rememberAppleAuthState"
     ),
     DeprecationLevel.WARNING
 )

@@ -38,9 +38,9 @@ import com.mmk.kmpauth.core.auth.rememberAnonymousAuthState
 import com.mmk.kmpauth.core.auth.rememberEmailAuthState
 import com.mmk.kmpauth.facebook.rememberFacebookAuthState
 import com.mmk.kmpauth.facebook.rememberFacebookSignInState
-import com.mmk.kmpauth.firebase.apple.rememberAppleAuthState
-import com.mmk.kmpauth.firebase.github.rememberGithubAuthState
-import com.mmk.kmpauth.firebase.microsoft.rememberMicrosoftAuthState
+import com.mmk.kmpauth.apple.rememberAppleAuthState
+import com.mmk.kmpauth.core.auth.rememberGithubAuthState
+import com.mmk.kmpauth.core.auth.rememberMicrosoftAuthState
 import com.mmk.kmpauth.core.auth.rememberPhoneAuthState
 import com.mmk.kmpauth.google.rememberGoogleAuthState
 import com.mmk.kmpauth.google.rememberGoogleSignInState
@@ -223,16 +223,13 @@ private fun SupabaseSection(
         // Browser OAuth through the backend interface: Desktop works out of
         // the box (supabase-kt catches the redirect on a localhost server);
         // Android/iOS need supabase-kt's deep-link setup.
-        val scope = rememberCoroutineScope()
-        Button(onClick = {
-            scope.launch {
-                report("Supabase/GitHub")(
-                    AppInitializer.supabaseBackend.signIn(
-                        AuthCredential.OAuthWebFlow(providerId = "github.com")
-                    )
-                )
-            }
-        }) { Text("GitHub (web flow)") }
+        val githubAuth = rememberGithubAuthState(onResult = report("Supabase/GitHub"))
+        Button(onClick = { githubAuth.launch() }) { Text("GitHub (web flow)") }
+
+        // Native Apple credential on iOS via the id_token grant; browser
+        // flow elsewhere.
+        val appleAuth = rememberAppleAuthState(onResult = report("Supabase/Apple"))
+        Button(onClick = { appleAuth.launch() }) { Text("Apple") }
     }
     }
 }

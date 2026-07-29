@@ -33,12 +33,24 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         credential: AuthCredential,
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> {
+        if (credential is AuthCredential.OAuthWebFlow) {
+            return runCatchingCancellable {
+                val user = gitLiveOAuthWebFlowSignIn(
+                    oAuthProvider = OAuthProvider(
+                        provider = credential.providerId,
+                        scopes = credential.scopes,
+                        customParameters = credential.customParameters,
+                    ),
+                    linkAccount = linkWithCurrentUser,
+                ) ?: throw IllegalStateException("Firebase Null user")
+                FirebaseKMPAuthUser(user)
+            }
+        }
         val firebaseCredential = credential.toFirebaseCredentialOrNull()
             ?: return Result.failure(
                 UnsupportedOperationException(
                     "FirebaseAuthBackend cannot exchange this credential directly " +
-                        "(provider '${credential.providerId}'). Use the dedicated " +
-                        "container composable for web-flow providers."
+                        "(provider '${credential.providerId}')."
                 )
             )
         return try {
@@ -54,6 +66,12 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
                 currentLogger.log("Firebase user is null")
                 Result.failure(IllegalStateException("Firebase Null user"))
             } else {
+                // Apple hands the full name to the app only on the first
+                // authorization; persist it when the account has none.
+                val displayName = (credential as? AuthCredential.IdToken)?.displayName
+                if (displayName != null && user.displayName.isNullOrEmpty()) {
+                    runCatching { user.updateProfile(displayName = displayName) }
+                }
                 Result.success(FirebaseKMPAuthUser(user))
             }
         } catch (e: Exception) {

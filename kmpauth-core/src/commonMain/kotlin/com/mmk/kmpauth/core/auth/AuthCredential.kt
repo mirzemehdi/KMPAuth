@@ -36,12 +36,16 @@ public sealed interface AuthCredential {
      * @param accessToken Provider access token, when available.
      * @param rawNonce Unhashed nonce used in the provider request, for
      * backends that verify it (e.g. Apple).
+     * @param displayName User's display name when the provider returns it
+     * outside the token — Apple hands the full name to the app only on the
+     * first authorization, so backends can persist it on the new account.
      */
     public data class IdToken(
         override val providerId: String,
         val idToken: String,
         val accessToken: String? = null,
         val rawNonce: String? = null,
+        val displayName: String? = null,
     ) : AuthCredential
 
     /**

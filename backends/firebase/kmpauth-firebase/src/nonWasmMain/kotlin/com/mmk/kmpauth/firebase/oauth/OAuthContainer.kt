@@ -1,10 +1,19 @@
+@file:OptIn(KMPAuthInternalApi::class)
+
 package com.mmk.kmpauth.firebase.oauth
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.runCatchingCancellable
+import com.mmk.kmpauth.firebase.backend.gitLiveOAuthWebFlowSignIn
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 
@@ -19,7 +28,7 @@ import dev.gitlive.firebase.auth.OAuthProvider
         "button's onClick. Scheduled for removal in 4.0.",
     ReplaceWith(
         "rememberOAuthState(provider, requestScopes, customParameters, linkAccount, onResult)",
-        "com.mmk.kmpauth.firebase.oauth.rememberOAuthState"
+        "com.mmk.kmpauth.core.auth.rememberOAuthState"
     ),
     DeprecationLevel.WARNING
 )
@@ -31,11 +40,17 @@ public fun OAuthContainer(
     linkAccount: Boolean = false,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
-    val signInState = rememberFirebaseGitLiveOAuthSignInState(
-        oAuthProvider = oAuthProvider,
-        linkAccount = linkAccount,
-        onResult = onResult,
-    )
+    val scope = rememberCoroutineScope()
+    val currentOAuthProvider by rememberUpdatedState(oAuthProvider)
+    val currentLinkAccount by rememberUpdatedState(linkAccount)
+    val currentOnResult by rememberUpdatedState(onResult)
+    val signInState = remember {
+        LaunchingSignInState(scope) {
+            currentOnResult(runCatchingCancellable {
+                gitLiveOAuthWebFlowSignIn(currentOAuthProvider, currentLinkAccount)
+            })
+        }
+    }
     val uiContainerScope = remember(signInState) {
         object : UiContainerScope {
             override fun onClick() = signInState.launch()

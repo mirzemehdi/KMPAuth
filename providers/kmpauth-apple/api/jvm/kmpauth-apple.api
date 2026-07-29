@@ -1,3 +1,7 @@
+public final class com/mmk/kmpauth/apple/AppleAuthState_jvmKt {
+	public static final fun rememberAppleAuthState (Ljava/util/List;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+}
+
 public abstract interface class com/mmk/kmpauth/apple/AppleSignInRequestScope {
 }
 
