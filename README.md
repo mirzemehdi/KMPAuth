@@ -21,18 +21,31 @@ own backend), with every API callable from `commonMain` on every target.
 
 ## What's supported where
 
-| Feature | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
+Every sign-in method is served by a **backend** (or by your own server, when
+the method just hands you a token). So two questions: which backend runs on
+your platforms, and which methods that backend serves.
+
+| Backend | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
 |---|:---:|:---:|:---:|:---:|:---:|
-| Google sign-in | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Apple sign-in (via Firebase) | ✅ | ✅ native | ✅ | — | — |
-| Apple sign-in (native, no backend) | — | ✅ | — | — | — |
-| Facebook sign-in | ✅ | ✅ | — | — | — |
-| GitHub / Microsoft / any OAuth (via Firebase) | ✅ | ✅ | ✅ | — | — |
-| Email password / reset / magic link | ✅ | ✅ | ✅ | ✅ | ✅ Supabase |
-| Phone number sign-in | ✅ | ✅ | — | — | — |
-| Anonymous sign-in | ✅ | ✅ | ✅ | ✅ | ✅ Supabase |
-| Firebase backend | ✅ | ✅ | ✅ REST | ✅ | — |
-| Supabase backend | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Firebase | ✅ | ✅ | ✅ (REST) | ✅ | — |
+| Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+("your server" below = no backend needed — the state hands you the
+provider's token to verify yourself.)
+
+| Sign-in method | Works with | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
+|---|---|:---:|:---:|:---:|:---:|:---:|
+| Google | your server · Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Apple | Firebase | ✅ | ✅ native | ✅ | — | — |
+| Apple (native token, no backend) | your server | — | ✅ | — | — | — |
+| Facebook | your server · Firebase · Supabase¹ | ✅ | ✅ | — | — | — |
+| GitHub / Microsoft / any OAuth | Firebase | ✅ | ✅ | ✅ | — | — |
+| Email (password / reset / magic link) | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
+| Phone number | Firebase | ✅ | ✅ | — | — | — |
+| Anonymous | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
+
+¹ Supabase accepts Facebook Limited Login (OIDC) tokens only.
+² On wasm only with Supabase — the Firebase SDK has no wasm target.
 
 Everything compiles and is callable from `commonMain` on **all** targets — a
 feature unavailable on the current platform reports a failed `Result` with
