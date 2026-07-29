@@ -28,7 +28,10 @@ class ManualE2ETest {
                 )
             )
         }
-        val engine = FirebaseRestAuthEngine()
+        val engine = FirebaseRestAuthEngine(
+            transport = JdkFirebaseRestTransport(),
+            apiKeyProvider = { firebaseOptionsOrFail().apiKey },
+        )
 
         val anon = engine.signInAnonymously()
         println("E2E_ANON=${anon.map { "${it.uid} anonymous-ok" }}")

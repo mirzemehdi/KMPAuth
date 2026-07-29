@@ -48,16 +48,24 @@ kotlin {
         jvmMain.get().dependsOn(nonWasmMain)
         jsMain.get().dependsOn(nonWasmMain)
 
+        // The Firebase Auth REST engine (Identity Toolkit) is shared by
+        // Desktop (JVM, where firebase-java-sdk has no auth, #204) and wasm
+        // (where the Firebase SDK has no target at all). Platform leaves
+        // supply the HTTP transport: JDK HttpClient on JVM, fetch on wasm —
+        // deliberately no Ktor (#78).
+        val restEngineMain by creating {
+            dependsOn(commonMain.get())
+            dependencies {
+                // JSON runtime API only — JsonObject builders/parsing, no
+                // @Serializable, no compiler plugin.
+                implementation(libs.kotlinx.serialization.json)
+            }
+        }
+        jvmMain.get().dependsOn(restEngineMain)
+        wasmJsMain.get().dependsOn(restEngineMain)
+
         jvmTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
-        }
-
-        jvmMain.dependencies {
-            // JSON for the Firebase Auth REST engine (runtime API only —
-            // JsonObject builders/parsing, no @Serializable, no compiler
-            // plugin). The engine itself uses the JDK's built-in HTTP
-            // client, deliberately not Ktor (#78).
-            implementation(libs.kotlinx.serialization.json)
         }
 
         androidMain.dependencies {

@@ -27,7 +27,7 @@ your platforms, and which methods that backend serves.
 
 | Backend | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
 |---|:---:|:---:|:---:|:---:|:---:|
-| Firebase | ✅ | ✅ | ✅ (REST) | ✅ | — |
+| Firebase | ✅ | ✅ | ✅ (REST) | ✅ | ✅ (REST²) |
 | Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ("your server" below = no backend needed — the state hands you the
@@ -40,15 +40,17 @@ provider's token to verify yourself.)
 | Apple (native token, no backend) | your server | — | ✅ | — | — | — |
 | Facebook (native SDK login) | your server · Firebase · Supabase¹ | ✅ | ✅ | — | — | — |
 | GitHub / Microsoft / Facebook-web / any OAuth | Firebase · Supabase | ✅ | ✅ | ✅ | ✅⁴ | ✅⁴ |
-| Email (password / reset / magic link) | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
+| Email (password / reset / magic link) | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Phone number | Firebase · Supabase | ✅ | ✅ | ✅³ | ✅³ | ✅³ |
-| Anonymous | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
+| Anonymous | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ¹ Supabase accepts Facebook Limited Login (OIDC) tokens only. Meta's SDK
 exists only on Android/iOS — on other platforms use the browser-OAuth row
 (`rememberOAuthState("facebook.com")` with Firebase, or
 `OAuthWebFlow("facebook.com")` with Supabase).
-² On wasm only with Supabase — the Firebase SDK has no wasm target.
+² Firebase on wasm runs on the REST engine (no Firebase SDK there): email,
+anonymous, id-token exchange, email link, password reset, reauthentication —
+not browser web flows or phone.
 ³ Beyond Android/iOS only with Supabase (SMS OTP); Firebase phone auth
 needs the mobile SDKs.
 ⁴ Only with Supabase (`KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))`):
@@ -105,6 +107,7 @@ val googleSignIn = rememberGoogleAuthState(onResult = onResult)
 GoogleSignInButton { googleSignIn.launch() }
 
 val appleSignIn = rememberAppleAuthState(onResult = onResult)       // native on iOS, web flow elsewhere
+val facebookSignIn = rememberFacebookAuthState(onResult = onResult) // kmpauth-facebook, Android/iOS
 val githubSignIn = rememberGithubAuthState(onResult = onResult)     // Firebase OAuth web flow
 val microsoftSignIn = rememberMicrosoftAuthState(onResult = onResult)
 val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)

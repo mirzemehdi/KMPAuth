@@ -47,8 +47,9 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   `Result<KMPAuthUser>` — non-null; a backend producing no user is a failure
   with a reason, never a null success. The native
   `dev.gitlive.firebase.auth.FirebaseUser` stays reachable through
-  `KMPAuthUser.raw`. On wasm (no Firebase SDK target) flows report a failed
-  `Result` instead of not compiling.
+  `KMPAuthUser.raw`. On wasm (no Firebase SDK target) the backend runs on
+  the REST engine (below); only the browser web flows and phone report
+  failed `Result`s there.
 - **`KMPAuth` is the single client-facing entry point** for everything that
   isn't a launchable sign-in state: `currentUser()`, `signOut()`,
   `signIn(credential)`, `signUp(email, password)`, `signInAnonymously()`,
@@ -122,10 +123,16 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   the KMPAuth entry point instead of a direct GitLive `Firebase.initialize`
   call (which still works); no-op on Android/iOS where the SDK reads the
   bundled config files.
-- **Desktop (JVM) Firebase auth works** (#204). GitLive's firebase-java-sdk
-  has no auth implementation, so on Desktop the Firebase backend now talks
-  to the Firebase Auth REST API (Identity Toolkit) directly - JDK built-in
-  HTTP client, no Ktor (#78). Supported on Desktop: email/password sign-in
+- **Desktop (JVM) and wasm Firebase auth work** (#204, #179). GitLive's
+  firebase-java-sdk has no auth implementation and GitLive has no wasm
+  target at all, so on those platforms the Firebase backend talks to the
+  Firebase Auth REST API (Identity Toolkit) directly - a shared REST engine
+  with the JDK's built-in HTTP client on Desktop and fetch on wasm, no Ktor
+  (#78). On wasm this serves email/password, anonymous, email link,
+  password reset, reauthentication and id-token exchange (web Google
+  sign-in produces the ID token via One Tap), configured via
+  `firebase(apiKey = ..., projectId = ..., applicationId = ...)`; browser
+  web flows and phone stay unavailable there. Supported on Desktop: email/password sign-in
   and sign-up, anonymous, email link, password reset, reauthentication, and
   Google/Facebook/Apple token exchange - `rememberGoogleAuthState` is now
   fully functional on Desktop (the loopback already produced the ID token).

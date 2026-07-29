@@ -52,9 +52,9 @@ public enum class EmailAuthMode {
  * ```
  *
  * With the Firebase backend: enable the "Email/Password" sign-in method in
- * the Firebase console. Works on all targets including Desktop (JVM, via
- * the Firebase REST API - call GitLive's `Firebase.initialize` there);
- * on wasm the flow reports a failed [Result].
+ * the Firebase console. Works on all targets — Desktop (JVM) and wasm run
+ * through the Firebase REST API (configure via
+ * `KMPAuth.initialize { firebase(apiKey = ..., ...) }` there).
  *
  * @param email Email address, read at launch time.
  * @param password Password, read at launch time.

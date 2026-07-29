@@ -11,10 +11,7 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.core.runCatchingCancellable
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.app
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlin.concurrent.Volatile
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -22,12 +19,6 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import java.net.URI
-import java.net.URLEncoder
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.nio.charset.StandardCharsets
 
 /** Signed-in user as reported by the Firebase Auth REST API. */
 internal data class FirebaseRestUser(
@@ -51,45 +42,45 @@ internal class FirebaseRestKMPAuthUser(internal val user: FirebaseRestUser) : KM
     override val raw: Any get() = user
 }
 
-/** Minimal HTTP POST abstraction so the engine is unit-testable. */
+/**
+ * Minimal HTTP POST abstraction so the engine is unit-testable and
+ * platform-portable (JDK HttpClient on Desktop, fetch on wasm).
+ */
 internal fun interface FirebaseRestTransport {
     /** Posts [jsonBody] to [url]; returns the response body (any status). */
-    fun post(url: String, jsonBody: String): String
+    suspend fun post(url: String, jsonBody: String): String
 }
 
+/** Firebase session handed back by a browser sign-in page. */
+internal data class WebFlowResult(
+    val idToken: String,
+    val refreshToken: String?,
+)
+
+/** Parameters of one web-flow sign-in attempt. */
+internal data class WebFlowRequest(
+    val providerId: String,
+    val scopes: List<String>,
+    val customParameters: Map<String, String>,
+)
+
 /**
- * [AuthProviderBackend] engine over the Firebase Auth REST API
- * (Identity Toolkit), used on Desktop where GitLive's firebase-java-sdk
- * does not implement auth (#204).
+ * [AuthProviderBackend] engine over the Firebase Auth REST API (Identity
+ * Toolkit). Used on Desktop, where GitLive's firebase-java-sdk does not
+ * implement auth (#204), and on wasm, where the Firebase SDK has no
+ * target at all.
  *
- * Requires `Firebase.initialize(...)` with the project's **web API key**
- * before use — the same GitLive initialization desktop Firebase already
- * needs. The session (current user, tokens) is held in memory for the
- * process lifetime; there is no on-disk persistence yet.
- *
- * Uses the JDK's built-in [java.net.http.HttpClient] — deliberately no
- * Ktor (#78).
+ * The session (current user, tokens) is held in memory for the process
+ * lifetime; there is no persistence yet. [webFlowRunner] is the platform's
+ * browser OAuth flow — Desktop's loopback page, or null where no flow
+ * exists (wasm), in which case `OAuthWebFlow` credentials fail with a
+ * reason.
  */
 internal class FirebaseRestAuthEngine(
-    private val transport: FirebaseRestTransport = JdkFirebaseRestTransport(),
-    private val apiKeyProvider: () -> String = { firebaseOptionsOrFail().apiKey },
-    webFlowRunner: (suspend (WebFlowRequest) -> WebFlowResult)? = null,
+    private val transport: FirebaseRestTransport,
+    private val apiKeyProvider: () -> String,
+    private val webFlowRunner: (suspend (WebFlowRequest) -> WebFlowResult)? = null,
 ) : AuthProviderBackend {
-
-    private val webFlowRunner: suspend (WebFlowRequest) -> WebFlowResult =
-        webFlowRunner ?: DesktopWebAuthFlow(config = {
-            val options = firebaseOptionsOrFail()
-            val projectId = options.projectId
-                ?: throw IllegalStateException(
-                    "FirebaseBackendOptions.projectId is required for web-flow sign-in on Desktop."
-                )
-            DesktopWebAuthFlow.WebFlowPageConfig(
-                apiKey = options.apiKey,
-                authDomain = options.authDomain ?: "$projectId.firebaseapp.com",
-                projectId = projectId,
-                applicationId = options.applicationId,
-            )
-        })::signIn
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -100,58 +91,61 @@ internal class FirebaseRestAuthEngine(
         credential: AuthCredential,
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> = runCatchingCancellable {
-        withContext(Dispatchers.IO) {
-            val user = when (credential) {
-                is AuthCredential.EmailPassword ->
-                    if (linkWithCurrentUser && session != null) {
-                        // Linking email/password to the current (e.g.
-                        // anonymous) user keeps its uid.
-                        signedInUser(
-                            call(
-                                "accounts:signUp",
-                                buildJsonObject {
-                                    put("idToken", requireSession().idToken)
-                                    put("email", credential.email)
-                                    put("password", credential.password)
-                                    put("returnSecureToken", true)
-                                }
-                            )
-                        )
-                    } else {
-                        signedInUser(
-                            call(
-                                "accounts:signInWithPassword",
-                                buildJsonObject {
-                                    put("email", credential.email)
-                                    put("password", credential.password)
-                                    put("returnSecureToken", true)
-                                }
-                            )
-                        )
-                    }
-
-                is AuthCredential.IdToken -> signedInUser(
-                    call("accounts:signInWithIdp", credential.toSignInWithIdpBody(linkWithCurrentUser))
-                )
-
-                is AuthCredential.OAuthWebFlow -> {
-                    if (linkWithCurrentUser) throw UnsupportedOperationException(
-                        "Linking a web-flow provider to the current user is not " +
-                            "supported on Desktop yet."
-                    )
-                    val flowResult = webFlowRunner(
-                        WebFlowRequest(
-                            providerId = credential.providerId,
-                            scopes = credential.scopes,
-                            customParameters = credential.customParameters,
+        val user = when (credential) {
+            is AuthCredential.EmailPassword ->
+                if (linkWithCurrentUser && session != null) {
+                    // Linking email/password to the current (e.g.
+                    // anonymous) user keeps its uid.
+                    signedInUser(
+                        call(
+                            "accounts:signUp",
+                            buildJsonObject {
+                                put("idToken", requireSession().idToken)
+                                put("email", credential.email)
+                                put("password", credential.password)
+                                put("returnSecureToken", true)
+                            }
                         )
                     )
-                    adoptSession(flowResult, credential.providerId)
+                } else {
+                    signedInUser(
+                        call(
+                            "accounts:signInWithPassword",
+                            buildJsonObject {
+                                put("email", credential.email)
+                                put("password", credential.password)
+                                put("returnSecureToken", true)
+                            }
+                        )
+                    )
                 }
+
+            is AuthCredential.IdToken -> signedInUser(
+                call("accounts:signInWithIdp", credential.toSignInWithIdpBody(linkWithCurrentUser))
+            )
+
+            is AuthCredential.OAuthWebFlow -> {
+                val runner = webFlowRunner ?: throw UnsupportedOperationException(
+                    "Firebase web-flow sign-in (provider " +
+                        "'${credential.providerId}') is not available on this " +
+                        "platform."
+                )
+                if (linkWithCurrentUser) throw UnsupportedOperationException(
+                    "Linking a web-flow provider to the current user is not " +
+                        "supported with the Firebase REST engine yet."
+                )
+                val flowResult = runner(
+                    WebFlowRequest(
+                        providerId = credential.providerId,
+                        scopes = credential.scopes,
+                        customParameters = credential.customParameters,
+                    )
+                )
+                adoptSession(flowResult, credential.providerId)
             }
-            session = user
-            FirebaseRestKMPAuthUser(user)
         }
+        session = user
+        FirebaseRestKMPAuthUser(user)
     }
 
     /**
@@ -159,7 +153,7 @@ internal class FirebaseRestAuthEngine(
      * already completed sign-in there) by looking up the user profile for
      * its ID token.
      */
-    private fun adoptSession(flowResult: WebFlowResult, providerId: String): FirebaseRestUser {
+    private suspend fun adoptSession(flowResult: WebFlowResult, providerId: String): FirebaseRestUser {
         val info = call(
             "accounts:lookup",
             buildJsonObject { put("idToken", flowResult.idToken) },
@@ -181,53 +175,49 @@ internal class FirebaseRestAuthEngine(
     override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
         runCatchingCancellable {
             requireSession()
-            withContext(Dispatchers.IO) {
-                val user = when (credential) {
-                    is AuthCredential.EmailPassword -> signedInUser(
-                        call(
-                            "accounts:signInWithPassword",
-                            buildJsonObject {
-                                put("email", credential.email)
-                                put("password", credential.password)
-                                put("returnSecureToken", true)
-                            }
-                        )
-                    )
-
-                    is AuthCredential.IdToken -> signedInUser(
-                        call("accounts:signInWithIdp", credential.toSignInWithIdpBody(link = false))
-                    )
-
-                    is AuthCredential.OAuthWebFlow -> throw UnsupportedOperationException(
-                        "FirebaseAuthBackend cannot reauthenticate with this credential " +
-                            "(provider '${credential.providerId}')."
-                    )
-                }
-                if (user.uid != requireSession().uid) {
-                    throw IllegalStateException(
-                        "Reauthentication credential belongs to a different user"
-                    )
-                }
-                session = user
-            }
-        }
-
-    override suspend fun signUp(email: String, password: String): Result<KMPAuthUser> =
-        runCatchingCancellable {
-            withContext(Dispatchers.IO) {
-                val user = signedInUser(
+            val user = when (credential) {
+                is AuthCredential.EmailPassword -> signedInUser(
                     call(
-                        "accounts:signUp",
+                        "accounts:signInWithPassword",
                         buildJsonObject {
-                            put("email", email)
-                            put("password", password)
+                            put("email", credential.email)
+                            put("password", credential.password)
                             put("returnSecureToken", true)
                         }
                     )
                 )
-                session = user
-                FirebaseRestKMPAuthUser(user)
+
+                is AuthCredential.IdToken -> signedInUser(
+                    call("accounts:signInWithIdp", credential.toSignInWithIdpBody(link = false))
+                )
+
+                is AuthCredential.OAuthWebFlow -> throw UnsupportedOperationException(
+                    "FirebaseAuthBackend cannot reauthenticate with this credential " +
+                        "(provider '${credential.providerId}')."
+                )
             }
+            if (user.uid != requireSession().uid) {
+                throw IllegalStateException(
+                    "Reauthentication credential belongs to a different user"
+                )
+            }
+            session = user
+        }
+
+    override suspend fun signUp(email: String, password: String): Result<KMPAuthUser> =
+        runCatchingCancellable {
+            val user = signedInUser(
+                call(
+                    "accounts:signUp",
+                    buildJsonObject {
+                        put("email", email)
+                        put("password", password)
+                        put("returnSecureToken", true)
+                    }
+                )
+            )
+            session = user
+            FirebaseRestKMPAuthUser(user)
         }
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> = runCatchingCancellable {
@@ -236,14 +226,12 @@ internal class FirebaseRestAuthEngine(
         session?.takeIf { it.isAnonymous }?.let {
             return@runCatchingCancellable FirebaseRestKMPAuthUser(it)
         }
-        withContext(Dispatchers.IO) {
-            val user = signedInUser(
-                call("accounts:signUp", buildJsonObject { put("returnSecureToken", true) }),
-                anonymous = true,
-            )
-            session = user
-            FirebaseRestKMPAuthUser(user)
-        }
+        val user = signedInUser(
+            call("accounts:signUp", buildJsonObject { put("returnSecureToken", true) }),
+            anonymous = true,
+        )
+        session = user
+        FirebaseRestKMPAuthUser(user)
     }
 
     override suspend fun signInWithPhone(
@@ -252,9 +240,10 @@ internal class FirebaseRestAuthEngine(
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> = Result.failure(
         UnsupportedOperationException(
-            "Firebase phone sign-in is not available on Desktop: the Identity " +
-                "Toolkit REST flow requires a reCAPTCHA token. The Supabase " +
-                "backend serves phone OTP on every target."
+            "Firebase phone sign-in is not available with the REST engine " +
+                "(Desktop/wasm): the Identity Toolkit REST flow requires a " +
+                "reCAPTCHA token. The Supabase backend serves phone OTP on " +
+                "every target."
         )
     )
 
@@ -262,36 +251,34 @@ internal class FirebaseRestAuthEngine(
         email: String,
         actionCodeSettings: EmailActionCodeSettings?,
     ): Result<Unit> = runCatchingCancellable {
-        withContext(Dispatchers.IO) {
-            call(
-                "accounts:sendOobCode",
-                buildJsonObject {
-                    put("requestType", "PASSWORD_RESET")
-                    put("email", email)
-                    actionCodeSettings?.applyTo(this)
-                }
-            )
-        }
+        call(
+            "accounts:sendOobCode",
+            buildJsonObject {
+                put("requestType", "PASSWORD_RESET")
+                put("email", email)
+                actionCodeSettings?.applyTo(this)
+            }
+        )
+        Unit
     }
 
     override suspend fun sendSignInLinkToEmail(
         email: String,
         actionCodeSettings: EmailActionCodeSettings,
     ): Result<Unit> = runCatchingCancellable {
-        withContext(Dispatchers.IO) {
-            call(
-                "accounts:sendOobCode",
-                buildJsonObject {
-                    put("requestType", "EMAIL_SIGNIN")
-                    put("email", email)
-                    actionCodeSettings.applyTo(this)
-                }
-            )
-        }
+        call(
+            "accounts:sendOobCode",
+            buildJsonObject {
+                put("requestType", "EMAIL_SIGNIN")
+                put("email", email)
+                actionCodeSettings.applyTo(this)
+            }
+        )
+        Unit
     }
 
     override fun isSignInWithEmailLink(link: String): Boolean {
-        val query = runCatching { URI(link).rawQuery }.getOrNull() ?: return false
+        val query = link.queryStringOrNull() ?: return false
         return query.contains("oobCode=") && query.contains("mode=signIn")
     }
 
@@ -300,25 +287,23 @@ internal class FirebaseRestAuthEngine(
         link: String,
         linkAccount: Boolean,
     ): Result<KMPAuthUser> = runCatchingCancellable {
-        val oobCode = runCatching { URI(link).rawQuery }.getOrNull()
+        val oobCode = link.queryStringOrNull()
             ?.split("&")
             ?.firstOrNull { it.startsWith("oobCode=") }
             ?.substringAfter("=")
             ?: throw IllegalArgumentException("Link is not a Firebase email sign-in link")
-        withContext(Dispatchers.IO) {
-            val user = signedInUser(
-                call(
-                    "accounts:signInWithEmailLink",
-                    buildJsonObject {
-                        put("email", email)
-                        put("oobCode", oobCode)
-                        if (linkAccount) session?.let { put("idToken", it.idToken) }
-                    }
-                )
+        val user = signedInUser(
+            call(
+                "accounts:signInWithEmailLink",
+                buildJsonObject {
+                    put("email", email)
+                    put("oobCode", oobCode)
+                    if (linkAccount) session?.let { put("idToken", it.idToken) }
+                }
             )
-            session = user
-            FirebaseRestKMPAuthUser(user)
-        }
+        )
+        session = user
+        FirebaseRestKMPAuthUser(user)
     }
 
     override suspend fun signOut() {
@@ -376,7 +361,7 @@ internal class FirebaseRestAuthEngine(
 
     /** Calls an Identity Toolkit endpoint and returns the parsed response. */
     @OptIn(KMPAuthInternalApi::class)
-    private fun call(endpoint: String, body: JsonObject): JsonObject {
+    private suspend fun call(endpoint: String, body: JsonObject): JsonObject {
         val url = "https://identitytoolkit.googleapis.com/v1/$endpoint?key=${apiKeyProvider()}"
         val responseText = transport.post(url, body.toString())
         val response = json.parseToJsonElement(responseText).jsonObject
@@ -388,7 +373,7 @@ internal class FirebaseRestAuthEngine(
         return response
     }
 
-    private fun signedInUser(response: JsonObject, anonymous: Boolean = false): FirebaseRestUser {
+    private suspend fun signedInUser(response: JsonObject, anonymous: Boolean = false): FirebaseRestUser {
         val idToken = response["idToken"]?.jsonPrimitive?.content
             ?: throw IllegalStateException("Firebase Null user")
         val providerId = response["providerId"]?.jsonPrimitive?.content
@@ -420,34 +405,26 @@ internal class FirebaseRestAuthEngine(
         }
         return user
     }
-
-    private fun String.urlEncoded(): String =
-        URLEncoder.encode(this, StandardCharsets.UTF_8)
 }
 
-/**
- * The GitLive Firebase options configured for this process, or an
- * instructive failure. Populated by `KMPAuth.initialize { firebase(...) }`
- * (see `KMPAuthFirebaseConfiguration`).
- */
-internal fun firebaseOptionsOrFail(): dev.gitlive.firebase.FirebaseOptions =
-    runCatching { Firebase.app.options }.getOrNull()
-        ?: throw IllegalStateException(
-            "Firebase is not configured on Desktop. Add firebase(FirebaseBackendOptions(" +
-                "apiKey = ..., projectId = ..., applicationId = ...)) inside " +
-                "KMPAuth.initialize { } at application start."
-        )
+/** The query part of a URL, or null when there is none. */
+private fun String.queryStringOrNull(): String? =
+    substringAfter('?', "").substringBefore('#').takeIf { it.isNotEmpty() }
 
-/** Default transport on the JDK's built-in HTTP client. */
-internal class JdkFirebaseRestTransport : FirebaseRestTransport {
-
-    private val client: HttpClient by lazy { HttpClient.newHttpClient() }
-
-    override fun post(url: String, jsonBody: String): String {
-        val request = HttpRequest.newBuilder(URI(url))
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-            .build()
-        return client.send(request, HttpResponse.BodyHandlers.ofString()).body()
+/** application/x-www-form-urlencoded percent-encoding (UTF-8). */
+internal fun String.urlEncoded(): String = buildString {
+    for (byte in this@urlEncoded.encodeToByteArray()) {
+        val c = byte.toInt().toChar()
+        when {
+            c.isLetterOrDigit() && c.code < 128 -> append(c)
+            c == '-' || c == '_' || c == '.' || c == '*' -> append(c)
+            c == ' ' -> append('+')
+            else -> {
+                append('%')
+                val hex = (byte.toInt() and 0xFF).toString(16).uppercase()
+                if (hex.length == 1) append('0')
+                append(hex)
+            }
+        }
     }
 }
