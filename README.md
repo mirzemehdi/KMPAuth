@@ -62,6 +62,20 @@ Everything compiles and is callable from `commonMain` on **all** targets — a
 feature unavailable on the current platform reports a failed `Result` with
 the reason instead of not compiling or silently doing nothing.
 
+## Installation (short version)
+
+```kotlin
+commonMain.dependencies {
+    implementation("io.github.mirzemehdi:kmpauth-google:<version>")   // Google sign-in
+    implementation("io.github.mirzemehdi:kmpauth-firebase:<version>") // Firebase backend
+    implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") // branded buttons
+    // also available: kmpauth-facebook, kmpauth-apple, kmpauth-supabase
+}
+```
+
+iOS apps add the native SDKs via Swift Package Manager — see
+[Getting started](docs/getting-started.md).
+
 ## Pick your setup
 
 ### 1. No backend — you verify the token yourself ([Google](docs/google.md) · [Facebook](docs/facebook.md) · [Apple](docs/apple.md))
@@ -210,20 +224,6 @@ Firebase/Supabase):
 Also: [UI helper buttons](docs/ui-helper.md) ·
 [Full API reference](https://mirzemehdi.github.io/KMPAuth) ·
 [Sample app covering every feature](sampleApp/shared/src/commonMain/kotlin/com/mmk/kmpauth/sample/App.kt)
-
-## Installation (short version)
-
-```kotlin
-commonMain.dependencies {
-    implementation("io.github.mirzemehdi:kmpauth-google:<version>")   // Google sign-in
-    implementation("io.github.mirzemehdi:kmpauth-firebase:<version>") // Firebase backend
-    implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") // branded buttons
-    // also available: kmpauth-facebook, kmpauth-apple, kmpauth-supabase
-}
-```
-
-iOS apps add the native SDKs via Swift Package Manager — see
-[Getting started](docs/getting-started.md).
 
 ## Migrating from 2.x
 
