@@ -26,8 +26,11 @@ public interface GoogleAuthUiProvider {
 
 
     /**
-     * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
-     * setting to false list any accounts that have previously been used to sign in to your app. Default value is false.
+     * @param filterByAuthorizedAccounts true limits the chooser to accounts
+     * that have previously signed in to this app; false lists all available
+     * accounts on the device. Default value is false. Note: when true and no
+     * previously authorized account exists, the flow automatically retries
+     * with all accounts so first-time users can still sign in.
      * @param isAutoSelectEnabled If `true`, the user will be automatically signed in
      * without showing the account chooser when there is exactly one eligible account.
      * If `false`, the account chooser will be shown even if only one account is available. Default value is true
@@ -45,8 +48,11 @@ public interface GoogleAuthUiProvider {
 
 
     /**
-     * @param filterByAuthorizedAccounts set to true so users can choose between available accounts to sign in.
-     * setting to false list any accounts that have previously been used to sign in to your app. Default value is false.
+     * @param filterByAuthorizedAccounts true limits the chooser to accounts
+     * that have previously signed in to this app; false lists all available
+     * accounts on the device. Default value is false. Note: when true and no
+     * previously authorized account exists, the flow automatically retries
+     * with all accounts so first-time users can still sign in.
      * @param isAutoSelectEnabled If `true`, the user will be automatically signed in
      * without showing the account chooser when there is exactly one eligible account.
      * If `false`, the account chooser will be shown even if only one account is available. Default value is true

@@ -31,7 +31,9 @@ import com.mmk.kmpauth.google.GoogleAuthUiProvider.Companion.BASIC_AUTH_SCOPE
  * ```
  *
  * @param filterByAuthorizedAccounts true limits the account list to accounts
- * previously used with this app; false lists all available accounts.
+ * previously used with this app; false lists all available accounts. Note:
+ * when true and no previously authorized account exists, the flow
+ * automatically retries with all accounts so first-time users can sign in.
  * @param isAutoSelectEnabled sign in automatically when exactly one eligible
  * account exists.
  * @param scopes OAuth scopes to request. Default `listOf("email", "profile")`.

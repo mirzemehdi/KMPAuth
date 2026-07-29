@@ -33,22 +33,81 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
             )
         }
 
-        return suspendCancellableCoroutine { continuation ->
-            val tokenClientConfig = createTokenClientConfig(
-                clientId = credentials.serverId,
-                scope = scopes.joinToString(" "),
-                prompt = if (filterByAuthorizedAccounts) "none" else "select_account",
-                callback = { tokenResponse: dynamic ->
-                    CoroutineScope(continuation.context).launch {
-                        continuation.handleTokenResponse(tokenResponse)
-                    }
-                }
-            )
-            val tokenClient = initTokenClient(tokenClientConfig)
-            requestAccessToken(tokenClient)
+        // GIS splits the two tokens across two flows: google.accounts.id
+        // (Sign in with Google / One Tap) issues the ID token, while the
+        // OAuth token client issues the access token only (#146). Get the
+        // ID token first - it is what Firebase and app backends verify.
+        val needsAccessToken = requestAccessToken ||
+            scopes.toSet() != GoogleAuthUiProvider.BASIC_AUTH_SCOPE.toSet()
+        val idToken = requestIdTokenViaOneTap(isAutoSelectEnabled)
+
+        if (idToken != null && !needsAccessToken) {
+            return Result.success(googleUserFromIdToken(idToken))
         }
+        if (idToken == null) {
+            showConsoleError(
+                "GoogleAuthUiProvider: One Tap did not return an ID token " +
+                    "(prompt suppressed or dismissed); falling back to the OAuth token flow."
+            )
+        }
+        return requestViaTokenClient(filterByAuthorizedAccounts, scopes, idToken)
     }
 
+    /**
+     * Runs the Sign in with Google (One Tap) prompt and returns the ID
+     * token, or null when the prompt is suppressed, skipped or dismissed.
+     */
+    private suspend fun requestIdTokenViaOneTap(isAutoSelectEnabled: Boolean): String? =
+        withTimeoutOrNull(5.minutes) {
+            suspendCancellableCoroutine { continuation ->
+                var resumed = false
+                fun resumeOnce(value: String?) {
+                    if (!resumed && continuation.isActive) {
+                        resumed = true
+                        continuation.resume(value)
+                    }
+                }
+                initializeGsiId(
+                    clientId = credentials.serverId,
+                    autoSelect = isAutoSelectEnabled,
+                    callback = { credentialResponse: dynamic ->
+                        resumeOnce(credentialResponse.credential as? String)
+                    },
+                )
+                promptGsiId { moment: dynamic ->
+                    // Covers FedCM and pre-FedCM notification shapes.
+                    if (isMomentTerminal(moment)) resumeOnce(null)
+                }
+            }
+        }
+
+    /** OAuth token-client flow: access token (plus a previously obtained ID token, if any). */
+    private suspend fun requestViaTokenClient(
+        filterByAuthorizedAccounts: Boolean,
+        scopes: List<String>,
+        presetIdToken: String?,
+    ): Result<GoogleUser> = suspendCancellableCoroutine { continuation ->
+        val tokenClientConfig = createTokenClientConfig(
+            clientId = credentials.serverId,
+            scope = scopes.joinToString(" "),
+            prompt = if (filterByAuthorizedAccounts) "none" else "select_account",
+            callback = { tokenResponse: dynamic ->
+                CoroutineScope(continuation.context).launch {
+                    continuation.handleTokenResponse(tokenResponse, presetIdToken)
+                }
+            }
+        )
+        val tokenClient = initTokenClient(tokenClientConfig)
+        requestAccessToken(tokenClient)
+    }
+
+    private fun googleUserFromIdToken(idToken: String): GoogleUser = GoogleUser(
+        idToken = idToken,
+        accessToken = null,
+        email = jwtClaim(idToken, "email"),
+        displayName = jwtClaim(idToken, "name") ?: "",
+        profilePicUrl = jwtClaim(idToken, "picture"),
+    )
 
     private fun loadGoogleAuthScript() {
         val script = document.createElement("script") as HTMLScriptElement
@@ -61,8 +120,10 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         document.head?.appendChild(script)
     }
 
-    private suspend fun CancellableContinuation<Result<GoogleUser>>.handleTokenResponse(tokenResponse: dynamic) {
-
+    private suspend fun CancellableContinuation<Result<GoogleUser>>.handleTokenResponse(
+        tokenResponse: dynamic,
+        presetIdToken: String?,
+    ) {
         val error = getTokenResponseError(tokenResponse)
         if (error != null) {
             showConsoleError("Error during Google sign-in: $error")
@@ -70,7 +131,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
             return
         }
 
-        val idToken = getTokenResponseIdToken(tokenResponse) ?: ""
+        val idToken = presetIdToken ?: getTokenResponseIdToken(tokenResponse) ?: ""
         val accessToken = getTokenResponseAccessToken(tokenResponse) ?: ""
 
         try {
@@ -174,3 +235,52 @@ private fun getTokenResponseIdToken(tokenResponse: dynamic): String? = tokenResp
 
 // Extract access_token from tokenResponse
 private fun getTokenResponseAccessToken(tokenResponse: dynamic): String? = tokenResponse.access_token
+
+// --- Sign in with Google (google.accounts.id) interop -----------------------
+
+private fun initializeGsiId(
+    clientId: String,
+    autoSelect: Boolean,
+    callback: (dynamic) -> Unit,
+) {
+    val config = js("({})")
+    js("Object.assign")(
+        config, json(
+            "client_id" to clientId,
+            "auto_select" to autoSelect,
+            "callback" to callback,
+            "use_fedcm_for_prompt" to true,
+        )
+    )
+    js("google.accounts.id.initialize(config)")
+}
+
+private fun promptGsiId(momentCallback: (dynamic) -> Unit) {
+    js("google.accounts.id.prompt(momentCallback)")
+}
+
+/** True when the prompt will not produce a credential (skipped/dismissed/not shown). */
+private fun isMomentTerminal(moment: dynamic): Boolean = try {
+    when {
+        moment.isSkippedMoment != null && moment.isSkippedMoment() == true -> true
+        moment.isDismissedMoment != null && moment.isDismissedMoment() == true &&
+            moment.getDismissedReason != null &&
+            moment.getDismissedReason() != "credential_returned" -> true
+        moment.isNotDisplayed != null && moment.isNotDisplayed() == true -> true
+        else -> false
+    }
+} catch (e: Throwable) {
+    true
+}
+
+/** Reads a claim from the ID token's JWT payload without verification. */
+private fun jwtClaim(jwt: String, name: String): String? = try {
+    val payloadJson = window.atob(
+        jwt.split(".")[1].replace("-", "+").replace("_", "/")
+    )
+    val payload = JSON.parse<dynamic>(payloadJson)
+    val value = payload[name]
+    if (value == null) null else value.toString()
+} catch (e: Throwable) {
+    null
+}
