@@ -59,11 +59,17 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         }
 
 
-        val (idToken, accessToken) = startHttpServerAndGetToken(
-            googleAuthUrl = googleAuthUrl,
-            redirectTarget = redirectTarget,
-            state = state,
-        )
+        val (idToken, accessToken) = try {
+            startHttpServerAndGetToken(
+                googleAuthUrl = googleAuthUrl,
+                redirectTarget = redirectTarget,
+                state = state,
+            )
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
         if (idToken == null && accessToken == null) {
             currentLogger.log("GoogleAuthUiProvider: token is null")
             return Result.failure(
@@ -161,19 +167,18 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         } catch (e: Exception) {
             currentCoroutineContext().ensureActive()
             val bindFailure = e is BindException || e.cause is BindException
-            if (bindFailure) {
-                currentLogger.log(
-                    "GoogleAuthUiProvider: could not bind port ${redirectTarget.port} for the OAuth " +
-                        "redirect (${redirectTarget.redirectUri}) - it is already in use. Free the " +
-                        "port, or set a different (Google-console-registered) " +
-                        "GoogleAuthCredentials.redirectUri."
-                )
+            val reason = if (bindFailure) {
+                "Could not bind port ${redirectTarget.port} for the OAuth redirect " +
+                    "(${redirectTarget.redirectUri}) - it is already in use. Free the " +
+                    "port, or set a different (Google-console-registered) " +
+                    "GoogleAuthCredentials.redirectUri."
             } else {
-                currentLogger.log(
-                    "GoogleAuthUiProvider: failed to start the redirect server on port ${redirectTarget.port}: $e"
-                )
+                "Failed to start the OAuth redirect server on port ${redirectTarget.port}: $e"
             }
-            return Pair(null, null)
+            currentLogger.log("GoogleAuthUiProvider: $reason")
+            // Surface the reason to onResult instead of a generic
+            // token-is-null failure (#102: failures carry their cause).
+            throw IllegalStateException(reason, e)
         }
 
         // Open the browser only after the callback server is listening, so the
