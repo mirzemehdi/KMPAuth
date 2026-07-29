@@ -66,10 +66,16 @@ the reason instead of not compiling or silently doing nothing.
 
 ```kotlin
 commonMain.dependencies {
+    // Identity providers - native SDK sign-in, no backend required:
     implementation("io.github.mirzemehdi:kmpauth-google:<version>")   // Google sign-in
+    implementation("io.github.mirzemehdi:kmpauth-apple:<version>")    // if needed: native Sign in with Apple (iOS)
+    implementation("io.github.mirzemehdi:kmpauth-facebook:<version>") // if needed: Facebook login (Android/iOS)
+
+    implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") // if needed: branded sign-in buttons
+
+    // Session backend - pick one (or both):
     implementation("io.github.mirzemehdi:kmpauth-firebase:<version>") // Firebase backend
-    implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") // branded buttons
-    // also available: kmpauth-facebook, kmpauth-apple, kmpauth-supabase
+    implementation("io.github.mirzemehdi:kmpauth-supabase:<version>") // if needed: Supabase backend
 }
 ```
 
