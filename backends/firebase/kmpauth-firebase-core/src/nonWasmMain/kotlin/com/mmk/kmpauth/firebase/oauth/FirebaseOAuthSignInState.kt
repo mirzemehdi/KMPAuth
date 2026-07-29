@@ -12,12 +12,12 @@ import dev.gitlive.firebase.auth.OAuthProvider
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun rememberFirebaseOAuthSignInState(
+public actual fun rememberOAuthState(
     provider: String,
     requestScopes: List<String>,
     customParameters: Map<String, String>,
     linkAccount: Boolean,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     // Lazy default registration: no-op when the app already registered
     // a backend at startup (first registration wins).
@@ -31,7 +31,15 @@ public actual fun rememberFirebaseOAuthSignInState(
         oAuthProvider = oAuthProvider,
         linkAccount = linkAccount,
         onResult = { result ->
-            onResult(result.map { user -> user?.let(::FirebaseKMPAuthUser) })
+            onResult(
+                result.fold(
+                    onSuccess = { user ->
+                        user?.let { Result.success<KMPAuthUser>(FirebaseKMPAuthUser(it)) }
+                            ?: Result.failure(IllegalStateException("Firebase Null user"))
+                    },
+                    onFailure = { Result.failure(it) },
+                )
+            )
         },
     )
 }

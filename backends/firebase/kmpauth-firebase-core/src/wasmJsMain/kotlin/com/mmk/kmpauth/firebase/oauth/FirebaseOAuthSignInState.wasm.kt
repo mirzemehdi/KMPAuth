@@ -12,12 +12,12 @@ import com.mmk.kmpauth.firebase.backend.WASM_UNSUPPORTED_REASON
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun rememberFirebaseOAuthSignInState(
+public actual fun rememberOAuthState(
     provider: String,
     requestScopes: List<String>,
     customParameters: Map<String, String>,
     linkAccount: Boolean,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     val currentOnResult by rememberUpdatedState(onResult)
     return remember {

@@ -28,15 +28,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.apple.rememberAppleSignInState
-import com.mmk.kmpauth.firebase.anonymous.rememberFirebaseAnonymousSignInState
-import com.mmk.kmpauth.firebase.apple.rememberFirebaseAppleSignInState
-import com.mmk.kmpauth.firebase.email.EmailAuthMode
-import com.mmk.kmpauth.firebase.email.rememberFirebaseEmailSignInState
-import com.mmk.kmpauth.firebase.facebook.rememberFirebaseFacebookSignInState
-import com.mmk.kmpauth.firebase.github.rememberFirebaseGithubSignInState
-import com.mmk.kmpauth.firebase.google.rememberFirebaseGoogleSignInState
-import com.mmk.kmpauth.firebase.microsoft.rememberFirebaseMicrosoftSignInState
-import com.mmk.kmpauth.firebase.phone.rememberFirebasePhoneSignInState
+import com.mmk.kmpauth.core.auth.EmailAuthMode
+import com.mmk.kmpauth.core.auth.rememberAnonymousAuthState
+import com.mmk.kmpauth.core.auth.rememberEmailAuthState
+import com.mmk.kmpauth.firebase.apple.rememberAppleAuthState
+import com.mmk.kmpauth.facebook.rememberFacebookAuthState
+import com.mmk.kmpauth.firebase.github.rememberGithubAuthState
+import com.mmk.kmpauth.google.rememberGoogleAuthState
+import com.mmk.kmpauth.firebase.microsoft.rememberMicrosoftAuthState
+import com.mmk.kmpauth.firebase.phone.rememberPhoneAuthState
 import com.mmk.kmpauth.google.rememberGoogleSignInState
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
@@ -57,7 +57,7 @@ fun App() {
         ) {
 
             var signedInUserName: String by remember { mutableStateOf("") }
-            val onFirebaseResult: (Result<KMPAuthUser?>) -> Unit = { result ->
+            val onFirebaseResult: (Result<KMPAuthUser>) -> Unit = { result ->
                 if (result.isSuccess) {
                     val user = result.getOrNull()
                     signedInUserName =
@@ -87,7 +87,7 @@ fun App() {
             Button(onClick = { googleSignIn.launch() }) { Text("Google Sign-In(Custom Design)") }
 
             //Apple Sign-In with Custom Button and authentication with Firebase
-            val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+            val appleSignIn = rememberAppleAuthState(onResult = onFirebaseResult)
             Button(onClick = { appleSignIn.launch() }) { Text("Apple Sign-In (Custom Design)") }
 
             //Native Apple Sign-In without Firebase. Apple platforms only - on
@@ -104,19 +104,19 @@ fun App() {
             Button(onClick = { appleNativeSignIn.launch() }) { Text("Apple Sign-In (No Firebase)") }
 
             //Github Sign-In with Custom Button and authentication with Firebase
-            val githubSignIn = rememberFirebaseGithubSignInState(onResult = onFirebaseResult)
+            val githubSignIn = rememberGithubAuthState(onResult = onFirebaseResult)
             Button(onClick = { githubSignIn.launch() }) { Text("Github Sign-In (Custom Design)") }
 
             //Facebook Sign-In with Custom Button and authentication with Firebase
-            val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
+            val facebookSignIn = rememberFacebookAuthState(onResult = onFirebaseResult)
             Button(onClick = { facebookSignIn.launch() }) { Text("Facebook Sign-In (Custom Design)") }
 
             //Microsoft Sign-In with Firebase (OAuth web flow, no Microsoft SDK)
-            val microsoftSignIn = rememberFirebaseMicrosoftSignInState(onResult = onFirebaseResult)
+            val microsoftSignIn = rememberMicrosoftAuthState(onResult = onFirebaseResult)
             Button(onClick = { microsoftSignIn.launch() }) { Text("Microsoft Sign-In") }
 
             //Anonymous (guest) sign-in with Firebase
-            val anonymousSignIn = rememberFirebaseAnonymousSignInState(onResult = onFirebaseResult)
+            val anonymousSignIn = rememberAnonymousAuthState(onResult = onFirebaseResult)
             Button(onClick = { anonymousSignIn.launch() }) { Text("Continue as Guest") }
 
             //Email/password authentication with Firebase
@@ -146,7 +146,7 @@ fun App() {
 @Composable
 fun EmailAuthSection(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser>) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -171,13 +171,13 @@ fun EmailAuthSection(
 
         // Field values are read at launch time, so the states can be
         // created once and reused as the user types.
-        val emailSignIn = rememberFirebaseEmailSignInState(
+        val emailSignIn = rememberEmailAuthState(
             email = email,
             password = password,
             mode = EmailAuthMode.SignIn,
             onResult = onFirebaseResult,
         )
-        val emailSignUp = rememberFirebaseEmailSignInState(
+        val emailSignUp = rememberEmailAuthState(
             email = email,
             password = password,
             mode = EmailAuthMode.SignUp,
@@ -193,7 +193,7 @@ fun EmailAuthSection(
 @Composable
 fun PhoneAuthSection(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser>) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -202,7 +202,7 @@ fun PhoneAuthSection(
     ) {
         var phoneNumber by remember { mutableStateOf("") }
         var smsCode by remember { mutableStateOf("") }
-        val phoneSignIn = rememberFirebasePhoneSignInState(
+        val phoneSignIn = rememberPhoneAuthState(
             phoneNumber = phoneNumber,
             onResult = onFirebaseResult,
         )
@@ -235,7 +235,7 @@ fun PhoneAuthSection(
 @Composable
 fun AuthUiHelperButtonsAndFirebaseAuth(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser>) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -243,18 +243,18 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
     ) {
 
         //Google Sign-In Button and authentication with Firebase
-        val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+        val googleSignIn = rememberGoogleAuthState(onResult = onFirebaseResult)
         GoogleSignInButton(
             modifier = Modifier.fillMaxWidth().height(44.dp),
             fontSize = 19.sp
         ) { googleSignIn.launch() }
 
         //Apple Sign-In Button and authentication with Firebase
-        val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+        val appleSignIn = rememberAppleAuthState(onResult = onFirebaseResult)
         AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { appleSignIn.launch() }
 
         //Facebook Sign-In Button and authentication with Firebase
-        val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
+        val facebookSignIn = rememberFacebookAuthState(onResult = onFirebaseResult)
         FacebookSignInButton(
             modifier = Modifier.fillMaxWidth().height(44.dp),
             fontSize = 19.sp
@@ -266,7 +266,7 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
 @Composable
 fun IconOnlyButtonsAndFirebaseAuth(
     modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<KMPAuthUser?>) -> Unit,
+    onFirebaseResult: (Result<KMPAuthUser>) -> Unit,
 ) {
     Row(
         modifier = modifier,
@@ -274,15 +274,15 @@ fun IconOnlyButtonsAndFirebaseAuth(
     ) {
 
         //Google Sign-In IconOnly Button and authentication with Firebase
-        val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+        val googleSignIn = rememberGoogleAuthState(onResult = onFirebaseResult)
         GoogleSignInButtonIconOnly(onClick = { googleSignIn.launch() })
 
         //Apple Sign-In IconOnly Button and authentication with Firebase
-        val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+        val appleSignIn = rememberAppleAuthState(onResult = onFirebaseResult)
         AppleSignInButtonIconOnly(onClick = { appleSignIn.launch() })
 
         //Facebook Sign-In IconOnly Button and authentication with Firebase
-        val facebookSignIn = rememberFirebaseFacebookSignInState(onResult = onFirebaseResult)
+        val facebookSignIn = rememberFacebookAuthState(onResult = onFirebaseResult)
         FacebookSignInButtonIconOnly(onClick = { facebookSignIn.launch() })
     }
 }

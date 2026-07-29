@@ -1,9 +1,8 @@
-package com.mmk.kmpauth.firebase.google
+package com.mmk.kmpauth.google
 
 import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.KMPAuthUser
-import com.mmk.kmpauth.google.GoogleUser
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -19,7 +18,7 @@ import kotlin.test.assertTrue
  * - linkAccount flag is forwarded as linkWithCurrentUser
  * - backend failures pass through unchanged
  */
-class GoogleFirebaseSignInHandlerTest {
+class GoogleAuthSignInHandlerTest {
 
     private class RecordingBackend(
         private val result: Result<KMPAuthUser>,
@@ -51,7 +50,7 @@ class GoogleFirebaseSignInHandlerTest {
     @Test
     fun nullIdTokenFailsFastWithExactMessage() = runTest {
         val backend = RecordingBackend(Result.failure(IllegalStateException("unused")))
-        val handler = GoogleFirebaseSignInHandler(backend)
+        val handler = GoogleAuthSignInHandler(backend)
 
         val result = handler.signIn(googleUser = null, linkAccount = false)
 
@@ -63,7 +62,7 @@ class GoogleFirebaseSignInHandlerTest {
     @Test
     fun forwardsTokensProviderIdAndLinkFlag() = runTest {
         val backend = RecordingBackend(Result.success(FakeUser(raw = null)))
-        val handler = GoogleFirebaseSignInHandler(backend)
+        val handler = GoogleAuthSignInHandler(backend)
 
         handler.signIn(
             googleUser = GoogleUser(idToken = "id-token", accessToken = "access-token"),
@@ -81,7 +80,7 @@ class GoogleFirebaseSignInHandlerTest {
     fun backendFailurePassesThroughUnchanged() = runTest {
         val boom = RuntimeException("boom")
         val backend = RecordingBackend(Result.failure(boom))
-        val handler = GoogleFirebaseSignInHandler(backend)
+        val handler = GoogleAuthSignInHandler(backend)
 
         val result = handler.signIn(GoogleUser(idToken = "t"), linkAccount = false)
 
@@ -95,7 +94,7 @@ class GoogleFirebaseSignInHandlerTest {
         // the native FirebaseUser is the deprecated container's job.
         val user = FakeUser(raw = "not-a-firebase-user")
         val backend = RecordingBackend(Result.success(user))
-        val handler = GoogleFirebaseSignInHandler(backend)
+        val handler = GoogleAuthSignInHandler(backend)
 
         val result = handler.signIn(GoogleUser(idToken = "t"), linkAccount = false)
 

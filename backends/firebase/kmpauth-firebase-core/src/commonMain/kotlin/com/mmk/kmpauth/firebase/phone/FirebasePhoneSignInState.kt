@@ -6,7 +6,7 @@ import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 /**
- * Handle returned by [rememberFirebasePhoneSignInState]. Phone sign-in is a
+ * Handle returned by [rememberPhoneAuthState]. Phone sign-in is a
  * two-step flow, so this extends [SignInState] with the second step:
  *
  * 1. [launch] sends the SMS verification code to the phone number.
@@ -18,7 +18,7 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
  * turns true.
  */
 @Stable
-public interface PhoneSignInState : SignInState {
+public interface PhoneAuthState : SignInState {
 
     /**
      * True after the verification code was sent, while the flow waits for
@@ -49,7 +49,7 @@ public interface PhoneSignInState : SignInState {
  * ```
  * var phoneNumber by remember { mutableStateOf("") }
  * var smsCode by remember { mutableStateOf("") }
- * val phoneSignIn = rememberFirebasePhoneSignInState(
+ * val phoneSignIn = rememberPhoneAuthState(
  *     phoneNumber = phoneNumber,
  *     onResult = onFirebaseResult,
  * )
@@ -76,27 +76,27 @@ public interface PhoneSignInState : SignInState {
  * signed-in Firebase user instead of creating a new session — e.g. to
  * upgrade an anonymous user to a permanent account.
  * @param onCodeSent invoked when the SMS was sent and the flow starts
- * waiting for [PhoneSignInState.submitCode] — show your code input UI.
+ * waiting for [PhoneAuthState.submitCode] — show your code input UI.
  * @param onResult receives the signed-in [KMPAuthUser] or the failure
  * (invalid phone number, quota exceeded, invalid code, ...). The native
  * Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
-public expect fun rememberFirebasePhoneSignInState(
+public expect fun rememberPhoneAuthState(
     phoneNumber: String,
     linkAccount: Boolean = false,
     onCodeSent: () -> Unit = {},
-    onResult: (Result<KMPAuthUser?>) -> Unit,
-): PhoneSignInState
+    onResult: (Result<KMPAuthUser>) -> Unit,
+): PhoneAuthState
 
 /**
- * [PhoneSignInState] for platforms where phone sign-in cannot work;
+ * [PhoneAuthState] for platforms where phone sign-in cannot work;
  * launching reports [reason] as a failed [Result] instead of crashing.
  */
-internal class UnsupportedPhoneSignInState(
-    private val onResult: (Result<KMPAuthUser?>) -> Unit,
+internal class UnsupportedPhoneAuthState(
+    private val onResult: (Result<KMPAuthUser>) -> Unit,
     private val reason: String,
-) : PhoneSignInState {
+) : PhoneAuthState {
     override val isInProgress: Boolean = false
     override val isCodeSent: Boolean = false
     override fun launch(): Unit = onResult(Result.failure(UnsupportedOperationException(reason)))

@@ -2,7 +2,3 @@ public final class com/mmk/kmpauth/firebase/facebook/FacebookButtonUiContainerFi
 	public static final fun FacebookButtonUiContainerFirebase (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLcom/mmk/kmpauth/facebook/FacebookLoginTracking;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
-public final class com/mmk/kmpauth/firebase/facebook/FirebaseFacebookSignInState_jvmKt {
-	public static final fun rememberFirebaseFacebookSignInState (Ljava/util/List;ZLcom/mmk/kmpauth/facebook/FacebookLoginTracking;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
-}
-

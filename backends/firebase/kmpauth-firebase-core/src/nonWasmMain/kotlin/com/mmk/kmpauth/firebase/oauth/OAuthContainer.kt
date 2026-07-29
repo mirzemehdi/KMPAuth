@@ -10,16 +10,16 @@ import dev.gitlive.firebase.auth.OAuthProvider
 
 /**
  * Legacy container API for OAuth sign-in with Firebase. Superseded by
- * [rememberFirebaseOAuthSignInState], which returns a
+ * [rememberOAuthState], which returns a
  * [com.mmk.kmpauth.core.SignInState] you can wire to any clickable without
  * the receiver-scope indirection.
  */
 @Deprecated(
-    "Use rememberFirebaseOAuthSignInState(provider, ...) and call launch() from your own " +
+    "Use rememberOAuthState(provider, ...) and call launch() from your own " +
         "button's onClick. Scheduled for removal in 4.0.",
     ReplaceWith(
-        "rememberFirebaseOAuthSignInState(provider, requestScopes, customParameters, linkAccount, onResult)",
-        "com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState"
+        "rememberOAuthState(provider, requestScopes, customParameters, linkAccount, onResult)",
+        "com.mmk.kmpauth.firebase.oauth.rememberOAuthState"
     ),
     DeprecationLevel.WARNING
 )

@@ -101,6 +101,23 @@ public object KMPAuth {
         KMPAuthBackend.reauthenticate(credential)
 
     /**
+     * Creates a new account with an email/password credential and signs it
+     * in. For the composable flow use
+     * `rememberEmailAuthState(mode = EmailAuthMode.SignUp)`.
+     */
+    public suspend fun signUp(
+        email: String,
+        password: String,
+    ): Result<KMPAuthUser> = KMPAuthBackend.signUp(email, password)
+
+    /**
+     * Signs in anonymously, creating (or resuming) a temporary account. For
+     * the composable flow use `rememberAnonymousAuthState`.
+     */
+    public suspend fun signInAnonymously(): Result<KMPAuthUser> =
+        KMPAuthBackend.signInAnonymously()
+
+    /**
      * Sends a password-reset email for the account registered under
      * [email].
      *
@@ -148,5 +165,5 @@ public object KMPAuth {
         email: String,
         link: String,
         linkAccount: Boolean = false,
-    ): Result<KMPAuthUser?> = KMPAuthBackend.signInWithEmailLink(email, link, linkAccount)
+    ): Result<KMPAuthUser> = KMPAuthBackend.signInWithEmailLink(email, link, linkAccount)
 }

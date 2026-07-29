@@ -14,12 +14,12 @@ import kotlinx.cinterop.ExperimentalForeignApi
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-public actual fun rememberFirebasePhoneSignInState(
+public actual fun rememberPhoneAuthState(
     phoneNumber: String,
     linkAccount: Boolean,
     onCodeSent: () -> Unit,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
-): PhoneSignInState {
+    onResult: (Result<KMPAuthUser>) -> Unit,
+): PhoneAuthState {
     val scope = rememberCoroutineScope()
     val currentPhoneNumber by rememberUpdatedState(phoneNumber)
     val currentLinkAccount by rememberUpdatedState(linkAccount)
@@ -30,7 +30,7 @@ public actual fun rememberFirebasePhoneSignInState(
         // Lazy default registration: no-op when the app already registered
         // a backend at startup (first registration wins).
         KMPAuthBackend.register(FirebaseAuthBackend)
-        PhoneSignInStateImpl(
+        PhoneAuthStateImpl(
             scope = scope,
             phoneNumber = { currentPhoneNumber },
             linkAccount = { currentLinkAccount },

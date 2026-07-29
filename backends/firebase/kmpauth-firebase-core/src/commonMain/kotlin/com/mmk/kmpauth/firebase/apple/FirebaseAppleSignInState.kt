@@ -17,7 +17,7 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
  *
  * ```
  * //Apple Sign-In with Custom Button and authentication with Firebase
- * val appleSignIn = rememberFirebaseAppleSignInState(onResult = onFirebaseResult)
+ * val appleSignIn = rememberAppleAuthState(onResult = onFirebaseResult)
  *
  * Button(onClick = { appleSignIn.launch() }) { Text("Apple Sign-In (Custom Design)") }
  * ```
@@ -28,11 +28,11 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
  * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
-public expect fun rememberFirebaseAppleSignInState(
+public expect fun rememberAppleAuthState(
     requestScopes: List<AppleSignInRequestScope> = listOf(
         AppleSignInRequestScope.FullName,
         AppleSignInRequestScope.Email
     ),
     linkAccount: Boolean = false,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState

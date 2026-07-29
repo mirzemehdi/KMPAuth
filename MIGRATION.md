@@ -110,7 +110,7 @@ GoogleButtonUiContainerFirebase(linkAccount = false, onResult = onFirebaseResult
 }
 
 // 3.0:
-val googleSignIn = rememberFirebaseGoogleSignInState(
+val googleSignIn = rememberGoogleAuthState(
     linkAccount = false,
     onResult = onFirebaseResult,
 )
@@ -175,7 +175,7 @@ registered with Google, so sign-in often failed with `redirect_uri_mismatch`).
 ## 8. Facebook login tracking (token type is now consistent)
 
 Facebook sign-in gained a `loginTracking: FacebookLoginTracking` parameter on
-`rememberFacebookSignInState`, `rememberFirebaseFacebookSignInState` and the
+`rememberFacebookSignInState`, `rememberFacebookAuthState` and the
 Facebook containers. It controls which token the flow returns and is consistent
 across Android and iOS:
 
@@ -265,10 +265,11 @@ provider directly.
 - `GoogleButtonUiContainer` keeps its `(GoogleUser?) -> Unit` callback, so 2.x
   container code compiles unchanged. To see failure reasons, move to
   `rememberGoogleSignInState`.
-- `rememberFirebaseGoogleSignInState` already used a `Result` callback. It now
+- `rememberGoogleAuthState` already used a `Result` callback. It now
   propagates the underlying Google failure instead of reporting a generic
   "id token is null", and as of the KMPAuthUser change (section 11) the result
-  type is `Result<KMPAuthUser?>`.
+  type is `Result<KMPAuthUser>` and the function is `rememberGoogleAuthState`
+  in `kmpauth-google` (section 11).
 
 ## 11. Firebase states return `KMPAuthUser` and are callable from commonMain (wasm included)
 
@@ -286,7 +287,7 @@ val onFirebaseResult: (Result<FirebaseUser?>) -> Unit = { result ->
 }
 
 // after
-val onFirebaseResult: (Result<KMPAuthUser?>) -> Unit = { result ->
+val onAuthResult: (Result<KMPAuthUser>) -> Unit = { result ->
     val name = result.getOrNull()?.displayName // same properties: uid, email, displayName, photoUrl, providerId
     val nativeUser = result.getOrNull()?.raw as? dev.gitlive.firebase.auth.FirebaseUser // escape hatch
 }
@@ -294,8 +295,36 @@ val onFirebaseResult: (Result<KMPAuthUser?>) -> Unit = { result ->
 
 Also changed:
 
-- `rememberFirebaseOAuthSignInState(oAuthProvider = OAuthProvider(...))` →
-  `rememberFirebaseOAuthSignInState(provider = "github.com", requestScopes = ..., customParameters = ...)`.
+- The sign-in states are backend-agnostic and renamed - the `Firebase` prefix
+  is gone, and "Auth" marks the states that produce a session:
+
+  | 3.0 alphas | Now | Module |
+  |---|---|---|
+  | `rememberGoogleAuthState` | `rememberGoogleAuthState` | `kmpauth-google` |
+  | `rememberFacebookAuthState` | `rememberFacebookAuthState` | `kmpauth-facebook` |
+  | `rememberFirebaseAppleSignInState` | `rememberAppleAuthState` | `kmpauth-firebase-core` |
+  | `rememberFirebaseGithubSignInState` | `rememberGithubAuthState` | `kmpauth-firebase-core` |
+  | `rememberFirebaseMicrosoftSignInState` | `rememberMicrosoftAuthState` | `kmpauth-firebase-core` |
+  | `rememberFirebaseOAuthSignInState` | `rememberOAuthState(provider = "...")` | `kmpauth-firebase-core` |
+  | `rememberFirebaseEmailSignInState` | `rememberEmailAuthState` | `kmpauth-core` |
+  | `rememberFirebaseAnonymousSignInState` | `rememberAnonymousAuthState` | `kmpauth-core` |
+  | `rememberFirebasePhoneSignInState` | `rememberPhoneAuthState` | `kmpauth-firebase-core` |
+
+  The provider-only states (`rememberGoogleSignInState`,
+  `rememberFacebookSignInState`, `rememberAppleSignInState`) are unchanged -
+  they return the provider credential without a backend session.
+- Callbacks are `Result<KMPAuthUser>` (non-null): a backend returning no user
+  is a failure with a reason, never a null success.
+- **Register the backend once at application start** - the generic states and
+  `KMPAuth.*` operations are served by it:
+
+  ```kotlin
+  KMPAuth.registerBackendProvider(FirebaseAuthBackend)
+  ```
+
+  The states living inside `kmpauth-firebase-core` (Apple/GitHub/Microsoft/
+  OAuth/phone) and the deprecated 2.x containers still self-register lazily,
+  so 2.x container code keeps working with zero config.
 - Password reset, email-link sign-in and reauthentication are backend
   operations called directly on `KMPAuthBackend` (which delegates to the
   registered backend): `KMPAuth.sendPasswordResetEmail(email)`,

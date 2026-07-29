@@ -20,6 +20,15 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
     override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
         Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
 
+    override suspend fun signUp(
+        email: String,
+        password: String,
+    ): Result<KMPAuthUser> =
+        Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
+
+    override suspend fun signInAnonymously(): Result<KMPAuthUser> =
+        Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
+
     override suspend fun sendPasswordResetEmail(
         email: String,
         actionCodeSettings: EmailActionCodeSettings?,
@@ -36,7 +45,7 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         email: String,
         link: String,
         linkAccount: Boolean,
-    ): Result<KMPAuthUser?> =
+    ): Result<KMPAuthUser> =
         Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
 
     override suspend fun signOut(): Unit = Unit

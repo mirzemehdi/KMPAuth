@@ -43,6 +43,32 @@ public interface AuthProviderBackend {
         )
 
     /**
+     * Creates a new account with an email/password credential and signs it
+     * in.
+     *
+     * The default implementation reports the operation as unsupported.
+     */
+    public suspend fun signUp(
+        email: String,
+        password: String,
+    ): Result<KMPAuthUser> = Result.failure(
+        UnsupportedOperationException(
+            "This AuthProviderBackend does not support email/password sign-up."
+        )
+    )
+
+    /**
+     * Signs in anonymously, creating (or resuming) a temporary account.
+     *
+     * The default implementation reports the operation as unsupported.
+     */
+    public suspend fun signInAnonymously(): Result<KMPAuthUser> = Result.failure(
+        UnsupportedOperationException(
+            "This AuthProviderBackend does not support anonymous sign-in."
+        )
+    )
+
+    /**
      * Sends a password-reset email for the account registered under
      * [email].
      *
@@ -104,7 +130,7 @@ public interface AuthProviderBackend {
         email: String,
         link: String,
         linkAccount: Boolean = false,
-    ): Result<KMPAuthUser?> = Result.failure(
+    ): Result<KMPAuthUser> = Result.failure(
         UnsupportedOperationException(
             "This AuthProviderBackend does not support email-link sign-in."
         )
@@ -175,6 +201,12 @@ public object KMPAuthBackend : AuthProviderBackend {
     override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
         backend?.reauthenticate(credential) ?: noBackendFailure()
 
+    override suspend fun signUp(email: String, password: String): Result<KMPAuthUser> =
+        backend?.signUp(email, password) ?: noBackendFailure()
+
+    override suspend fun signInAnonymously(): Result<KMPAuthUser> =
+        backend?.signInAnonymously() ?: noBackendFailure()
+
     override suspend fun sendPasswordResetEmail(
         email: String,
         actionCodeSettings: EmailActionCodeSettings?,
@@ -194,7 +226,7 @@ public object KMPAuthBackend : AuthProviderBackend {
         email: String,
         link: String,
         linkAccount: Boolean,
-    ): Result<KMPAuthUser?> =
+    ): Result<KMPAuthUser> =
         backend?.signInWithEmailLink(email, link, linkAccount) ?: noBackendFailure()
 
     override suspend fun signOut() {

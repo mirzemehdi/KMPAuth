@@ -3,7 +3,7 @@ package com.mmk.kmpauth.firebase.microsoft
 import androidx.compose.runtime.Composable
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.KMPAuthUser
-import com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState
+import com.mmk.kmpauth.firebase.oauth.rememberOAuthState
 
 /**
  * Microsoft Sign-In with Firebase as a Compose state holder.
@@ -18,7 +18,7 @@ import com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState
  * the user taps.
  *
  * ```
- * val microsoftSignIn = rememberFirebaseMicrosoftSignInState(onResult = onFirebaseResult)
+ * val microsoftSignIn = rememberMicrosoftAuthState(onResult = onFirebaseResult)
  *
  * Button(onClick = { microsoftSignIn.launch() }) { Text("Microsoft Sign-In") }
  * ```
@@ -35,12 +35,12 @@ import com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState
  * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
-public fun rememberFirebaseMicrosoftSignInState(
+public fun rememberMicrosoftAuthState(
     requestScopes: List<String> = listOf("mail.read"),
     customParameters: Map<String, String> = emptyMap(),
     linkAccount: Boolean = false,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
-): SignInState = rememberFirebaseOAuthSignInState(
+    onResult: (Result<KMPAuthUser>) -> Unit,
+): SignInState = rememberOAuthState(
     provider = "microsoft.com",
     requestScopes = requestScopes,
     customParameters = customParameters,

@@ -1,14 +1,10 @@
-public final class com/mmk/kmpauth/firebase/anonymous/FirebaseAnonymousSignInStateKt {
-	public static final fun rememberFirebaseAnonymousSignInState (Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/mmk/kmpauth/core/SignInState;
-}
-
 public final class com/mmk/kmpauth/firebase/apple/AppleButtonUiContainerKt {
 	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun AppleButtonUiContainer (Landroidx/compose/ui/Modifier;Ljava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/mmk/kmpauth/firebase/apple/FirebaseAppleSignInState_jvmKt {
-	public static final fun rememberFirebaseAppleSignInState (Ljava/util/List;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberAppleAuthState (Ljava/util/List;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackend : com/mmk/kmpauth/core/auth/AuthProviderBackend {
@@ -20,8 +16,10 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackend : com/mm
 	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/mmk/kmpauth/firebase/backend/FirebaseKMPAuthUser : com/mmk/kmpauth/core/auth/KMPAuthUser {
@@ -35,20 +33,8 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseKMPAuthUser : com/mm
 	public fun getUid ()Ljava/lang/String;
 }
 
-public final class com/mmk/kmpauth/firebase/email/EmailAuthMode : java/lang/Enum {
-	public static final field SignIn Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
-	public static final field SignUp Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
-	public static fun values ()[Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;
-}
-
-public final class com/mmk/kmpauth/firebase/email/FirebaseEmailSignInStateKt {
-	public static final fun rememberFirebaseEmailSignInState (Ljava/lang/String;Ljava/lang/String;Lcom/mmk/kmpauth/firebase/email/EmailAuthMode;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
-}
-
 public final class com/mmk/kmpauth/firebase/github/FirebaseGithubSignInStateKt {
-	public static final fun rememberFirebaseGithubSignInState (Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberGithubAuthState (Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/firebase/github/GithubButtonUiContainerKt {
@@ -57,11 +43,11 @@ public final class com/mmk/kmpauth/firebase/github/GithubButtonUiContainerKt {
 }
 
 public final class com/mmk/kmpauth/firebase/microsoft/FirebaseMicrosoftSignInStateKt {
-	public static final fun rememberFirebaseMicrosoftSignInState (Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberMicrosoftAuthState (Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/firebase/oauth/FirebaseOAuthSignInStateKt {
-	public static final fun rememberFirebaseOAuthSignInState (Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberOAuthState (Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/firebase/oauth/OAuthContainerKt {
@@ -70,10 +56,10 @@ public final class com/mmk/kmpauth/firebase/oauth/OAuthContainerKt {
 }
 
 public final class com/mmk/kmpauth/firebase/phone/FirebasePhoneSignInState_jvmKt {
-	public static final fun rememberFirebasePhoneSignInState (Ljava/lang/String;ZLkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/firebase/phone/PhoneSignInState;
+	public static final fun rememberPhoneAuthState (Ljava/lang/String;ZLkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/firebase/phone/PhoneAuthState;
 }
 
-public abstract interface class com/mmk/kmpauth/firebase/phone/PhoneSignInState : com/mmk/kmpauth/core/SignInState {
+public abstract interface class com/mmk/kmpauth/firebase/phone/PhoneAuthState : com/mmk/kmpauth/core/SignInState {
 	public abstract fun cancel ()V
 	public abstract fun isCodeSent ()Z
 	public abstract fun submitCode (Ljava/lang/String;)V

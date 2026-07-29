@@ -53,7 +53,7 @@ kotlin {
             implementation(compose.foundation)
             api(project(":kmpauth-core"))
             api(project(":backends:firebase:kmpauth-firebase-core"))
-            implementation(project(":providers:kmpauth-google"))
+            api(project(":providers:kmpauth-google"))
         }
 
         commonTest.dependencies {

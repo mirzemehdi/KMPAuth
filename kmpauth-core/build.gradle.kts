@@ -1,5 +1,8 @@
 plugins {
     id("kmpauth.kmp.library")
+    // Core now hosts @Composable state holders (rememberEmailAuthState,
+    // rememberAnonymousAuthState) - they need the Compose compiler.
+    alias(libs.plugins.composeCompiler)
 }
 
 kotlin {

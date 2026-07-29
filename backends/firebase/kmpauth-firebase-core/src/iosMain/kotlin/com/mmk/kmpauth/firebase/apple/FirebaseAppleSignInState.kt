@@ -24,10 +24,10 @@ import kotlin.coroutines.resume
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun rememberFirebaseAppleSignInState(
+public actual fun rememberAppleAuthState(
     requestScopes: List<AppleSignInRequestScope>,
     linkAccount: Boolean,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
     val currentRequestScopes by rememberUpdatedState(requestScopes)
@@ -49,7 +49,7 @@ public actual fun rememberFirebaseAppleSignInState(
 private suspend fun signInWithApple(
     requestScopes: List<AppleSignInRequestScope>,
     linkAccount: Boolean,
-): Result<KMPAuthUser?> {
+): Result<KMPAuthUser> {
     val credentialResult = performAppleSignIn(requestScopes)
     val appleCredential = credentialResult.getOrElse { return Result.failure(it) }
     return signInToFirebase(
@@ -66,7 +66,7 @@ private suspend fun signInToFirebase(
     rawNonce: String,
     fullName: platform.Foundation.NSPersonNameComponents?,
     linkAccount: Boolean,
-): Result<KMPAuthUser?> = suspendCancellableCoroutine { continuation ->
+): Result<KMPAuthUser> = suspendCancellableCoroutine { continuation ->
     // Pass Apple's name components along so Firebase can populate the display
     // name on the user's first sign-in.
     val credential = FIROAuthProvider.appleCredentialWithIDToken(idToken, rawNonce, fullName)
@@ -83,7 +83,10 @@ private suspend fun signInToFirebase(
                     )
                 )
             } else {
-                continuation.resume(Result.success(Firebase.auth.currentUser?.let(::FirebaseKMPAuthUser)))
+                continuation.resume(
+                    Firebase.auth.currentUser?.let { Result.success<KMPAuthUser>(FirebaseKMPAuthUser(it)) }
+                        ?: Result.failure(IllegalStateException("Firebase Null user"))
+                )
             }
         }
     }

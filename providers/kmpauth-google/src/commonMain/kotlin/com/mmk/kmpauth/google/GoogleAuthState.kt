@@ -1,4 +1,4 @@
-package com.mmk.kmpauth.firebase.google
+package com.mmk.kmpauth.google
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,14 +11,19 @@ import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.NoOpSignInState
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
-import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
-import com.mmk.kmpauth.google.GoogleAuthProvider
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 /**
- * Google Sign-In exchanged for a Firebase session, as a Compose state
- * holder. Make sure [GoogleAuthProvider.create] was called at application
- * start.
+ * Google Sign-In exchanged for a session by the registered auth backend
+ * (Firebase today; any
+ * [AuthProviderBackend][com.mmk.kmpauth.core.auth.AuthProviderBackend]),
+ * as a Compose state holder. For the Google credential alone — no backend
+ * session — use [rememberGoogleSignInState].
+ *
+ * Make sure [GoogleAuthProvider.create] was called at application start,
+ * and that a backend is registered (e.g.
+ * `KMPAuth.registerBackendProvider(FirebaseAuthBackend)` — see the
+ * `kmpauth-firebase-core` module).
  *
  * Parameters are read at launch time: recomposing with new values (e.g.
  * toggling [linkAccount] between sign-in and sign-up modes) updates the
@@ -26,24 +31,24 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
  * the user taps.
  *
  * ```
- * val googleSignIn = rememberFirebaseGoogleSignInState(onResult = onFirebaseResult)
+ * val googleAuth = rememberGoogleAuthState(onResult = onAuthResult)
  *
- * GoogleSignInButton(onClick = { googleSignIn.launch() })
+ * GoogleSignInButton(onClick = { googleAuth.launch() })
  * ```
  *
  * @param linkAccount true links the credential to the currently signed-in
- * Firebase user instead of creating a new session.
+ * user instead of creating a new session.
  * @param onResult receives the signed-in [KMPAuthUser] or the failure. The
- * native Firebase user stays reachable through [KMPAuthUser.raw].
+ * backend's native user stays reachable through [KMPAuthUser.raw].
  */
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public fun rememberFirebaseGoogleSignInState(
+public fun rememberGoogleAuthState(
     linkAccount: Boolean = false,
     filterByAuthorizedAccounts: Boolean = false,
     isAutoSelectEnabled: Boolean = true,
     scopes: List<String> = listOf("email", "profile"),
-    onResult: (Result<KMPAuthUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     // IDE previews never run application startup, so GoogleAuthProvider.create()
     // has not been called and get() would throw. Render an inert state instead.
@@ -58,10 +63,7 @@ public fun rememberFirebaseGoogleSignInState(
     val currentOnResult by rememberUpdatedState(onResult)
 
     return remember {
-        // Lazy default registration: no-op when the app already registered
-        // a backend at startup (first registration wins).
-        KMPAuthBackend.register(FirebaseAuthBackend)
-        val signInHandler = GoogleFirebaseSignInHandler(backend = KMPAuthBackend)
+        val signInHandler = GoogleAuthSignInHandler(backend = KMPAuthBackend)
         LaunchingSignInState(scope) {
             val googleResult = googleAuthUiProvider.signIn(
                 filterByAuthorizedAccounts = currentFilter,

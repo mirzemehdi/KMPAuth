@@ -3,7 +3,7 @@ package com.mmk.kmpauth.firebase.github
 import androidx.compose.runtime.Composable
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.KMPAuthUser
-import com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState
+import com.mmk.kmpauth.firebase.oauth.rememberOAuthState
 
 /**
  * Github Sign-In with Firebase as a Compose state holder.
@@ -15,7 +15,7 @@ import com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState
  *
  * ```
  * //Github Sign-In with Custom Button and authentication with Firebase
- * val githubSignIn = rememberFirebaseGithubSignInState(onResult = onFirebaseResult)
+ * val githubSignIn = rememberGithubAuthState(onResult = onFirebaseResult)
  *
  * Button(onClick = { githubSignIn.launch() }) { Text("Github Sign-In (Custom Design)") }
  * ```
@@ -27,12 +27,12 @@ import com.mmk.kmpauth.firebase.oauth.rememberFirebaseOAuthSignInState
  * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
-public fun rememberFirebaseGithubSignInState(
+public fun rememberGithubAuthState(
     requestScopes: List<String> = listOf("user:email"),
     customParameters: Map<String, String> = emptyMap(),
     linkAccount: Boolean = false,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
-): SignInState = rememberFirebaseOAuthSignInState(
+    onResult: (Result<KMPAuthUser>) -> Unit,
+): SignInState = rememberOAuthState(
     provider = "github.com",
     requestScopes = requestScopes,
     customParameters = customParameters,

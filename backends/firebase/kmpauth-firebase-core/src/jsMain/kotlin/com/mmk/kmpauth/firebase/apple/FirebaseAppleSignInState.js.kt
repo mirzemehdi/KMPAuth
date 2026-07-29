@@ -12,10 +12,10 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 @OptIn(KMPAuthInternalApi::class)
 @Composable
-public actual fun rememberFirebaseAppleSignInState(
+public actual fun rememberAppleAuthState(
     requestScopes: List<AppleSignInRequestScope>,
     linkAccount: Boolean,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     val currentOnResult by rememberUpdatedState(onResult)
     return remember {

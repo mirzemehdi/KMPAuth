@@ -17,7 +17,7 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
  * the user taps.
  *
  * ```
- * val oAuthSignIn = rememberFirebaseOAuthSignInState(
+ * val oAuthSignIn = rememberOAuthState(
  *     provider = "github.com",
  *     onResult = onFirebaseResult,
  * )
@@ -37,10 +37,10 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
  * native Firebase user stays reachable through [KMPAuthUser.raw].
  */
 @Composable
-public expect fun rememberFirebaseOAuthSignInState(
+public expect fun rememberOAuthState(
     provider: String,
     requestScopes: List<String> = emptyList(),
     customParameters: Map<String, String> = emptyMap(),
     linkAccount: Boolean = false,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
+    onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState

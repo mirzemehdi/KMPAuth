@@ -7,15 +7,15 @@ import androidx.compose.runtime.rememberUpdatedState
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 @Composable
-public actual fun rememberFirebasePhoneSignInState(
+public actual fun rememberPhoneAuthState(
     phoneNumber: String,
     linkAccount: Boolean,
     onCodeSent: () -> Unit,
-    onResult: (Result<KMPAuthUser?>) -> Unit,
-): PhoneSignInState {
+    onResult: (Result<KMPAuthUser>) -> Unit,
+): PhoneAuthState {
     val currentOnResult by rememberUpdatedState(onResult)
     return remember {
-        UnsupportedPhoneSignInState(
+        UnsupportedPhoneAuthState(
             onResult = { currentOnResult(it) },
             reason = "Phone sign-in on the web requires a reCAPTCHA verifier, " +
                 "which KMPAuth does not provide yet.",

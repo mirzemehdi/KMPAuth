@@ -19,21 +19,21 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Shared [PhoneSignInState] implementation. Platform actuals supply
+ * Shared [PhoneAuthState] implementation. Platform actuals supply
  * [createVerificationProvider], which builds the platform's
  * [PhoneVerificationProvider] around the shared code-await logic: the
  * provider's `getVerificationCode` must call the given `getCode` lambda,
  * which flips [isCodeSent], fires `onCodeSent` and suspends until
  * [submitCode] delivers the code.
  */
-internal class PhoneSignInStateImpl(
+internal class PhoneAuthStateImpl(
     private val scope: CoroutineScope,
     private val phoneNumber: () -> String,
     private val linkAccount: () -> Boolean,
     private val onCodeSent: () -> Unit,
-    private val onResult: (Result<KMPAuthUser?>) -> Unit,
+    private val onResult: (Result<KMPAuthUser>) -> Unit,
     private val createVerificationProvider: (getCode: suspend () -> String) -> PhoneVerificationProvider,
-) : PhoneSignInState {
+) : PhoneAuthState {
 
     override var isInProgress: Boolean by mutableStateOf(false)
         private set
@@ -67,7 +67,7 @@ internal class PhoneSignInStateImpl(
     }
 
     @OptIn(KMPAuthInternalApi::class)
-    private suspend fun signIn(): Result<KMPAuthUser?> = runCatchingCancellable {
+    private suspend fun signIn(): Result<KMPAuthUser> = runCatchingCancellable {
         val deferred = CompletableDeferred<String>()
         codeDeferred = deferred
         val verificationProvider = createVerificationProvider {
@@ -85,6 +85,7 @@ internal class PhoneSignInStateImpl(
             auth.signInWithCredential(credential)
         }
         result.user?.let(::FirebaseKMPAuthUser)
+            ?: throw IllegalStateException("Firebase Null user")
     }
 
     override fun submitCode(code: String) {

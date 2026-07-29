@@ -5,20 +5,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.mmk.kmpauth.core.UiContainerScope
+import com.mmk.kmpauth.core.auth.KMPAuthBackend
+import com.mmk.kmpauth.firebase.backend.FirebaseAuthBackend
+import com.mmk.kmpauth.google.rememberGoogleAuthState
 import dev.gitlive.firebase.auth.FirebaseUser
 
 /**
  * Legacy container API for Google Sign-In with Firebase. Superseded by
- * [rememberFirebaseGoogleSignInState], which returns a
+ * [rememberGoogleAuthState], which returns a
  * [com.mmk.kmpauth.core.SignInState] you can wire to any clickable without
  * the receiver-scope indirection.
  */
 @Deprecated(
-    "Use rememberFirebaseGoogleSignInState(...) and call launch() from your own button's onClick. " +
+    "Use rememberGoogleAuthState(...) and call launch() from your own button's onClick. " +
         "Scheduled for removal in 4.0.",
     ReplaceWith(
-        "rememberFirebaseGoogleSignInState(linkAccount, filterByAuthorizedAccounts, isAutoSelectEnabled, scopes, onResult)",
-        "com.mmk.kmpauth.firebase.google.rememberFirebaseGoogleSignInState"
+        "rememberGoogleAuthState(linkAccount, filterByAuthorizedAccounts, isAutoSelectEnabled, scopes, onResult)",
+        "com.mmk.kmpauth.google.rememberGoogleAuthState"
     ),
     DeprecationLevel.WARNING
 )
@@ -32,14 +35,17 @@ public fun GoogleButtonUiContainerFirebase(
     onResult: (Result<FirebaseUser?>) -> Unit,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
-    val signInState = rememberFirebaseGoogleSignInState(
+    // 2.x apps never registered a backend explicitly; keep the container
+    // zero-config by lazily registering the Firebase default.
+    KMPAuthBackend.register(FirebaseAuthBackend)
+    val signInState = rememberGoogleAuthState(
         linkAccount = linkAccount,
         filterByAuthorizedAccounts = filterByAuthorizedAccounts,
         isAutoSelectEnabled = isAutoSelectEnabled,
         scopes = scopes,
         // The state reports KMPAuthUser; this 2.x-compat container keeps its
         // Result<FirebaseUser?> callback by unwrapping the native user.
-        onResult = { result -> onResult(result.map { it?.raw as? FirebaseUser }) },
+        onResult = { result -> onResult(result.map { it.raw as? FirebaseUser }) },
     )
     val uiContainerScope = remember(signInState) {
         object : UiContainerScope {
@@ -50,11 +56,11 @@ public fun GoogleButtonUiContainerFirebase(
 }
 
 @Deprecated(
-    "Use rememberFirebaseGoogleSignInState(...) and call launch() from your own button's onClick. " +
+    "Use rememberGoogleAuthState(...) and call launch() from your own button's onClick. " +
         "Scheduled for removal in 4.0.",
     ReplaceWith(
-        "rememberFirebaseGoogleSignInState(onResult = onResult)",
-        "com.mmk.kmpauth.firebase.google.rememberFirebaseGoogleSignInState"
+        "rememberGoogleAuthState(onResult = onResult)",
+        "com.mmk.kmpauth.google.rememberGoogleAuthState"
     ),
     DeprecationLevel.WARNING
 )

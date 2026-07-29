@@ -83,6 +83,20 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
             currentUser.reauthenticate(firebaseCredential)
         }
 
+    override suspend fun signUp(
+        email: String,
+        password: String,
+    ): Result<KMPAuthUser> = runCatchingCancellable {
+        Firebase.auth.createUserWithEmailAndPassword(email, password)
+            .user?.let(::FirebaseKMPAuthUser)
+            ?: throw IllegalStateException("Firebase Null user")
+    }
+
+    override suspend fun signInAnonymously(): Result<KMPAuthUser> = runCatchingCancellable {
+        Firebase.auth.signInAnonymously().user?.let(::FirebaseKMPAuthUser)
+            ?: throw IllegalStateException("Firebase Null user")
+    }
+
     override suspend fun sendPasswordResetEmail(
         email: String,
         actionCodeSettings: EmailActionCodeSettings?,
@@ -104,7 +118,7 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         email: String,
         link: String,
         linkAccount: Boolean,
-    ): Result<KMPAuthUser?> = runCatchingCancellable {
+    ): Result<KMPAuthUser> = runCatchingCancellable {
         val auth = Firebase.auth
         val currentUser = auth.currentUser
         val result = if (linkAccount && currentUser != null) {
@@ -113,6 +127,7 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
             auth.signInWithEmailLink(email, link)
         }
         result.user?.let(::FirebaseKMPAuthUser)
+            ?: throw IllegalStateException("Firebase Null user")
     }
 
     override suspend fun signOut() {
@@ -124,13 +139,13 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
 
     /**
      * Adapts a legacy `Result<FirebaseUser?>` callback (the deprecated 2.x
-     * container composables) to the `Result<KMPAuthUser?>` the sign-in
+     * container composables) to the `Result<KMPAuthUser>` the sign-in
      * states now produce, unwrapping the native user through
      * [KMPAuthUser.raw].
      */
     internal fun toFirebaseUserCallback(
         onResult: (Result<FirebaseUser?>) -> Unit,
-    ): (Result<KMPAuthUser?>) -> Unit = { result ->
+    ): (Result<KMPAuthUser>) -> Unit = { result ->
         onResult(result.map { it?.raw as? FirebaseUser })
     }
 
@@ -153,7 +168,14 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         when (this) {
             is AuthCredential.IdToken -> when (providerId) {
                 AuthProviderIds.GOOGLE -> GoogleAuthProvider.credential(idToken, accessToken)
-                AuthProviderIds.FACEBOOK -> accessToken?.let { FacebookAuthProvider.credential(it) }
+                // Facebook Limited Login issues an OIDC JWT verified through
+                // its nonce; classic login uses the access token.
+                AuthProviderIds.FACEBOOK ->
+                    if (rawNonce != null) OAuthProvider.credential(
+                        providerId = AuthProviderIds.FACEBOOK,
+                        idToken = idToken,
+                        rawNonce = rawNonce,
+                    ) else FacebookAuthProvider.credential(accessToken ?: idToken)
                 // Apple issues a verifiable identity token; Firebase checks
                 // the unhashed nonce against the hash embedded in the token.
                 AuthProviderIds.APPLE -> OAuthProvider.credential(
