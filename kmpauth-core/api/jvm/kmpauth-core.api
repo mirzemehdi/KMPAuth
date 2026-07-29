@@ -1,6 +1,21 @@
 public final class com/mmk/kmpauth/core/KMPAuth {
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/KMPAuth;
+	public final fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public final fun getBackendProvider ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
+	public final fun isSignInWithEmailLink (Ljava/lang/String;)Z
+	public final fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun registerBackendProvider (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Z)V
+	public static synthetic fun registerBackendProvider$default (Lcom/mmk/kmpauth/core/KMPAuth;Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZILjava/lang/Object;)V
+	public final fun requireBackendProvider ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
+	public final fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendPasswordResetEmail-0E7RQCE$default (Lcom/mmk/kmpauth/core/KMPAuth;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendSignInLinkToEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun setLogger (Lcom/mmk/kmpauth/core/logger/KMPAuthLogger;)V
+	public final fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signIn-0E7RQCE$default (Lcom/mmk/kmpauth/core/KMPAuth;Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/core/KMPAuth;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface annotation class com/mmk/kmpauth/core/KMPAuthInternalApi : java/lang/annotation/Annotation {

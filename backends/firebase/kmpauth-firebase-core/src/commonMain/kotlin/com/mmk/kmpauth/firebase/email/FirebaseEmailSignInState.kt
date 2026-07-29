@@ -50,8 +50,8 @@ public enum class EmailAuthMode {
  * [com.mmk.kmpauth.core.auth.AuthProviderBackend]:
  *
  * ```
- * KMPAuthBackend.sendPasswordResetEmail(email)
- * KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, password))
+ * KMPAuth.sendPasswordResetEmail(email)
+ * KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, password))
  * ```
  *
  * Note: on Desktop (JVM) the underlying Firebase SDK does not implement

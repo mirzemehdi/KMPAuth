@@ -148,9 +148,9 @@ backend-agnostic credential/user model (`AuthCredential`, `KMPAuthUser`).
   `FirebaseAuthBackend` automatically the first time a container is used;
   every composable keeps returning `Result<FirebaseUser?>` exactly as in 2.x.
 - **Custom/Supabase backends:** implement `AuthProviderBackend` and call
-  `KMPAuthBackend.register(yourBackend)` at application start (before any
-  KMPAuth UI renders). The first registration wins, so an explicit
-  registration always beats the lazy Firebase default; pass
+  `KMPAuth.registerBackendProvider(yourBackend)` at application start
+  (before any KMPAuth UI renders). The first registration wins, so an
+  explicit registration always beats the lazy Firebase default; pass
   `replace = true` to swap an already-registered backend.
 - Web-flow providers (Apple on Android, GitHub, generic OAuth) are executed
   by their dedicated container composables — a backend `signIn` call cannot
@@ -298,8 +298,8 @@ Also changed:
   `rememberFirebaseOAuthSignInState(provider = "github.com", requestScopes = ..., customParameters = ...)`.
 - Password reset, email-link sign-in and reauthentication are backend
   operations called directly on `KMPAuthBackend` (which delegates to the
-  registered backend): `KMPAuthBackend.sendPasswordResetEmail(email)`,
-  `KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, password))`.
+  registered backend): `KMPAuth.sendPasswordResetEmail(email)`,
+  `KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, password))`.
   Link configuration uses `EmailActionCodeSettings` (KMPAuth's type, android
   fields flattened) instead of GitLive's `ActionCodeSettings`.
 - Desktop/JS: launching a flow that is not implemented there (OAuth/GitHub/

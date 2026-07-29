@@ -586,15 +586,15 @@ Button(onClick = { emailSignIn.launch() }, enabled = !emailSignIn.isInProgress) 
 ```
 
 Password reset and passwordless email-link (magic link) sign-in are
-provider-agnostic operations on the auth backend (`KMPAuthBackend`), like
-`signOut()` and `currentUser()`:
+provider-agnostic operations on the `KMPAuth` entry point, like `signOut()`
+and `currentUser()`:
 
 ```kotlin
 // Password reset
-KMPAuthBackend.sendPasswordResetEmail(email)
+KMPAuth.sendPasswordResetEmail(email)
 
 // Passwordless: step 1 - send the link (enable "Email link" in the Firebase console)
-KMPAuthBackend.sendSignInLinkToEmail(
+KMPAuth.sendSignInLinkToEmail(
     email = email,
     actionCodeSettings = EmailActionCodeSettings(
         url = "https://example.com/finish-sign-in",
@@ -606,8 +606,8 @@ KMPAuthBackend.sendSignInLinkToEmail(
 // Persist `email` locally - you need it again after the user opens the link.
 
 // Passwordless: step 2 - in your deep/universal link handler
-if (KMPAuthBackend.isSignInWithEmailLink(link)) {
-    val result = KMPAuthBackend.signInWithEmailLink(persistedEmail, link)
+if (KMPAuth.isSignInWithEmailLink(link)) {
+    val result = KMPAuth.signInWithEmailLink(persistedEmail, link)
 }
 ```
 
@@ -616,11 +616,11 @@ password), Firebase requires a recent sign-in — reauthenticate first:
 
 ```kotlin
 // Email/password users
-KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, currentPassword))
+KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, currentPassword))
     .onSuccess { /* now delete the account / update the password */ }
 
 // Google/Apple/Facebook users: rerun the provider flow for a fresh token, then
-KMPAuthBackend.reauthenticate(
+KMPAuth.reauthenticate(
     AuthCredential.IdToken(AuthProviderIds.GOOGLE, googleUser.idToken)
 )
 ```
