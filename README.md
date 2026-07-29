@@ -133,6 +133,10 @@ val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
 val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult) // SMS OTP, every target
 val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
 
+// Browser OAuth - GitHub/Microsoft/GitLab/any GoTrue provider
+// (Desktop works out of the box; see the guide for mobile deep links):
+val githubResult = KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))
+
 KMPAuth.sendPasswordResetEmail(email)
 KMPAuth.signOut()
 ```
