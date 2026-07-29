@@ -140,7 +140,15 @@ val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
 val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult) // SMS OTP, every target
 val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
 
-// Browser OAuth - GitHub/Microsoft/GitLab/any GoTrue provider
+// Apple on iOS: exchange the native credential through the id_token grant
+val appleSignIn = rememberAppleSignInState(onResult = { result ->   // kmpauth-apple
+    result.onSuccess { apple ->
+        // suspend call - launch from your scope:
+        KMPAuth.signIn(AuthCredential.IdToken(AuthProviderIds.APPLE, apple.idToken, rawNonce = apple.nonce))
+    }
+})
+
+// Browser OAuth - GitHub/Microsoft/Apple/Facebook/any GoTrue provider
 // (Desktop works out of the box; see the guide for mobile deep links):
 val githubResult = KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))
 
