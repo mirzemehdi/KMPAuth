@@ -4,7 +4,7 @@ Guidance for AI agents and contributors working in this repository.
 
 ## What this is
 
-KMPAuth — a Kotlin Multiplatform authentication library (Google, Apple, GitHub, Facebook sign-in, with optional Firebase integration and a pluggable backend abstraction). Published to Maven Central as `io.github.mirzemehdi:kmpauth-*`. Version lives in `gradle.properties` (`kmpAuthVersion`).
+KMPAuth — a Kotlin Multiplatform authentication library (Google, Apple, GitHub, Facebook, Microsoft, email/password, phone and anonymous sign-in, with optional Firebase integration and a pluggable backend abstraction). Published to Maven Central as `io.github.mirzemehdi:kmpauth-*`. Version lives in `gradle.properties` (`kmpAuthVersion`).
 
 ## Module map
 
@@ -12,18 +12,18 @@ Layout: identity **providers** (credential sources) live under `providers/`; ses
 
 | Module (gradle path) | Purpose | Depends on |
 |---|---|---|
-| `:kmpauth-core` | Base infrastructure: logging, `SignInState`/`LaunchingSignInState`, HTTP client factory, `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`) | — |
+| `:kmpauth-core` | Base infrastructure: logging, `SignInState`/`LaunchingSignInState`/`UnsupportedSignInState`, `runCatchingCancellable`, the `KMPAuth` client facade, and the `com.mmk.kmpauth.core.auth` backend abstraction (`AuthProviderBackend`, `KMPAuthBackend`, `AuthCredential`, `KMPAuthUser`, `EmailActionCodeSettings`) | — |
 | `:providers:kmpauth-google` | Google Sign-In (Credential Manager on Android, GoogleSignIn SDK on iOS, OAuth loopback on JVM) | core |
 | `:providers:kmpauth-facebook` | Facebook Login via Facebook SDK (no Firebase) | core |
 | `:providers:kmpauth-apple` | Native Sign in with Apple via AuthenticationServices (no Firebase). iOS-only flow — other targets are no-op stubs, since Apple's web flow needs a server-side client-secret exchange. Also supplies the iOS credential acquisition reused by firebase-core (`performAppleSignIn`, `@KMPAuthInternalApi`) | core |
-| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/OAuth `rememberXxxSignInState` flows (GitLive firebase-auth). Its iOS Apple flow delegates to `:providers:kmpauth-apple` for the native authorization | core, apple |
+| `:backends:firebase:kmpauth-firebase-core` | `FirebaseAuthBackend` (default backend) + Apple/GitHub/Microsoft/OAuth/email/phone/anonymous `rememberXxxSignInState` flows (GitLive firebase-auth). Its iOS Apple flow delegates to `:providers:kmpauth-apple` for the native authorization | core, apple |
 | `:backends:firebase:kmpauth-firebase-google` | `rememberFirebaseGoogleSignInState` + sign-in handler | firebase-core, google |
 | `:backends:firebase:kmpauth-firebase-facebook` | Facebook + Firebase combo container | firebase-core, facebook |
 | `:deprecated:kmpauth-firebase` | Backward-compat **aggregator** artifact: `api(firebase-core, firebase-google)` — keeps 2.x dependency blocks working | firebase-core, firebase-google |
 | `:kmpauth-uihelper` | Pre-styled Compose sign-in buttons (Google/Apple/Facebook) | core |
-| `sampleApp/shared` + `androidApp`/`desktopApp`/`webApp`/`iosApp` | Demo: shared UI module + per-platform entry points (webApp targets js — Firebase API is empty on wasm) | all |
+| `sampleApp/shared` + `androidApp`/`desktopApp`/`webApp`/`iosApp` | Demo: shared UI module + per-platform entry points (webApp builds both js and wasm variants — the wasm one is the smoke test for the wasm-callable Firebase API) | all |
 
-Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared by the convention plugin for every module. Firebase modules expose their API from a `nonWasmMain` intermediate source set (GitLive has no wasm target); their wasm variant is an intentionally empty klib so wasm consumers can still depend on them from commonMain. No iosX64 (dropped in 3.0; Compose Multiplatform 1.11+ does not ship it).
+Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared by the convention plugin for every module. Firebase modules declare their public API in `commonMain` using KMPAuth's own types (`KMPAuthUser`, never GitLive types — GitLive has no wasm target), so consumers call everything from commonMain on every target including wasm. GitLive-facing implementations and the deprecated 2.x containers (which expose `FirebaseUser`) live in a `nonWasmMain` intermediate source set; wasm actuals report failed `Result`s with a clear reason. No iosX64 (dropped in 3.0; Compose Multiplatform 1.11+ does not ship it).
 
 ## Build conventions
 
@@ -56,7 +56,7 @@ Targets: android, iosArm64/iosSimulatorArm64, jvm, js(IR), wasmJs — declared b
 ./gradlew publishToMavenLocal   # local artifact smoke test
 ```
 
-Sample apps: `./gradlew :sampleApp:desktopApp:run` (desktop), `:sampleApp:androidApp:assembleDebug` (Android), `:sampleApp:webApp:jsBrowserDevelopmentRun` (web), iOS via `sampleApp/iosApp/iosApp.xcodeproj` (framework `shared`; the embedAndSign build phase drives Gradle).
+Sample apps: `./gradlew :sampleApp:desktopApp:run` (desktop), `:sampleApp:androidApp:assembleDebug` (Android), `:sampleApp:webApp:jsBrowserDevelopmentRun` (web js, port 8080), `:sampleApp:webApp:wasmJsBrowserDevelopmentRun` (web wasm, port 8081), iOS via `sampleApp/iosApp/iosApp.xcodeproj` (framework `shared`; the embedAndSign build phase drives Gradle).
 
 ## CI / release
 
@@ -68,16 +68,28 @@ Release flow: bump `kmpAuthVersion` in `gradle.properties`, merge to `main`, tag
 
 Primary API: `rememberXxxSignInState(...)` composables returning
 `com.mmk.kmpauth.core.SignInState` (`launch()`, observable `isInProgress`,
-double-launch guard via internal `LaunchingSignInState`). All parameters are
-read at launch time through `rememberUpdatedState`. The 2.x `*UiContainer`
-composables are deprecated thin wrappers over these states — keep them
-delegating, never reimplement logic in them.
+double-launch guard via internal `LaunchingSignInState`). Phone sign-in
+returns `PhoneSignInState` (extends `SignInState` with `isCodeSent`,
+`submitCode(code)`, `cancel()`). All parameters are read at launch time
+through `rememberUpdatedState`. The 2.x `*UiContainer` composables are
+deprecated thin wrappers over these states — keep them delegating, never
+reimplement logic in them.
+
+Everything that isn't a launchable flow goes through the **`KMPAuth`
+facade** (`kmpauth-core`): `currentUser()`, `signOut()`, `signIn(credential)`,
+`reauthenticate(credential)`, `sendPasswordResetEmail`, email-link sign-in,
+and `registerBackendProvider`/`getBackendProvider`/`requireBackendProvider`.
+It delegates to `KMPAuthBackend`; keep new session/account operations on this
+facade rather than inventing provider-specific top-level objects.
 
 **Failures are values, not nulls.** Every provider's `onResult` takes a
 `Result<T>` (`Result<GoogleUser>`, `Result<FacebookUser>`, `Result<AppleUser>`,
-`Result<FirebaseUser?>`); never swallow an exception into a `null` — the reason
-is what makes a field report actionable (#102, #103). Only the deprecated
-`GoogleButtonUiContainer` keeps a nullable callback, for 2.x source compat.
+`Result<KMPAuthUser?>` for Firebase-backed flows); never swallow an exception
+into a `null` — the reason is what makes a field report actionable
+(#102, #103). Platforms where a flow cannot work report a failed `Result`
+(`UnsupportedSignInState`), never a silent no-op. Only the deprecated 2.x
+containers keep their old callbacks (`GoogleUser?`, `Result<FirebaseUser?>`
+via `KMPAuthUser.raw` unwrap) for source compat.
 
 Provider resolution must not happen during composition: guard on
 `LocalInspectionMode` and return `NoOpSignInState`, or IDE previews crash
@@ -95,4 +107,6 @@ function would need visibility of all provider modules, undoing the granular
 
 ## Auth backend architecture (3.0)
 
-`KMPAuthBackend` registry holds one `AuthProviderBackend`. `kmpauth-firebase` self-registers `FirebaseAuthBackend` lazily on first container use; an app-supplied backend (e.g. future Supabase) registered at startup always wins (first registration wins; `replace = true` to swap). Token credentials (`AuthCredential.IdToken`) flow through the backend; web-flow providers (Apple-on-Android, GitHub, generic OAuth) are driven by their platform container composables.
+`KMPAuthBackend` registry holds one `AuthProviderBackend` — and implements the interface itself, delegating to the registered backend (no-backend calls return failed `Result`s with a how-to-register message). The client-facing surface is the `KMPAuth` facade on top of it. `kmpauth-firebase` self-registers `FirebaseAuthBackend` (an `expect object`; wasm actual fails everything) lazily on first sign-in-state use; an app-supplied backend (e.g. future Supabase) registered at startup always wins (first registration wins; `replace = true` to swap).
+
+Credentials: `AuthCredential.IdToken` (Google/Facebook/Apple — Apple needs `rawNonce`) and `AuthCredential.EmailPassword` are exchanged directly by the backend (`signIn`, `reauthenticate`); `AuthCredential.OAuthWebFlow` cannot be — web-flow providers (Apple-on-Android, GitHub, Microsoft, generic OAuth) are driven by their platform sign-in states. Backend interface additions must ship default implementations (unsupported failure) so custom backends stay source-compatible.
