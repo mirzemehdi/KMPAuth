@@ -161,7 +161,7 @@ internal class DesktopWebAuthFlow(
                 <script id="kmpauth-config" type="application/json">$pageConfig</script>
                 <script type="module">
                   import { initializeApp } from "https://www.gstatic.com/firebasejs/$FIREBASE_JS_VERSION/firebase-app.js";
-                  import { getAuth, signInWithPopup, OAuthProvider } from "https://www.gstatic.com/firebasejs/$FIREBASE_JS_VERSION/firebase-auth.js";
+                  import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, OAuthProvider } from "https://www.gstatic.com/firebasejs/$FIREBASE_JS_VERSION/firebase-auth.js";
 
                   const cfg = JSON.parse(document.getElementById("kmpauth-config").textContent);
                   const auth = getAuth(initializeApp(cfg.firebase));
@@ -177,16 +177,31 @@ internal class DesktopWebAuthFlow(
                     fetch("/complete", { method: "POST", headers: { "Content-Type": "application/json" },
                                          body: JSON.stringify(payload) });
 
+                  const finish = async (credential) => {
+                    const idToken = await credential.user.getIdToken();
+                    await complete({ idToken, refreshToken: credential.user.refreshToken });
+                    status.textContent = "Signed in. You can close this window and return to the app.";
+                    button.remove();
+                  };
+
+                  // Resume a redirect-fallback round trip, if one is pending.
+                  getRedirectResult(auth)
+                    .then((credential) => { if (credential) return finish(credential); })
+                    .catch(async (e) => { await complete({ error: (e && e.code) || String(e) }); });
+
                   button.addEventListener("click", async () => {
                     button.disabled = true;
                     status.textContent = "Waiting for the sign-in window...";
                     try {
-                      const credential = await signInWithPopup(auth, provider);
-                      const idToken = await credential.user.getIdToken();
-                      await complete({ idToken, refreshToken: credential.user.refreshToken });
-                      status.textContent = "Signed in. You can close this window and return to the app.";
-                      button.remove();
+                      await finish(await signInWithPopup(auth, provider));
                     } catch (e) {
+                      // Popup blockers are common; fall back to a full-page
+                      // redirect (resumed by getRedirectResult above).
+                      if (e && e.code === "auth/popup-blocked") {
+                        status.textContent = "Continuing in this window...";
+                        await signInWithRedirect(auth, provider);
+                        return;
+                      }
                       await complete({ error: (e && e.code) || String(e) });
                       status.textContent = "Sign-in failed: " + ((e && e.code) || e);
                       button.disabled = false;
