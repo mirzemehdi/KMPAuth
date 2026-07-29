@@ -19,6 +19,25 @@ own backend), with every API callable from `commonMain` on every target.
   <img src="https://github.com/mirzemehdi/KMPAuth/assets/32781662/f5a3cd28-6ef2-46bf-9b07-a045ce217b34)" width="200" alt="SampleApp"/>
 </p>
 
+## What's supported where
+
+| Feature | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Google sign-in | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Apple sign-in (via Firebase) | ✅ | ✅ native | ✅ | — | — |
+| Apple sign-in (native, no backend) | — | ✅ | — | — | — |
+| Facebook sign-in | ✅ | ✅ | — | — | — |
+| GitHub / Microsoft / any OAuth (via Firebase) | ✅ | ✅ | ✅ | — | — |
+| Email password / reset / magic link | ✅ | ✅ | ✅ | ✅ | ✅ Supabase |
+| Phone number sign-in | ✅ | ✅ | — | — | — |
+| Anonymous sign-in | ✅ | ✅ | ✅ | ✅ | ✅ Supabase |
+| Firebase backend | ✅ | ✅ | ✅ REST | ✅ | — |
+| Supabase backend | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+Everything compiles and is callable from `commonMain` on **all** targets — a
+feature unavailable on the current platform reports a failed `Result` with
+the reason instead of not compiling or silently doing nothing.
+
 ## Pick your setup
 
 ### 1. No backend — you verify the token yourself ([Google](docs/google.md) · [Facebook](docs/facebook.md) · [Apple](docs/apple.md))
@@ -110,48 +129,31 @@ Start here — read only what you need:
 | **[Getting started](docs/getting-started.md)** | Dependencies, iOS SPM setup, requirements, `KMPAuth.initialize`, first sign-in |
 | **[Core concepts](docs/core-concepts.md)** | The two state layers, `KMPAuthUser`, the `KMPAuth` object, account linking, reauthentication |
 
-**Sign-in providers:**
+**Identity providers** (bring their own SDK/flow, work with any backend or
+none):
 
 | Guide | Platforms |
 |---|---|
 | [Google](docs/google.md) | Android · iOS · Desktop · JS · wasm |
 | [Apple](docs/apple.md) | Android · iOS (native) · Desktop — or iOS-only without any backend |
 | [Facebook](docs/facebook.md) | Android · iOS |
-| [GitHub / Microsoft / any OAuth](docs/oauth-providers.md) | Android · iOS · Desktop |
-| [Email — password, reset, magic link](docs/email.md) | everywhere the backend runs |
-| [Phone number](docs/phone.md) | Android · iOS |
-| [Anonymous (guest)](docs/anonymous.md) | everywhere the backend runs |
 
-**Auth backends:**
+**Backends & backend-served sign-in** (these flows exist only through
+Firebase/Supabase):
 
 | Guide | What's in it |
 |---|---|
 | [Firebase](docs/firebase.md) | Auto-registration, Android/iOS zero-config, Desktop (REST + browser flows), web notes |
 | [Supabase](docs/supabase.md) | Setup, Ktor engines, what maps to Supabase (works on **wasm**) |
+| [GitHub / Microsoft / any OAuth](docs/oauth-providers.md) | Firebase-driven OAuth web flow — Android · iOS · Desktop |
+| [Email — password, reset, magic link](docs/email.md) | Served by Firebase or Supabase |
+| [Phone number](docs/phone.md) | Firebase — Android · iOS |
+| [Anonymous (guest)](docs/anonymous.md) | Served by Firebase or Supabase |
 | [Custom & multiple backends](docs/custom-backends.md) | `AuthProviderBackend`, `LocalKMPAuthBackend` scoping |
 
 Also: [UI helper buttons](docs/ui-helper.md) ·
 [Full API reference](https://mirzemehdi.github.io/KMPAuth) ·
 [Sample app covering every feature](sampleApp/shared/src/commonMain/kotlin/com/mmk/kmpauth/sample/App.kt)
-
-## What's supported where
-
-| Feature | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
-|---|:---:|:---:|:---:|:---:|:---:|
-| Google sign-in | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Apple sign-in (via Firebase) | ✅ | ✅ native | ✅ | — | — |
-| Apple sign-in (native, no backend) | — | ✅ | — | — | — |
-| Facebook sign-in | ✅ | ✅ | — | — | — |
-| GitHub / Microsoft / any OAuth (via Firebase) | ✅ | ✅ | ✅ | — | — |
-| Email password / reset / magic link | ✅ | ✅ | ✅ | ✅ | ✅ Supabase |
-| Phone number sign-in | ✅ | ✅ | — | — | — |
-| Anonymous sign-in | ✅ | ✅ | ✅ | ✅ | ✅ Supabase |
-| Firebase backend | ✅ | ✅ | ✅ REST | ✅ | — |
-| Supabase backend | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-Everything compiles and is callable from `commonMain` on **all** targets — a
-feature unavailable on the current platform reports a failed `Result` with
-the reason instead of not compiling or silently doing nothing.
 
 ## Installation (short version)
 
