@@ -61,7 +61,7 @@ public fun rememberFirebaseGoogleSignInState(
         // Lazy default registration: no-op when the app already registered
         // a backend at startup (first registration wins).
         KMPAuthBackend.register(FirebaseAuthBackend)
-        val signInHandler = GoogleFirebaseSignInHandler(backend = KMPAuthBackend.require())
+        val signInHandler = GoogleFirebaseSignInHandler(backend = KMPAuthBackend)
         LaunchingSignInState(scope) {
             val googleResult = googleAuthUiProvider.signIn(
                 filterByAuthorizedAccounts = currentFilter,

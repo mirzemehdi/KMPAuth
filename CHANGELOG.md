@@ -21,8 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `rememberFirebaseOAuthSignInState` now takes the provider as plain data —
   `(provider, requestScopes, customParameters, ...)` — instead of a GitLive
   `OAuthProvider` instance.
-- `FirebaseEmailAuth` takes an `EmailActionCodeSettings` (KMPAuth's own type)
-  instead of GitLive's `ActionCodeSettings`.
+- Email operations that don't fit a launchable state (password reset,
+  email-link sign-in, reauthentication) live on the provider-agnostic
+  backend — `KMPAuthBackend` itself implements `AuthProviderBackend` and
+  delegates to the registered backend, so no `require()` step is needed:
+  `KMPAuthBackend.sendPasswordResetEmail(email)`. Link configuration uses
+  `EmailActionCodeSettings` (KMPAuth's own type in `kmpauth-core`) instead
+  of GitLive's `ActionCodeSettings`.
 - On Desktop and JS, the unimplemented Firebase flows (OAuth/GitHub/Apple web
   flow, Facebook) now report a failed `Result` explaining why instead of
   silently doing nothing when launched.
@@ -35,9 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `rememberFirebaseEmailSignInState(email, password, mode, linkAccount, onResult)`
   signs in or — with `EmailAuthMode.SignUp` — creates the account; field values
   are read at launch time, so the state is created once and reused as the user
-  types. `FirebaseEmailAuth` adds the flows that don't fit a launchable state:
-  `sendPasswordResetEmail`, and passwordless email-link (magic link) sign-in via
-  `sendSignInLinkToEmail` / `isSignInWithEmailLink` / `signInWithEmailLink`.
+  types. The flows that don't fit a launchable state are backend operations:
+  `KMPAuthBackend.sendPasswordResetEmail`, and passwordless email-link (magic
+  link) sign-in via `sendSignInLinkToEmail` / `isSignInWithEmailLink` /
+  `signInWithEmailLink`.
 - **Phone number sign-in with Firebase** (#111).
   `rememberFirebasePhoneSignInState(phoneNumber, ...)` returns a
   `PhoneSignInState`: `launch()` sends the SMS, `isCodeSent`/`onCodeSent`
@@ -58,13 +64,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   using `linkAccount = true`, which keeps the anonymous uid and its data.
 - **Reauthentication** (#167). Firebase requires a recent sign-in before
   security-sensitive operations (account deletion, password change). The
-  provider-agnostic `AuthProviderBackend.reauthenticate(credential)` accepts
+  provider-agnostic `KMPAuthBackend.reauthenticate(credential)` accepts
   any credential — `AuthCredential.EmailPassword`, or a fresh
-  `AuthCredential.IdToken` from rerunning the Google/Apple/Facebook flow —
-  and `FirebaseEmailAuth.reauthenticate(email, password)` is the email
-  convenience over it. `AuthCredential` gains the `EmailPassword` variant,
-  and the Firebase backend can now also exchange Apple `IdToken`
-  credentials (idToken + rawNonce).
+  `AuthCredential.IdToken` from rerunning the Google/Apple/Facebook flow.
+  `AuthCredential` gains the `EmailPassword` variant, and the Firebase
+  backend can now also exchange Apple `IdToken` credentials
+  (idToken + rawNonce).
 
   All of these delegate to the Firebase SDK and report failures as `Result`
   values. On Desktop (JVM) the underlying SDK does not implement auth yet

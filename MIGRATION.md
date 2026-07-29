@@ -296,9 +296,12 @@ Also changed:
 
 - `rememberFirebaseOAuthSignInState(oAuthProvider = OAuthProvider(...))` →
   `rememberFirebaseOAuthSignInState(provider = "github.com", requestScopes = ..., customParameters = ...)`.
-- `FirebaseEmailAuth.sendSignInLinkToEmail` takes `EmailActionCodeSettings`
-  (KMPAuth's type, android fields flattened) instead of GitLive's
-  `ActionCodeSettings`.
+- Password reset, email-link sign-in and reauthentication are backend
+  operations called directly on `KMPAuthBackend` (which delegates to the
+  registered backend): `KMPAuthBackend.sendPasswordResetEmail(email)`,
+  `KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, password))`.
+  Link configuration uses `EmailActionCodeSettings` (KMPAuth's type, android
+  fields flattened) instead of GitLive's `ActionCodeSettings`.
 - Desktop/JS: launching a flow that is not implemented there (OAuth/GitHub/
   Apple web flow, Facebook) now reports a failed `Result` with the reason;
   previously it silently did nothing.

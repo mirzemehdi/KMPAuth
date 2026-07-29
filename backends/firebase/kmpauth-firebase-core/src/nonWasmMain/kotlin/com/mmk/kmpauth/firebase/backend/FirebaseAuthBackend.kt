@@ -6,9 +6,12 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.core.runCatchingCancellable
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.ActionCodeSettings
+import dev.gitlive.firebase.auth.AndroidPackageName
 import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FacebookAuthProvider
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -80,6 +83,38 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
             currentUser.reauthenticate(firebaseCredential)
         }
 
+    override suspend fun sendPasswordResetEmail(
+        email: String,
+        actionCodeSettings: EmailActionCodeSettings?,
+    ): Result<Unit> = runCatchingCancellable {
+        Firebase.auth.sendPasswordResetEmail(email, actionCodeSettings?.toFirebase())
+    }
+
+    override suspend fun sendSignInLinkToEmail(
+        email: String,
+        actionCodeSettings: EmailActionCodeSettings,
+    ): Result<Unit> = runCatchingCancellable {
+        Firebase.auth.sendSignInLinkToEmail(email, actionCodeSettings.toFirebase())
+    }
+
+    override fun isSignInWithEmailLink(link: String): Boolean =
+        Firebase.auth.isSignInWithEmailLink(link)
+
+    override suspend fun signInWithEmailLink(
+        email: String,
+        link: String,
+        linkAccount: Boolean,
+    ): Result<KMPAuthUser?> = runCatchingCancellable {
+        val auth = Firebase.auth
+        val currentUser = auth.currentUser
+        val result = if (linkAccount && currentUser != null) {
+            currentUser.linkWithCredential(EmailAuthProvider.credentialWithLink(email, link))
+        } else {
+            auth.signInWithEmailLink(email, link)
+        }
+        result.user?.let(::FirebaseKMPAuthUser)
+    }
+
     override suspend fun signOut() {
         Firebase.auth.signOut()
     }
@@ -98,6 +133,21 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
     ): (Result<KMPAuthUser?>) -> Unit = { result ->
         onResult(result.map { it?.raw as? FirebaseUser })
     }
+
+    /** Maps the SDK-agnostic settings onto GitLive's ActionCodeSettings. */
+    private fun EmailActionCodeSettings.toFirebase(): ActionCodeSettings = ActionCodeSettings(
+        url = url,
+        canHandleCodeInApp = canHandleCodeInApp,
+        iOSBundleId = iOSBundleId,
+        androidPackageName = androidPackageName?.let {
+            AndroidPackageName(
+                packageName = it,
+                installIfNotAvailable = androidInstallIfNotAvailable,
+                minimumVersion = androidMinimumVersion,
+            )
+        },
+        linkDomain = linkDomain,
+    )
 
     private fun AuthCredential.toFirebaseCredentialOrNull(): dev.gitlive.firebase.auth.AuthCredential? =
         when (this) {

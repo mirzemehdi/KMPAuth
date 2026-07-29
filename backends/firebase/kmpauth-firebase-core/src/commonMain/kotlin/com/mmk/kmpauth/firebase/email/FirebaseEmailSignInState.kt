@@ -45,8 +45,14 @@ public enum class EmailAuthMode {
  * }
  * ```
  *
- * For password reset, reauthentication and passwordless email-link sign-in,
- * see [FirebaseEmailAuth].
+ * Password reset, reauthentication and passwordless email-link sign-in are
+ * provider-agnostic backend operations — see
+ * [com.mmk.kmpauth.core.auth.AuthProviderBackend]:
+ *
+ * ```
+ * KMPAuthBackend.sendPasswordResetEmail(email)
+ * KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, password))
+ * ```
  *
  * Note: on Desktop (JVM) the underlying Firebase SDK does not implement
  * auth yet, and on wasm the SDK has no target — the flow reports a failed

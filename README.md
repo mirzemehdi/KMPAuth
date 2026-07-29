@@ -585,15 +585,16 @@ Button(onClick = { emailSignIn.launch() }, enabled = !emailSignIn.isInProgress) 
 }
 ```
 
-Password reset and passwordless email-link (magic link) sign-in are plain suspend
-functions on `FirebaseEmailAuth`:
+Password reset and passwordless email-link (magic link) sign-in are
+provider-agnostic operations on the auth backend (`KMPAuthBackend`), like
+`signOut()` and `currentUser()`:
 
 ```kotlin
 // Password reset
-FirebaseEmailAuth.sendPasswordResetEmail(email)
+KMPAuthBackend.sendPasswordResetEmail(email)
 
 // Passwordless: step 1 - send the link (enable "Email link" in the Firebase console)
-FirebaseEmailAuth.sendSignInLinkToEmail(
+KMPAuthBackend.sendSignInLinkToEmail(
     email = email,
     actionCodeSettings = EmailActionCodeSettings(
         url = "https://example.com/finish-sign-in",
@@ -605,8 +606,8 @@ FirebaseEmailAuth.sendSignInLinkToEmail(
 // Persist `email` locally - you need it again after the user opens the link.
 
 // Passwordless: step 2 - in your deep/universal link handler
-if (FirebaseEmailAuth.isSignInWithEmailLink(link)) {
-    val result = FirebaseEmailAuth.signInWithEmailLink(persistedEmail, link)
+if (KMPAuthBackend.isSignInWithEmailLink(link)) {
+    val result = KMPAuthBackend.signInWithEmailLink(persistedEmail, link)
 }
 ```
 
@@ -615,17 +616,11 @@ password), Firebase requires a recent sign-in — reauthenticate first:
 
 ```kotlin
 // Email/password users
-FirebaseEmailAuth.reauthenticate(email, currentPassword)
+KMPAuthBackend.reauthenticate(AuthCredential.EmailPassword(email, currentPassword))
     .onSuccess { /* now delete the account / update the password */ }
-```
 
-Reauthentication is not email-specific. For Google/Apple/Facebook users,
-rerun the provider flow to get a fresh token, then use the provider-agnostic
-backend API:
-
-```kotlin
-// e.g. after rememberGoogleSignInState returns a fresh GoogleUser
-KMPAuthBackend.require().reauthenticate(
+// Google/Apple/Facebook users: rerun the provider flow for a fresh token, then
+KMPAuthBackend.reauthenticate(
     AuthCredential.IdToken(AuthProviderIds.GOOGLE, googleUser.idToken)
 )
 ```
