@@ -20,8 +20,10 @@ public actual fun rememberAppleAuthState(
     val currentOnResult by rememberUpdatedState(onResult)
     return remember {
         UnsupportedSignInState(
-            reason = "Apple Sign-In with Firebase is not implemented on Desktop " +
-                "(https://github.com/mirzemehdi/KMPAuth/issues/204).",
+            reason = "Apple Sign-In's web flow is not available on Desktop yet " +
+                "(https://github.com/mirzemehdi/KMPAuth/issues/81). If you obtain an " +
+                "Apple identity token elsewhere, exchange it via " +
+                "KMPAuth.signIn(AuthCredential.IdToken(...)).",
             onFailure = { currentOnResult(Result.failure(it)) },
         )
     }

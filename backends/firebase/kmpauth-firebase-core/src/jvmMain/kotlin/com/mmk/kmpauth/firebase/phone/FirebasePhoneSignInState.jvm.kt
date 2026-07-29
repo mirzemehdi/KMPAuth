@@ -17,9 +17,8 @@ public actual fun rememberPhoneAuthState(
     return remember {
         UnsupportedPhoneAuthState(
             onResult = { currentOnResult(it) },
-            reason = "Phone sign-in is not supported on Desktop: the Firebase " +
-                "Java SDK does not implement phone authentication " +
-                "(https://github.com/mirzemehdi/KMPAuth/issues/204).",
+            reason = "Phone sign-in is not supported on Desktop: Firebase requires " +
+                "a reCAPTCHA verification KMPAuth cannot provide there yet.",
         )
     }
 }

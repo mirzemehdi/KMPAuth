@@ -48,6 +48,18 @@ kotlin {
         jvmMain.get().dependsOn(nonWasmMain)
         jsMain.get().dependsOn(nonWasmMain)
 
+        jvmTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
+
+        jvmMain.dependencies {
+            // JSON for the Firebase Auth REST engine (runtime API only —
+            // JsonObject builders/parsing, no @Serializable, no compiler
+            // plugin). The engine itself uses the JDK's built-in HTTP
+            // client, deliberately not Ktor (#78).
+            implementation(libs.kotlinx.serialization.json)
+        }
+
         androidMain.dependencies {
             // GitLive's Android artifacts declare Firebase dependencies without
             // versions; the BoM must be on the classpath to pin them. Exposed
