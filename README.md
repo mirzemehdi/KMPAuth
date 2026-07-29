@@ -164,7 +164,7 @@ your _**Web Client Id**_ as `serverId`):
 ```kotlin
 KMPAuth.initialize {
     logger { println("KMPAuthLog: $it") } // optional
-    google(GoogleAuthCredentials(serverId = WebClientId))
+    google(serverId = WebClientId)
     // backendProvider(MyOwnBackend) - custom backends only; Firebase registers itself
 }
 ```
@@ -672,7 +672,7 @@ KMPAuth.reauthenticate(
 > browser on a local page that runs Firebase's official JS SDK against your
 > project's hosted auth handler, so every provider configured in the
 > Firebase console works, including Apple. Configure once via
-> `KMPAuth.initialize { firebase(FirebaseBackendOptions(apiKey, projectId, applicationId)) }`
+> `KMPAuth.initialize { firebase(apiKey = ..., projectId = ..., applicationId = ...) }`
 > (no-op on Android/iOS). Phone stays unavailable on Desktop (reCAPTCHA).
 > On wasm, Firebase flows report a failed `Result`.
 
@@ -716,7 +716,7 @@ one explicit call at app start:
 
 ```kotlin
 KMPAuth.initialize {
-    supabase(SupabaseBackendOptions(url = projectUrl, apiKey = anonKey))
+    supabase(url = projectUrl, apiKey = publishableKey)
     // apps that already use supabase-kt can pass their client instead:
     // supabase(existingSupabaseClient)
 }
@@ -725,6 +725,27 @@ KMPAuth.initialize {
 If `kmpauth-firebase-core` is *also* in the dependencies, pass
 `supabase(..., replace = true)` — on iOS/JS/wasm the Firebase backend
 registers eagerly at binary load, before `initialize` runs.
+
+#### Using several backends at once
+
+The registered backend is only the default. Every backend-generic auth state
+takes a `backend` parameter, so Firebase and Supabase can serve different
+flows side by side (the sample app demonstrates this with parallel button
+groups):
+
+```kotlin
+// Firebase stays the registered default:
+val firebaseEmail = rememberEmailAuthState(email, password, onResult = ...)
+
+// a standalone Supabase backend pins these states to Supabase:
+val supabase = remember { SupabaseAuthBackend(url = projectUrl, apiKey = publishableKey) }
+val supabaseEmail = rememberEmailAuthState(email, password, backend = supabase, onResult = ...)
+val supabaseGoogle = rememberGoogleAuthState(backend = supabase, onResult = ...)
+
+// non-composable operations run on the instance directly:
+supabase.sendPasswordResetEmail(email)
+```
+
 
 After that the backend-generic flows run against Supabase (enable the
 matching providers in the Supabase dashboard):

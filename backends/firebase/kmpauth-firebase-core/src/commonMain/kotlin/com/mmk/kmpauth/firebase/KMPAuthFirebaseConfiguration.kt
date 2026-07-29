@@ -41,3 +41,29 @@ public fun KMPAuthConfiguration.firebase(options: FirebaseBackendOptions) {
 }
 
 internal expect fun initializeFirebasePlatform(options: FirebaseBackendOptions)
+
+/**
+ * [firebase] shorthand taking the values directly — same semantics as the
+ * [FirebaseBackendOptions] overload:
+ *
+ * ```
+ * KMPAuth.initialize {
+ *     firebase(apiKey = ..., projectId = ..., applicationId = ...)
+ * }
+ * ```
+ */
+public fun KMPAuthConfiguration.firebase(
+    apiKey: String,
+    projectId: String,
+    applicationId: String,
+    authDomain: String = "$projectId.firebaseapp.com",
+) {
+    firebase(
+        FirebaseBackendOptions(
+            apiKey = apiKey,
+            projectId = projectId,
+            applicationId = applicationId,
+            authDomain = authDomain,
+        )
+    )
+}

@@ -10,6 +10,7 @@ import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderIds
+import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.logger.currentLogger
@@ -52,6 +53,9 @@ private class PendingFacebookResult {
  * @param linkAccount [Boolean] flag to link account with current user. Default value is false.
  * @param loginTracking [FacebookLoginTracking] mode. Defaults to
  * [FacebookLoginTracking.Limited]. See [FacebookLoginTracking].
+ * @param backend serves this state. Defaults to the registered process-wide
+ * backend ([KMPAuthBackend]); pass a specific [AuthProviderBackend] instance
+ * to use several backends side by side (e.g. Firebase and Supabase).
  * @param onResult receives the signed-in [KMPAuthUser] or the failure. The
  * backend's native user stays reachable through [KMPAuthUser.raw].
  */
@@ -64,11 +68,13 @@ public fun rememberFacebookAuthState(
     ),
     linkAccount: Boolean = false,
     loginTracking: FacebookLoginTracking = FacebookLoginTracking.Limited,
+    backend: AuthProviderBackend = KMPAuthBackend,
     onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
     val currentLinkAccount by rememberUpdatedState(linkAccount)
     val currentLoginTracking by rememberUpdatedState(loginTracking)
+    val currentBackend by rememberUpdatedState(backend)
     val currentOnResult by rememberUpdatedState(onResult)
 
     val pendingFacebookResult = remember { PendingFacebookResult() }
@@ -117,7 +123,7 @@ public fun rememberFacebookAuthState(
                         }
 
                         currentOnResult(
-                            KMPAuthBackend.signIn(credential, currentLinkAccount)
+                            currentBackend.signIn(credential, currentLinkAccount)
                         )
                     }
             } finally {

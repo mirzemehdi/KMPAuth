@@ -32,6 +32,9 @@ import com.mmk.kmpauth.core.SignInState
  * Firebase REST API - call GitLive's `Firebase.initialize` there); on wasm
  * the flow reports a failed [Result].
  *
+ * @param backend serves this state. Defaults to the registered process-wide
+ * backend ([KMPAuthBackend]); pass a specific [AuthProviderBackend] instance
+ * to use several backends side by side (e.g. Firebase and Supabase).
  * @param onResult receives the signed-in anonymous [KMPAuthUser] or the
  * failure. The backend's native user stays reachable through
  * [KMPAuthUser.raw].
@@ -39,14 +42,16 @@ import com.mmk.kmpauth.core.SignInState
 @OptIn(KMPAuthInternalApi::class)
 @Composable
 public fun rememberAnonymousAuthState(
+    backend: AuthProviderBackend = KMPAuthBackend,
     onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     val scope = rememberCoroutineScope()
+    val currentBackend by rememberUpdatedState(backend)
     val currentOnResult by rememberUpdatedState(onResult)
 
     return remember {
         LaunchingSignInState(scope) {
-            currentOnResult(KMPAuthBackend.signInAnonymously())
+            currentOnResult(currentBackend.signInAnonymously())
         }
     }
 }

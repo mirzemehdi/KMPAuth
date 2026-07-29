@@ -19,6 +19,8 @@ public final class com/mmk/kmpauth/firebase/FirebaseBackendOptions {
 
 public final class com/mmk/kmpauth/firebase/KMPAuthFirebaseConfigurationKt {
 	public static final fun firebase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/firebase/FirebaseBackendOptions;)V
+	public static final fun firebase (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun firebase$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 }
 
 public final class com/mmk/kmpauth/firebase/apple/AppleButtonUiContainerKt {
