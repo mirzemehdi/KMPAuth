@@ -725,19 +725,22 @@ KMPAuth.initialize {
 
 #### Using several backends at once
 
-The registered backend is only the default. Every backend-generic auth state
-takes a `backend` parameter, so Firebase and Supabase can serve different
-flows side by side (the sample app demonstrates this with parallel button
-groups):
+The registered backend is only the default. The auth states read their
+backend from the `LocalKMPAuthBackend` composition local, so scoping a
+subtree to another backend is one wrapper - no per-call parameters (the
+sample app demonstrates this with parallel Firebase and Supabase sections):
 
 ```kotlin
-// Firebase stays the registered default:
+// Firebase (registered default) - nothing to write:
 val firebaseEmail = rememberEmailAuthState(email, password, onResult = ...)
 
-// a standalone Supabase backend pins these states to Supabase:
+// scope a whole section to a standalone Supabase backend:
 val supabase = remember { SupabaseAuthBackend(url = projectUrl, apiKey = publishableKey) }
-val supabaseEmail = rememberEmailAuthState(email, password, backend = supabase, onResult = ...)
-val supabaseGoogle = rememberGoogleAuthState(backend = supabase, onResult = ...)
+CompositionLocalProvider(LocalKMPAuthBackend provides supabase) {
+    // every auth state in here is served by Supabase
+    val supabaseEmail = rememberEmailAuthState(email, password, onResult = ...)
+    val supabaseGoogle = rememberGoogleAuthState(onResult = ...)
+}
 
 // non-composable operations run on the instance directly:
 supabase.sendPasswordResetEmail(email)

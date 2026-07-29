@@ -67,7 +67,7 @@ public final class com/mmk/kmpauth/core/UnsupportedSignInState : com/mmk/kmpauth
 }
 
 public final class com/mmk/kmpauth/core/auth/AnonymousAuthStateKt {
-	public static final fun rememberAnonymousAuthState (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberAnonymousAuthState (Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public abstract interface class com/mmk/kmpauth/core/auth/AuthCredential {
@@ -198,7 +198,7 @@ public final class com/mmk/kmpauth/core/auth/EmailAuthMode : java/lang/Enum {
 }
 
 public final class com/mmk/kmpauth/core/auth/EmailAuthStateKt {
-	public static final fun rememberEmailAuthState (Ljava/lang/String;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailAuthMode;ZLcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
+	public static final fun rememberEmailAuthState (Ljava/lang/String;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailAuthMode;ZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/mmk/kmpauth/core/SignInState;
 }
 
 public final class com/mmk/kmpauth/core/auth/KMPAuthBackend : com/mmk/kmpauth/core/auth/AuthProviderBackend {
@@ -228,6 +228,10 @@ public abstract interface class com/mmk/kmpauth/core/auth/KMPAuthUser {
 	public abstract fun getProviderId ()Ljava/lang/String;
 	public abstract fun getRaw ()Ljava/lang/Object;
 	public abstract fun getUid ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/core/auth/LocalKMPAuthBackendKt {
+	public static final fun getLocalKMPAuthBackend ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
 public final class com/mmk/kmpauth/core/di/PlatformModule_jvmKt {

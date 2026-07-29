@@ -54,13 +54,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   remain non-wasm.
 
 ### Added
-- **Several backends side by side**. Every backend-generic auth state
-  (`rememberEmailAuthState`, `rememberAnonymousAuthState`,
-  `rememberGoogleAuthState`, `rememberFacebookAuthState`) takes a `backend`
-  parameter defaulting to the registered `KMPAuthBackend` — pass a
-  standalone instance (e.g. `SupabaseAuthBackend(url, apiKey)`) to pin a
-  state to a specific backend while another stays the default. The sample
-  app now shows Firebase and Supabase as parallel sections.
+- **Several backends side by side via `LocalKMPAuthBackend`**. The
+  backend-generic auth states (`rememberEmailAuthState`,
+  `rememberAnonymousAuthState`, `rememberGoogleAuthState`,
+  `rememberFacebookAuthState`) read their backend from a composition local
+  defaulting to the registered `KMPAuthBackend` - single-backend apps write
+  nothing, and scoping a subtree to a standalone instance (e.g.
+  `SupabaseAuthBackend(url, apiKey)`) is one `CompositionLocalProvider`
+  wrapper. The sample app shows Firebase and Supabase as parallel sections.
 - **Flat configuration overloads**: `google(serverId = ...)`,
   `firebase(apiKey = ..., projectId = ..., applicationId = ...)`,
   `supabase(url = ..., apiKey = ...)` — no wrapper objects needed at the

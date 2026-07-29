@@ -93,9 +93,10 @@ works), `currentUser()`, `signOut()`, `signIn(credential)`, `signUp`,
 email-link sign-in, and `registerBackendProvider`/`getBackendProvider`/
 `requireBackendProvider`. It delegates to `KMPAuthBackend`; keep new
 session/account operations and setup on this facade rather than inventing
-provider-specific top-level objects. Backend-generic states take a
-`backend: AuthProviderBackend = KMPAuthBackend` parameter for multi-backend
-apps; configuration extensions ship flat-parameter overloads
+provider-specific top-level objects. Backend-generic states read their backend from the
+`LocalKMPAuthBackend` composition local (default: registered `KMPAuthBackend`) -
+multi-backend apps scope subtrees with `CompositionLocalProvider`, never
+per-call parameters; configuration extensions ship flat-parameter overloads
 (`google(serverId)`, `firebase(apiKey, projectId, applicationId)`,
 `supabase(url, apiKey)`) alongside the options-object ones.
 

@@ -10,8 +10,7 @@ import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.NoOpSignInState
 import com.mmk.kmpauth.core.SignInState
-import com.mmk.kmpauth.core.auth.AuthProviderBackend
-import com.mmk.kmpauth.core.auth.KMPAuthBackend
+import com.mmk.kmpauth.core.auth.LocalKMPAuthBackend
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 
 /**
@@ -39,9 +38,6 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
  *
  * @param linkAccount true links the credential to the currently signed-in
  * user instead of creating a new session.
- * @param backend serves this state. Defaults to the registered process-wide
- * backend ([KMPAuthBackend]); pass a specific [AuthProviderBackend] instance
- * to use several backends side by side (e.g. Firebase and Supabase).
  * @param onResult receives the signed-in [KMPAuthUser] or the failure. The
  * backend's native user stays reachable through [KMPAuthUser.raw].
  */
@@ -52,7 +48,6 @@ public fun rememberGoogleAuthState(
     filterByAuthorizedAccounts: Boolean = false,
     isAutoSelectEnabled: Boolean = true,
     scopes: List<String> = listOf("email", "profile"),
-    backend: AuthProviderBackend = KMPAuthBackend,
     onResult: (Result<KMPAuthUser>) -> Unit,
 ): SignInState {
     // IDE previews never run application startup, so GoogleAuthProvider.create()
@@ -65,7 +60,7 @@ public fun rememberGoogleAuthState(
     val currentFilter by rememberUpdatedState(filterByAuthorizedAccounts)
     val currentAutoSelect by rememberUpdatedState(isAutoSelectEnabled)
     val currentScopes by rememberUpdatedState(scopes)
-    val currentBackend by rememberUpdatedState(backend)
+    val currentBackend by rememberUpdatedState(LocalKMPAuthBackend.current)
     val currentOnResult by rememberUpdatedState(onResult)
 
     return remember {
