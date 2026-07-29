@@ -135,6 +135,7 @@ KMPAuth.initialize {
 val onResult: (Result<KMPAuthUser>) -> Unit = { result -> /* ... */ }
 
 val googleSignIn = rememberGoogleAuthState(onResult = onResult)     // id-token grant
+val facebookSignIn = rememberFacebookAuthState(onResult = onResult) // kmpauth-facebook, Limited Login (OIDC), Android/iOS
 val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
 val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult) // SMS OTP, every target
 val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
