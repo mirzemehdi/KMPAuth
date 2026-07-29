@@ -64,9 +64,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(project(":providers:kmpauth-google"))
             implementation(project(":providers:kmpauth-apple"))
-            implementation(project(":backends:firebase:kmpauth-firebase-core"))
-            implementation(project(":backends:firebase:kmpauth-firebase-google"))
-            implementation(project(":backends:firebase:kmpauth-firebase-facebook"))
+            implementation(project(":backends:firebase:kmpauth-firebase"))
+            implementation(project(":deprecated:kmpauth-firebase-google"))
+            implementation(project(":deprecated:kmpauth-firebase-facebook"))
             // Supabase backend demo (see AppInitializer.USE_SUPABASE_BACKEND).
             implementation(project(":backends:supabase:kmpauth-supabase"))
             implementation(project(":kmpauth-uihelper"))

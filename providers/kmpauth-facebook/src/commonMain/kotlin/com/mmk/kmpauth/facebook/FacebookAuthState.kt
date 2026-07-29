@@ -31,7 +31,7 @@ private class PendingFacebookResult {
  * as a Compose state holder. For the Facebook credential alone — no
  * backend session — use [rememberFacebookSignInState].
  *
- * With `kmpauth-firebase-core` in the dependencies the Firebase backend
+ * With `kmpauth-firebase` in the dependencies the Firebase backend
  * registers itself automatically; a custom backend is registered via
  * `KMPAuth.registerBackendProvider`.
  *

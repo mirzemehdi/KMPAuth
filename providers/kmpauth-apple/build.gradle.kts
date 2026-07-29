@@ -15,7 +15,7 @@ plugins {
  * client. Other platforms would require Apple's web OAuth flow, whose
  * authorization code must be exchanged server-side using a client secret, so
  * they are intentionally no-op stubs here. Use the Firebase Apple containers in
- * kmpauth-firebase-core if you need Apple Sign-In on non-Apple targets.
+ * kmpauth-firebase if you need Apple Sign-In on non-Apple targets.
  *
  * No SwiftPM dependency: AuthenticationServices ships with the iOS SDK.
  */

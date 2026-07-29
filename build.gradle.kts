@@ -38,8 +38,8 @@ allprojects {
 
     // Sample modules plus the synthetic grouping projects created by nested
     // include() paths. The real modules inside them (e.g.
-    // :deprecated:kmpauth-firebase) DO publish - the deprecated aggregator
-    // must stay on Maven Central for 2.x consumers.
+    // :deprecated:kmpauth-firebase-google) DO publish - the deprecated 2.x
+    // container shims must stay on Maven Central for 2.x consumers.
     val excludedModules = listOf(
         ":sampleApp:shared", ":sampleApp:androidApp", ":sampleApp:desktopApp", ":sampleApp:webApp", ":sampleApp",
         ":providers", ":backends", ":backends:firebase", ":deprecated",
@@ -59,8 +59,8 @@ dependencies {
     dokka(project(":kmpauth-core"))
     dokka(project(":providers:kmpauth-google"))
     dokka(project(":providers:kmpauth-facebook"))
-    dokka(project(":backends:firebase:kmpauth-firebase-core"))
-    dokka(project(":backends:firebase:kmpauth-firebase-google"))
-    dokka(project(":backends:firebase:kmpauth-firebase-facebook"))
+    dokka(project(":backends:firebase:kmpauth-firebase"))
+    dokka(project(":deprecated:kmpauth-firebase-google"))
+    dokka(project(":deprecated:kmpauth-firebase-facebook"))
     dokka(project(":kmpauth-uihelper"))
 }

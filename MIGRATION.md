@@ -13,6 +13,9 @@ Step-by-step guide for upgrading from KMPAuth 2.x to 3.0.
       they are deleted in 3.0. Public entry points (`GoogleAuthProvider.create`,
       the `*UiContainer` composables) are unchanged and need no code changes.
 - [ ] Address `@Deprecated` warnings — each carries a `ReplaceWith` migration hint.
+- [ ] Still using `GoogleButtonUiContainerFirebase` / `FacebookButtonUiContainerFirebase`?
+      Add `kmpauth-firebase-google` / `kmpauth-firebase-facebook` to your
+      dependencies — `kmpauth-firebase` no longer bundles them (section 5).
 - [ ] Moving off the deprecated containers? Use the `rememberXxxSignInState` /
       `rememberXxxAuthState` composables (sections 4 and 11) — session
       callbacks are `Result<KMPAuthUser>` instead of `Result<FirebaseUser?>`.
@@ -54,7 +57,7 @@ frameworks through the Kotlin `swiftPMDependencies {}` DSL (Kotlin 2.4+).
 
 **In your shared KMP module:** if you consume KMPAuth from a KMP project
 that itself builds the iOS framework, no Kotlin code changes are needed —
-the `cocoapods.FirebaseAuth.*` bindings inside `kmpauth-firebase-core` come from
+the `cocoapods.FirebaseAuth.*` bindings inside `kmpauth-firebase` come from
 GitLive's bundled cinterop and keep working.
 
 ## 2. Koin removal
@@ -129,29 +132,36 @@ Notes:
 - One state per provider per screen; no wrapping container, the button is
   entirely yours.
 
-## 5. Granular Firebase artifacts (optional)
+## 5. Firebase artifacts: `kmpauth-firebase` slimmed down; container shims split out
 
-`kmpauth-firebase` still works exactly as in 2.x — same coordinates, now
-published as an aggregator of the granular artifacts (its module lives
-under `deprecated/` in the repository as a compatibility shim). Optionally slim your dependency tree:
+`kmpauth-firebase` keeps its coordinates but no longer bundles the Google
+sign-in stack: it now contains the Firebase auth backend plus the
+Apple/GitHub/Microsoft/OAuth/phone states. The deprecated 2.x Google and
+Facebook container composables live in their own compatibility artifacts
+(removed in 4.0):
 
 | You use | Depend on |
 |---|---|
-| Everything (as in 2.x) | `kmpauth-firebase` (unchanged) |
-| Apple/GitHub/OAuth + backend only | `kmpauth-firebase-core` |
-| Google + Firebase | `kmpauth-firebase-google` (+ `kmpauth-google`) |
-| Facebook + Firebase | `kmpauth-firebase-facebook` |
+| The 3.0 API (`rememberXxxAuthState`, `KMPAuth.*`) | `kmpauth-firebase` (+ your provider modules, e.g. `kmpauth-google`) |
+| Deprecated `GoogleButtonUiContainerFirebase` | add `kmpauth-firebase-google` |
+| Deprecated `FacebookButtonUiContainerFirebase` | add `kmpauth-firebase-facebook` |
+
+**⚠️ One-line change for 2.x upgraders:** in 2.x, `kmpauth-firebase` included
+`GoogleButtonUiContainerFirebase`. If you still use that container after
+bumping to 3.0, add `kmpauth-firebase-google` to your dependencies (the
+compile error tells you exactly this). Moving to `rememberGoogleAuthState`
+(section 4) removes the need for the extra artifact entirely.
 
 ## 6. Pluggable auth backends
 
 3.0 introduces `com.mmk.kmpauth.core.auth.AuthProviderBackend` with a
 backend-agnostic credential/user model (`AuthCredential`, `KMPAuthUser`).
 
-- **Existing Firebase users: no action.** With `kmpauth-firebase-core` (or the
-  `kmpauth-firebase` aggregate) in the dependencies, `FirebaseAuthBackend`
-  registers itself automatically — `ServiceLoader` on JVM/Android, eager
-  load-time registration on iOS/JS/wasm. The deprecated containers keep
-  returning `Result<FirebaseUser?>` exactly as in 2.x.
+- **Existing Firebase users: no action.** With `kmpauth-firebase` in the
+  dependencies, `FirebaseAuthBackend` registers itself automatically —
+  `ServiceLoader` on JVM/Android, eager load-time registration on
+  iOS/JS/wasm. The deprecated containers keep returning
+  `Result<FirebaseUser?>` exactly as in 2.x.
 - **Supabase backend:** `KMPAuth.initialize { supabase(url = ..., apiKey = ...) }`
   with the `kmpauth-supabase` artifact — see the README's Supabase section.
 - **Custom backends:** implement `AuthProviderBackend` and call
@@ -160,7 +170,7 @@ backend-agnostic credential/user model (`AuthCredential`, `KMPAuthUser`).
   supersedes the auto-registered Firebase default, regardless of order;
   `replace = true` swaps an earlier explicit registration.
 - Web-flow providers (Apple on Android, GitHub, Microsoft, generic OAuth)
-  are driven by their platform auth states in `kmpauth-firebase-core` — a
+  are driven by their platform auth states in `kmpauth-firebase` — a
   backend `signIn` call cannot drive a browser flow.
 
 ## 7. Desktop (JVM) Google Sign-In redirect URI
@@ -218,7 +228,7 @@ working on both platforms.
 Native Sign in with Apple is now available without Firebase through the new
 `kmpauth-apple` artifact, and both the Firebase and non-Firebase flows share a
 single scope type. `AppleSignInRequestScope` therefore moved out of
-`kmpauth-firebase-core`:
+`kmpauth-firebase`:
 
 ```diff
 - import com.mmk.kmpauth.firebase.apple.AppleSignInRequestScope
@@ -227,7 +237,7 @@ single scope type. `AppleSignInRequestScope` therefore moved out of
 
 Only the import changes — `AppleSignInRequestScope.FullName` /
 `AppleSignInRequestScope.Email` and every Firebase Apple composable behave
-exactly as before. `kmpauth-firebase-core` depends on `kmpauth-apple`
+exactly as before. `kmpauth-firebase` depends on `kmpauth-apple`
 transitively, so no new dependency is needed. (This mirrors how
 `kmpauth-firebase-facebook` already reuses `FacebookSignInRequestScope` from
 `kmpauth-facebook`.)
@@ -315,12 +325,12 @@ session through the registered backend):
   | `GoogleButtonUiContainerFirebase` | `rememberGoogleAuthState` | `kmpauth-google` |
   | `FacebookButtonUiContainer` | `rememberFacebookSignInState` (credential only) | `kmpauth-facebook` |
   | `FacebookButtonUiContainerFirebase` | `rememberFacebookAuthState` | `kmpauth-facebook` |
-  | `AppleButtonUiContainer` | `rememberAppleAuthState` | `kmpauth-firebase-core` |
-  | `GithubButtonUiContainer` | `rememberGithubAuthState` | `kmpauth-firebase-core` |
-  | `OAuthContainer` | `rememberOAuthState(provider = "...")` | `kmpauth-firebase-core` |
+  | `AppleButtonUiContainer` | `rememberAppleAuthState` | `kmpauth-firebase` |
+  | `GithubButtonUiContainer` | `rememberGithubAuthState` | `kmpauth-firebase` |
+  | `OAuthContainer` | `rememberOAuthState(provider = "...")` | `kmpauth-firebase` |
 
   New in 3.0, no 2.x equivalent: `rememberMicrosoftAuthState` and
-  `rememberPhoneAuthState` (`kmpauth-firebase-core`),
+  `rememberPhoneAuthState` (`kmpauth-firebase`),
   `rememberEmailAuthState` and `rememberAnonymousAuthState`
   (`kmpauth-core`), `rememberAppleSignInState` (native Apple credential,
   `kmpauth-apple`).
@@ -331,7 +341,7 @@ Also changed in 3.0:
   replaces separate `GoogleAuthProvider.create` + logger calls -
   provider modules contribute extensions on the configuration scope.
   `GoogleAuthProvider.create` still works unchanged.
-- **No backend setup needed with Firebase** - having `kmpauth-firebase-core`
+- **No backend setup needed with Firebase** - having `kmpauth-firebase`
   in the dependencies auto-registers the backend (ServiceLoader on
   JVM/Android, eager load-time registration on iOS/JS/wasm). Custom backends
   register explicitly and always supersede the auto-registered default:
