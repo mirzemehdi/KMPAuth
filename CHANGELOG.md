@@ -96,12 +96,18 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   sign-in, password reset, magic-link sign-in (`token_hash`, PKCE `code`
   and implicit-flow links), phone SMS OTP sign-in (on every target),
   reauthentication (as a fresh sign-in),
-  Google/Apple/Facebook-Limited-Login id-token exchange, and id-token
-  identity linking. Not mapped, failing with a reason: classic Facebook
-  access tokens (Supabase's `id_token` grant is OIDC-only), web-flow
-  providers (use supabase-kt's `signInWith(Github)` directly), and
-  email/password linking (Supabase uses `auth.updateUser`). Consumers add a
-  Ktor client engine per platform, as in any supabase-kt setup.
+  Google/Apple/Facebook-Limited-Login id-token exchange, id-token
+  identity linking, and **browser OAuth**
+  (`KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))` — GitHub,
+  Azure/Microsoft, GitLab, Discord and every other GoTrue provider;
+  Desktop catches the redirect out of the box via supabase-kt's localhost
+  callback server, Android/iOS use supabase-kt's deep-link setup, web is a
+  full-page redirect with the session restored after reload). Not mapped,
+  failing with a reason: classic Facebook access tokens (Supabase's
+  `id_token` grant is OIDC-only), browser-OAuth identity linking (use
+  `auth.linkIdentity`), and email/password linking (Supabase uses
+  `auth.updateUser`). Consumers add a Ktor client engine per platform, as
+  in any supabase-kt setup.
 - **Desktop (JVM) web-flow sign-in** (#81). `rememberOAuthState`/GitHub/
   Microsoft/Apple states now work on Desktop: the state serves a one-page
   site on a loopback port, opens it in the system browser, and the official

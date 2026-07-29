@@ -219,11 +219,20 @@ private fun SupabaseSection(
 
         EmailAuthBlock(label = "Supabase", report = report, onStatus = onStatus)
         PhoneAuthBlock(label = "Supabase", report = report)
-        Text(
-            "Web-flow providers (GitHub/Microsoft/Apple) are Firebase-driven; " +
-                "the Supabase backend reports them as unsupported.",
-            style = MaterialTheme.typography.bodySmall,
-        )
+
+        // Browser OAuth through the backend interface: Desktop works out of
+        // the box (supabase-kt catches the redirect on a localhost server);
+        // Android/iOS need supabase-kt's deep-link setup.
+        val scope = rememberCoroutineScope()
+        Button(onClick = {
+            scope.launch {
+                report("Supabase/GitHub")(
+                    AppInitializer.supabaseBackend.signIn(
+                        AuthCredential.OAuthWebFlow(providerId = "github.com")
+                    )
+                )
+            }
+        }) { Text("GitHub (web flow)") }
     }
     }
 }

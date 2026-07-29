@@ -1,9 +1,15 @@
 # GitHub, Microsoft and other OAuth providers
 
-Module: `kmpauth-firebase` — Firebase drives the OAuth web flow, no
-provider SDK involved. Works on Android, iOS and Desktop (JVM); on Web
-(JS/wasm) these states are not implemented yet and report a failed
-`Result`.
+Served two ways:
+
+- **Firebase** (`kmpauth-firebase`) — the composable states below; Firebase
+  drives the OAuth web flow, no provider SDK involved. Android, iOS and
+  Desktop (JVM); on Web (JS/wasm) the states are not implemented yet and
+  report a failed `Result`.
+- **Supabase** — `KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))`
+  with the Supabase backend registered; see
+  [the Supabase guide](supabase.md#browser-oauth-per-platform) for the
+  per-platform setup (Desktop works out of the box).
 
 ## GitHub
 

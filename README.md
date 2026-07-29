@@ -39,7 +39,7 @@ provider's token to verify yourself.)
 | Apple | Firebase | ✅ | ✅ native | ✅ | — | — |
 | Apple (native token, no backend) | your server | — | ✅ | — | — | — |
 | Facebook | your server · Firebase · Supabase¹ | ✅ | ✅ | — | — | — |
-| GitHub / Microsoft / any OAuth | Firebase | ✅ | ✅ | ✅ | — | — |
+| GitHub / Microsoft / any OAuth | Firebase · Supabase | ✅ | ✅ | ✅ | ✅⁴ | ✅⁴ |
 | Email (password / reset / magic link) | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
 | Phone number | Firebase · Supabase | ✅ | ✅ | ✅³ | ✅³ | ✅³ |
 | Anonymous | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
@@ -48,6 +48,10 @@ provider's token to verify yourself.)
 ² On wasm only with Supabase — the Firebase SDK has no wasm target.
 ³ Beyond Android/iOS only with Supabase (SMS OTP); Firebase phone auth
 needs the mobile SDKs.
+⁴ Only with Supabase (`KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))`):
+Desktop works out of the box, Android/iOS need Supabase's deep-link setup,
+and on web the flow is a full-page redirect — the session is restored after
+reload.
 
 Everything compiles and is callable from `commonMain` on **all** targets — a
 feature unavailable on the current platform reports a failed `Result` with
@@ -161,7 +165,7 @@ Firebase/Supabase):
 |---|---|
 | [Firebase](docs/firebase.md) | Auto-registration, Android/iOS zero-config, Desktop (REST + browser flows), web notes |
 | [Supabase](docs/supabase.md) | Setup, Ktor engines, what maps to Supabase (works on **wasm**) |
-| [GitHub / Microsoft / any OAuth](docs/oauth-providers.md) | Firebase-driven OAuth web flow — Android · iOS · Desktop |
+| [GitHub / Microsoft / any OAuth](docs/oauth-providers.md) | Firebase (Android · iOS · Desktop) or Supabase (every target, see guide) |
 | [Email — password, reset, magic link](docs/email.md) | Served by Firebase or Supabase |
 | [Phone number](docs/phone.md) | Firebase (Android · iOS) or Supabase (every target) |
 | [Anonymous (guest)](docs/anonymous.md) | Served by Firebase or Supabase |

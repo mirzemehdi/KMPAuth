@@ -100,14 +100,40 @@ class SupabaseAuthBackendTest {
     }
 
     @Test
-    fun oauthWebFlowCredentialIsUnsupported() = runTest {
+    fun oauthWebFlowRejectsUnknownProviderBeforeAnyRequest() = runTest {
         val engine = RecordingMockEngine { jsonResponse(TEST_SESSION_JSON) }
         val backend = SupabaseAuthBackend(engine.client)
 
-        val result = backend.signIn(AuthCredential.OAuthWebFlow(providerId = AuthProviderIds.GITHUB))
+        val result = backend.signIn(AuthCredential.OAuthWebFlow(providerId = "myspace.com"))
 
-        assertIs<UnsupportedOperationException>(result.exceptionOrNull())
+        assertIs<IllegalArgumentException>(result.exceptionOrNull())
         assertTrue(engine.requests.isEmpty())
+    }
+
+    @Test
+    fun oauthWebFlowRejectsLinkingBeforeAnyRequest() = runTest {
+        val engine = RecordingMockEngine { jsonResponse(TEST_SESSION_JSON) }
+        val backend = SupabaseAuthBackend(engine.client)
+
+        val result = backend.signIn(
+            AuthCredential.OAuthWebFlow(providerId = AuthProviderIds.GITHUB),
+            linkWithCurrentUser = true,
+        )
+
+        val error = result.exceptionOrNull()
+        assertIs<UnsupportedOperationException>(error)
+        assertTrue("linkIdentity" in error.message.orEmpty())
+        assertTrue(engine.requests.isEmpty())
+    }
+
+    @Test
+    fun oauthProviderMappingAcceptsFirebaseAndGoTrueIds() {
+        assertEquals("github", supabaseOAuthProviderOrNull("github.com")?.name)
+        assertEquals("github", supabaseOAuthProviderOrNull("github")?.name)
+        assertEquals("azure", supabaseOAuthProviderOrNull("microsoft.com")?.name)
+        assertEquals("azure", supabaseOAuthProviderOrNull("azure")?.name)
+        assertEquals("gitlab", supabaseOAuthProviderOrNull("GitLab")?.name)
+        assertNull(supabaseOAuthProviderOrNull("myspace.com"))
     }
 
     @Test

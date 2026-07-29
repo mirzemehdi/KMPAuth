@@ -54,15 +54,31 @@ Enable the matching providers in the Supabase dashboard.
   requirement)
 - Id-token linking (`linkAccount = true`) via Supabase identity linking —
   requires manual linking enabled on the project
+- **Browser OAuth (GitHub, Azure/Microsoft, GitLab, Discord, ...)** via
+  `KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))` — accepts
+  Firebase-style ids and GoTrue provider names; see the platform notes
+  below
+
+**Browser OAuth per platform:**
+
+- **Desktop (JVM)**: works out of the box — supabase-kt opens the system
+  browser and catches the redirect on its own localhost callback server
+  (allow-list `http://localhost:<port>` in the Supabase dashboard;
+  configure the port via supabase-kt's `httpCallbackConfig`).
+- **Android / iOS**: needs supabase-kt's standard deep-link setup — set
+  `scheme`/`host` on the Supabase client, register the scheme in
+  `AndroidManifest.xml` / `Info.plist`, forward the link
+  (`handleDeeplinks`), and allow-list the redirect URL in the dashboard.
+- **Web (JS/wasm)**: the page redirects to the provider — the app unloads,
+  so no `Result` callback fires; the session is restored by supabase-kt
+  when the page reloads after the round-trip.
 
 **Doesn't (by design), failing with the Supabase-idiomatic alternative:**
 
 - Classic Facebook access tokens — Supabase's `id_token` grant accepts only
   OIDC tokens; use Facebook Limited Login
-- The `kmpauth-firebase`-resident web-flow states
-  (GitHub/Microsoft/OAuth/Apple-web) — use supabase-kt's
-  `signInWith(Github)` etc. directly via
-  `SupabaseAuthBackend.supabaseClient`
+- Linking a browser-OAuth identity — use
+  `supabaseClient.auth.linkIdentity(Github)` directly
 - Linking an email/password credential — Supabase adds an email via
   `auth.updateUser` instead
 
