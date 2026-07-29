@@ -3,6 +3,7 @@ public final class com/mmk/kmpauth/core/KMPAuth {
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/KMPAuth;
 	public final fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
 	public final fun getBackendProvider ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
+	public final fun initialize (Lkotlin/jvm/functions/Function1;)V
 	public final fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public final fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun registerBackendProvider (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Z)V
@@ -19,6 +20,13 @@ public final class com/mmk/kmpauth/core/KMPAuth {
 	public static synthetic fun signInWithEmailLink-BWLJW6A$default (Lcom/mmk/kmpauth/core/KMPAuth;Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mmk/kmpauth/core/KMPAuthConfiguration {
+	public static final field $stable I
+	public final fun backendProvider (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Z)V
+	public static synthetic fun backendProvider$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZILjava/lang/Object;)V
+	public final fun logger (Lcom/mmk/kmpauth/core/logger/KMPAuthLogger;)V
 }
 
 public abstract interface annotation class com/mmk/kmpauth/core/KMPAuthInternalApi : java/lang/annotation/Annotation {

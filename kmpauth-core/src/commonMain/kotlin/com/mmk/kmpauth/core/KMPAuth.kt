@@ -31,6 +31,24 @@ import com.mmk.kmpauth.core.logger.currentLogger
 @OptIn(KMPAuthInternalApi::class)
 public object KMPAuth {
 
+    /**
+     * One-stop initialization, called once at application start. Provider
+     * modules contribute their setup as extensions on
+     * [KMPAuthConfiguration] — e.g. `kmpauth-google` adds `google(...)`:
+     *
+     * ```
+     * KMPAuth.initialize {
+     *     logger { println("KMPAuthLog: $it") }
+     *     google(GoogleAuthCredentials(serverId = WebClientId))
+     *     // backendProvider(MyOwnBackend) — only for custom backends;
+     *     // the Firebase backend registers itself automatically.
+     * }
+     * ```
+     */
+    public fun initialize(block: KMPAuthConfiguration.() -> Unit) {
+        KMPAuthConfiguration().block()
+    }
+
     /** Replaces KMPAuth's logger; by default logs go to the platform console. */
     public fun setLogger(logger: KMPAuthLogger) {
         currentLogger = logger

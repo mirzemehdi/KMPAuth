@@ -54,6 +54,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   remain non-wasm.
 
 ### Added
+- **`KMPAuth.initialize { }` one-stop setup**. Provider modules contribute
+  their configuration as extensions on the scope - `kmpauth-google` adds
+  `google(GoogleAuthCredentials(serverId))` (equivalent to
+  `GoogleAuthProvider.create`, which still works); `logger { }` and
+  `backendProvider(backend)` (custom backends only) are built in.
 - **Email authentication** (#97, #110).
   `rememberEmailAuthState(email, password, mode, linkAccount, onResult)`
   signs in or — with `EmailAuthMode.SignUp` — creates the account; field values

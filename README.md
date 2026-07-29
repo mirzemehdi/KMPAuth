@@ -155,11 +155,19 @@ it will automatically generate OAuth client IDs for each platform,
 and one will be **_Web Client ID_** which will be needed for identifying signed-in users in backend server.
 
 #### Platform Setup
-Create GoogleAuthProvider instance by providing _**Web Client Id**_ as a serverID on Application start.
+Initialize KMPAuth once at application start - provider modules plug their
+setup into the same block (`kmpauth-google` contributes `google(...)`, taking
+your _**Web Client Id**_ as `serverId`):
 ```kotlin
-GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = WebClientId))
-
+KMPAuth.initialize {
+    logger { println("KMPAuthLog: $it") } // optional
+    google(GoogleAuthCredentials(serverId = WebClientId))
+    // backendProvider(MyOwnBackend) - custom backends only; Firebase registers itself
+}
 ```
+The 2.x `GoogleAuthProvider.create(credentials)` call still works and does the
+same thing.
+
 <details>
   <summary>Android</summary>
 

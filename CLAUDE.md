@@ -84,12 +84,15 @@ thin wrappers over these states — keep them delegating, never reimplement
 logic in them.
 
 Everything that isn't a launchable flow goes through the **`KMPAuth`
-facade** (`kmpauth-core`): `currentUser()`, `signOut()`, `signIn(credential)`,
-`signUp`, `signInAnonymously`, `reauthenticate(credential)`,
-`sendPasswordResetEmail`, email-link sign-in, and
-`registerBackendProvider`/`getBackendProvider`/`requireBackendProvider`.
-It delegates to `KMPAuthBackend`; keep new session/account operations on this
-facade rather than inventing provider-specific top-level objects.
+facade** (`kmpauth-core`): `initialize { }` (one-stop setup at app start -
+provider modules contribute extensions on `KMPAuthConfiguration`, e.g.
+`kmpauth-google`'s `google(credentials)`; `GoogleAuthProvider.create` still
+works), `currentUser()`, `signOut()`, `signIn(credential)`, `signUp`,
+`signInAnonymously`, `reauthenticate(credential)`, `sendPasswordResetEmail`,
+email-link sign-in, and `registerBackendProvider`/`getBackendProvider`/
+`requireBackendProvider`. It delegates to `KMPAuthBackend`; keep new
+session/account operations and setup on this facade rather than inventing
+provider-specific top-level objects.
 
 **Failures are values, not nulls.** `Result<KMPAuthUser>` is non-null — a
 backend producing no user is a failure with a reason, never a null success;

@@ -315,6 +315,10 @@ Also changed:
   they return the provider credential without a backend session.
 - Callbacks are `Result<KMPAuthUser>` (non-null): a backend returning no user
   is a failure with a reason, never a null success.
+- **One-stop init (optional)**: `KMPAuth.initialize { logger { ... }; google(credentials) }`
+  replaces separate `GoogleAuthProvider.create` + logger calls -
+  provider modules contribute extensions on the configuration scope.
+  `GoogleAuthProvider.create` still works unchanged.
 - **No backend setup needed with Firebase** - having `kmpauth-firebase-core`
   in the dependencies auto-registers the backend (ServiceLoader on
   JVM/Android, eager load-time registration on iOS/JS/wasm). Custom backends

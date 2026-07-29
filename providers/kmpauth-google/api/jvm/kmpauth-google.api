@@ -78,3 +78,9 @@ public final class com/mmk/kmpauth/google/GoogleUser {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/mmk/kmpauth/google/KMPAuthGoogleConfigurationKt {
+	public static final fun google (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Lcom/mmk/kmpauth/google/GoogleAuthCredentials;)V
+	public static final fun google (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun google$default (Lcom/mmk/kmpauth/core/KMPAuthConfiguration;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+}
+
