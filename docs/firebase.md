@@ -39,7 +39,8 @@ Desktop support is complete:
   (`https://<authDomain>/__/auth/handler`) — every provider configured in
   the Firebase console works, including Apple. Nothing but that single flow
   is served on the loopback.
-- **Phone** stays unavailable (needs reCAPTCHA).
+- **Phone** stays unavailable with Firebase (needs reCAPTCHA) — the
+  [Supabase backend](supabase.md) serves phone OTP on Desktop.
 
 ## Web
 

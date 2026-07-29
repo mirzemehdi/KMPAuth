@@ -8,6 +8,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.core.runCatchingCancellable
 import dev.gitlive.firebase.Firebase
@@ -244,6 +245,18 @@ internal class FirebaseRestAuthEngine(
             FirebaseRestKMPAuthUser(user)
         }
     }
+
+    override suspend fun signInWithPhone(
+        phoneNumber: String,
+        verificationUi: PhoneVerificationUi,
+        linkWithCurrentUser: Boolean,
+    ): Result<KMPAuthUser> = Result.failure(
+        UnsupportedOperationException(
+            "Firebase phone sign-in is not available on Desktop: the Identity " +
+                "Toolkit REST flow requires a reCAPTCHA token. The Supabase " +
+                "backend serves phone OTP on every target."
+        )
+    )
 
     override suspend fun sendPasswordResetEmail(
         email: String,

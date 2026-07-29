@@ -41,11 +41,13 @@ provider's token to verify yourself.)
 | Facebook | your server · Firebase · Supabase¹ | ✅ | ✅ | — | — | — |
 | GitHub / Microsoft / any OAuth | Firebase | ✅ | ✅ | ✅ | — | — |
 | Email (password / reset / magic link) | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
-| Phone number | Firebase | ✅ | ✅ | — | — | — |
+| Phone number | Firebase · Supabase | ✅ | ✅ | ✅³ | ✅³ | ✅³ |
 | Anonymous | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅² |
 
 ¹ Supabase accepts Facebook Limited Login (OIDC) tokens only.
 ² On wasm only with Supabase — the Firebase SDK has no wasm target.
+³ Beyond Android/iOS only with Supabase (SMS OTP); Firebase phone auth
+needs the mobile SDKs.
 
 Everything compiles and is callable from `commonMain` on **all** targets — a
 feature unavailable on the current platform reports a failed `Result` with
@@ -124,6 +126,7 @@ val onResult: (Result<KMPAuthUser>) -> Unit = { result -> /* ... */ }
 
 val googleSignIn = rememberGoogleAuthState(onResult = onResult)     // id-token grant
 val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
+val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult) // SMS OTP, every target
 val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
 
 KMPAuth.sendPasswordResetEmail(email)
@@ -160,7 +163,7 @@ Firebase/Supabase):
 | [Supabase](docs/supabase.md) | Setup, Ktor engines, what maps to Supabase (works on **wasm**) |
 | [GitHub / Microsoft / any OAuth](docs/oauth-providers.md) | Firebase-driven OAuth web flow — Android · iOS · Desktop |
 | [Email — password, reset, magic link](docs/email.md) | Served by Firebase or Supabase |
-| [Phone number](docs/phone.md) | Firebase — Android · iOS |
+| [Phone number](docs/phone.md) | Firebase (Android · iOS) or Supabase (every target) |
 | [Anonymous (guest)](docs/anonymous.md) | Served by Firebase or Supabase |
 | [Custom & multiple backends](docs/custom-backends.md) | `AuthProviderBackend`, `LocalKMPAuthBackend` scoping |
 

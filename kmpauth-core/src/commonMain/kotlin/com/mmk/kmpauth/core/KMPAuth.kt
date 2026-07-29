@@ -5,6 +5,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.KMPAuthLogger
 import com.mmk.kmpauth.core.logger.currentLogger
 
@@ -135,6 +136,20 @@ public object KMPAuth {
      */
     public suspend fun signInAnonymously(): Result<KMPAuthUser> =
         KMPAuthBackend.signInAnonymously()
+
+    /**
+     * Signs in with a phone number: sends an SMS verification code and
+     * completes sign-in with the code obtained through [verificationUi].
+     * For the composable flow use `rememberPhoneAuthState`, which supplies
+     * the [com.mmk.kmpauth.core.auth.PhoneVerificationUi] wired to its
+     * Compose state.
+     */
+    public suspend fun signInWithPhone(
+        phoneNumber: String,
+        verificationUi: PhoneVerificationUi,
+        linkWithCurrentUser: Boolean = false,
+    ): Result<KMPAuthUser> =
+        KMPAuthBackend.signInWithPhone(phoneNumber, verificationUi, linkWithCurrentUser)
 
     /**
      * Sends a password-reset email for the account registered under

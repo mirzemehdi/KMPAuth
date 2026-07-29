@@ -19,6 +19,10 @@ public class KMPAuthContextInitializer : Initializer<Unit> {
         // tests or manual initialization must not race or overwrite.
         if (!::applicationContext.isInitialized) {
             applicationContext = context.applicationContext
+            (applicationContext as? android.app.Application)
+                ?.registerActivityLifecycleCallbacks(
+                    com.mmk.kmpauth.core.auth.AndroidActivityTracker
+                )
         }
     }
 

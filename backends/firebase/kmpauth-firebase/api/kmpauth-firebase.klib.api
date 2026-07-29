@@ -7,14 +7,6 @@
 // - Show declarations: true
 
 // Library unique name: <io.github.mirzemehdi:kmpauth-firebase>
-abstract interface com.mmk.kmpauth.firebase.phone/PhoneAuthState : com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.firebase.phone/PhoneAuthState|null[0]
-    abstract val isCodeSent // com.mmk.kmpauth.firebase.phone/PhoneAuthState.isCodeSent|{}isCodeSent[0]
-        abstract fun <get-isCodeSent>(): kotlin/Boolean // com.mmk.kmpauth.firebase.phone/PhoneAuthState.isCodeSent.<get-isCodeSent>|<get-isCodeSent>(){}[0]
-
-    abstract fun cancel() // com.mmk.kmpauth.firebase.phone/PhoneAuthState.cancel|cancel(){}[0]
-    abstract fun submitCode(kotlin/String) // com.mmk.kmpauth.firebase.phone/PhoneAuthState.submitCode|submitCode(kotlin.String){}[0]
-}
-
 final class com.mmk.kmpauth.firebase/FirebaseBackendOptions { // com.mmk.kmpauth.firebase/FirebaseBackendOptions|null[0]
     constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String = ...) // com.mmk.kmpauth.firebase/FirebaseBackendOptions.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String){}[0]
 
@@ -46,6 +38,7 @@ final object com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend : com.mmk.kmpa
     final suspend fun signIn(com.mmk.kmpauth.core.auth/AuthCredential, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signIn|signIn(com.mmk.kmpauth.core.auth.AuthCredential;kotlin.Boolean){}[0]
     final suspend fun signInAnonymously(): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signInAnonymously|signInAnonymously(){}[0]
     final suspend fun signInWithEmailLink(kotlin/String, kotlin/String, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signInWithEmailLink|signInWithEmailLink(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+    final suspend fun signInWithPhone(kotlin/String, com.mmk.kmpauth.core.auth/PhoneVerificationUi, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signInWithPhone|signInWithPhone(kotlin.String;com.mmk.kmpauth.core.auth.PhoneVerificationUi;kotlin.Boolean){}[0]
     final suspend fun signOut() // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signOut|signOut(){}[0]
     final suspend fun signUp(kotlin/String, kotlin/String): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.signUp|signUp(kotlin.String;kotlin.String){}[0]
 }
@@ -60,7 +53,6 @@ final fun com.mmk.kmpauth.firebase.backend/com_mmk_kmpauth_firebase_backend_Fire
 final fun com.mmk.kmpauth.firebase.github/rememberGithubAuthState(kotlin.collections/List<kotlin/String>?, kotlin.collections/Map<kotlin/String, kotlin/String>?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.firebase.github/rememberGithubAuthState|rememberGithubAuthState(kotlin.collections.List<kotlin.String>?;kotlin.collections.Map<kotlin.String,kotlin.String>?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.firebase.microsoft/rememberMicrosoftAuthState(kotlin.collections/List<kotlin/String>?, kotlin.collections/Map<kotlin/String, kotlin/String>?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.firebase.microsoft/rememberMicrosoftAuthState|rememberMicrosoftAuthState(kotlin.collections.List<kotlin.String>?;kotlin.collections.Map<kotlin.String,kotlin.String>?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.firebase.oauth/rememberOAuthState(kotlin/String, kotlin.collections/List<kotlin/String>?, kotlin.collections/Map<kotlin/String, kotlin/String>?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.firebase.oauth/rememberOAuthState|rememberOAuthState(kotlin.String;kotlin.collections.List<kotlin.String>?;kotlin.collections.Map<kotlin.String,kotlin.String>?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
-final fun com.mmk.kmpauth.firebase.phone/rememberPhoneAuthState(kotlin/String, kotlin/Boolean, kotlin/Function0<kotlin/Unit>?, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.firebase.phone/PhoneAuthState // com.mmk.kmpauth.firebase.phone/rememberPhoneAuthState|rememberPhoneAuthState(kotlin.String;kotlin.Boolean;kotlin.Function0<kotlin.Unit>?;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.firebase/com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop_getter|com_mmk_kmpauth_firebase_FirebaseBackendOptions$stableprop_getter(){}[0]
 
 // Targets: [ios, js]
@@ -75,6 +67,7 @@ final class com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService : com.mm
     final suspend fun signIn(com.mmk.kmpauth.core.auth/AuthCredential, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.signIn|signIn(com.mmk.kmpauth.core.auth.AuthCredential;kotlin.Boolean){}[0]
     final suspend fun signInAnonymously(): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.signInAnonymously|signInAnonymously(){}[0]
     final suspend fun signInWithEmailLink(kotlin/String, kotlin/String, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.signInWithEmailLink|signInWithEmailLink(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+    final suspend fun signInWithPhone(kotlin/String, com.mmk.kmpauth.core.auth/PhoneVerificationUi, kotlin/Boolean): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.signInWithPhone|signInWithPhone(kotlin.String;com.mmk.kmpauth.core.auth.PhoneVerificationUi;kotlin.Boolean){}[0]
     final suspend fun signOut() // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.signOut|signOut(){}[0]
     final suspend fun signUp(kotlin/String, kotlin/String): kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.signUp|signUp(kotlin.String;kotlin.String){}[0]
 }

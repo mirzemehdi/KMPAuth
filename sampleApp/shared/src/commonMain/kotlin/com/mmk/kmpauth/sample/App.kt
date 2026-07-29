@@ -41,7 +41,7 @@ import com.mmk.kmpauth.facebook.rememberFacebookSignInState
 import com.mmk.kmpauth.firebase.apple.rememberAppleAuthState
 import com.mmk.kmpauth.firebase.github.rememberGithubAuthState
 import com.mmk.kmpauth.firebase.microsoft.rememberMicrosoftAuthState
-import com.mmk.kmpauth.firebase.phone.rememberPhoneAuthState
+import com.mmk.kmpauth.core.auth.rememberPhoneAuthState
 import com.mmk.kmpauth.google.rememberGoogleAuthState
 import com.mmk.kmpauth.google.rememberGoogleSignInState
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
@@ -194,7 +194,7 @@ private fun FirebaseSection(
         Button(onClick = { anonymousAuth.launch() }) { Text("Continue as guest") }
 
         EmailAuthBlock(label = "Firebase", report = report, onStatus = onStatus)
-        PhoneAuthBlock(report = report)
+        PhoneAuthBlock(label = "Firebase", report = report)
     }
 }
 
@@ -218,6 +218,7 @@ private fun SupabaseSection(
         Button(onClick = { anonymousAuth.launch() }) { Text("Continue as guest") }
 
         EmailAuthBlock(label = "Supabase", report = report, onStatus = onStatus)
+        PhoneAuthBlock(label = "Supabase", report = report)
         Text(
             "Web-flow providers (GitHub/Microsoft/Apple) are Firebase-driven; " +
                 "the Supabase backend reports them as unsupported.",
@@ -298,12 +299,15 @@ private fun EmailAuthBlock(
 }
 
 @Composable
-private fun PhoneAuthBlock(report: (String) -> (Result<KMPAuthUser>) -> Unit) {
+private fun PhoneAuthBlock(
+    label: String,
+    report: (String) -> (Result<KMPAuthUser>) -> Unit,
+) {
     var phoneNumber by remember { mutableStateOf("") }
     var smsCode by remember { mutableStateOf("") }
     val phoneAuth = rememberPhoneAuthState(
         phoneNumber = phoneNumber,
-        onResult = report("Firebase/Phone"),
+        onResult = report("$label/Phone"),
     )
     if (!phoneAuth.isCodeSent) {
         OutlinedTextField(

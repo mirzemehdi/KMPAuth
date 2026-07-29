@@ -47,6 +47,9 @@ Enable the matching providers in the Supabase dashboard.
 - Magic links: `sendSignInLinkToEmail` / `isSignInWithEmailLink` /
   `signInWithEmailLink` — `token_hash`, PKCE `code` and implicit-flow
   redirects are all recognized
+- [`rememberPhoneAuthState`](phone.md) — SMS OTP on **every target**
+  (enable the Phone provider and an SMS sender in the dashboard); the one
+  backend that serves phone sign-in beyond Android/iOS
 - `reauthenticate` (as a fresh sign-in; Supabase has no recent-login
   requirement)
 - Id-token linking (`linkAccount = true`) via Supabase identity linking —
@@ -57,7 +60,7 @@ Enable the matching providers in the Supabase dashboard.
 - Classic Facebook access tokens — Supabase's `id_token` grant accepts only
   OIDC tokens; use Facebook Limited Login
 - The `kmpauth-firebase`-resident web-flow states
-  (GitHub/Microsoft/OAuth/Apple-web/phone) — use supabase-kt's
+  (GitHub/Microsoft/OAuth/Apple-web) — use supabase-kt's
   `signInWith(Github)` etc. directly via
   `SupabaseAuthBackend.supabaseClient`
 - Linking an email/password credential — Supabase adds an email via

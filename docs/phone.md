@@ -1,8 +1,15 @@
 # Phone number sign-in
 
-Module: `kmpauth-firebase`. Android (with automatic SMS verification when
-Play services can) and iOS. Enable the "Phone" sign-in method in the
-Firebase console.
+State lives in `kmpauth-core` and is served by whichever backend is
+registered — [Firebase](firebase.md) or [Supabase](supabase.md):
+
+- **Firebase**: Android (with automatic SMS verification when Play services
+  can) and iOS. Enable the "Phone" sign-in method in the Firebase console.
+  Desktop, web and wasm report a failed `Result` (the REST/web flows need a
+  reCAPTCHA verifier KMPAuth does not provide).
+- **Supabase**: **every target** — plain OTP over SMS. Enable the Phone
+  provider and an SMS sender (Twilio, Vonage, ...) in the Supabase
+  dashboard.
 
 Two-step flow: `launch()` sends the SMS, `submitCode` completes sign-in:
 
@@ -23,8 +30,12 @@ if (!phoneSignIn.isCodeSent) {
 ```
 
 `phoneSignIn.cancel()` abandons the flow (e.g. the user dismissed the code
-input).
+input). On Android with Firebase, Play services may auto-verify the SMS —
+then the flow completes directly and `isCodeSent` never turns true.
 
-On Desktop and web, launching reports a failed `Result` — the Firebase Java
-SDK does not implement phone auth, and the web flow would need a reCAPTCHA
-verifier KMPAuth does not provide yet.
+Outside a composable, the same flow is
+`KMPAuth.signInWithPhone(phoneNumber, verificationUi)` — implement
+`PhoneVerificationUi.awaitVerificationCode()` to supply the code.
+
+Custom backends serve this flow by implementing
+`AuthProviderBackend.signInWithPhone`.

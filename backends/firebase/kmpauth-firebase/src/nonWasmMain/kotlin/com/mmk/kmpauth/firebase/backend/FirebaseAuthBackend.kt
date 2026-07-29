@@ -5,6 +5,7 @@ import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import dev.gitlive.firebase.auth.FirebaseUser
 
 /**
@@ -40,6 +41,13 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> =
         engine.signInAnonymously()
+
+    override suspend fun signInWithPhone(
+        phoneNumber: String,
+        verificationUi: PhoneVerificationUi,
+        linkWithCurrentUser: Boolean,
+    ): Result<KMPAuthUser> =
+        engine.signInWithPhone(phoneNumber, verificationUi, linkWithCurrentUser)
 
     override suspend fun sendPasswordResetEmail(
         email: String,

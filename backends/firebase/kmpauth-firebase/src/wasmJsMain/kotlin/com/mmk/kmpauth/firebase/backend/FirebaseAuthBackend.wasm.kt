@@ -4,6 +4,7 @@ import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 
 internal const val WASM_UNSUPPORTED_REASON: String =
     "Firebase authentication is not available on wasm: the Firebase SDK " +
@@ -27,6 +28,13 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> =
+        Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
+
+    override suspend fun signInWithPhone(
+        phoneNumber: String,
+        verificationUi: PhoneVerificationUi,
+        linkWithCurrentUser: Boolean,
+    ): Result<KMPAuthUser> =
         Result.failure(UnsupportedOperationException(WASM_UNSUPPORTED_REASON))
 
     override suspend fun sendPasswordResetEmail(

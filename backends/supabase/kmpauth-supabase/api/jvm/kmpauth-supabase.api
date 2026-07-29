@@ -21,6 +21,7 @@ public final class com/mmk/kmpauth/supabase/SupabaseAuthBackend : com/mmk/kmpaut
 	public fun signIn-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthCredential;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signInAnonymously-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signInWithEmailLink-BWLJW6A (Ljava/lang/String;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signInWithPhone-BWLJW6A (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/PhoneVerificationUi;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }

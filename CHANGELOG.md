@@ -30,10 +30,9 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   `AuthProviderBackend` (Firebase today, Supabase-ready):
   `rememberGoogleAuthState` (in `kmpauth-google`), `rememberFacebookAuthState`
   (in `kmpauth-facebook`), `rememberAppleAuthState`, `rememberGithubAuthState`,
-  `rememberMicrosoftAuthState`, `rememberOAuthState(provider)`,
-  `rememberPhoneAuthState` (in `kmpauth-firebase`),
-  `rememberEmailAuthState` and `rememberAnonymousAuthState` (in
-  `kmpauth-core`). Google/Facebook exchange states moved into their provider
+  `rememberMicrosoftAuthState`, `rememberOAuthState(provider)` (in
+  `kmpauth-firebase`), `rememberEmailAuthState`, `rememberAnonymousAuthState`
+  and `rememberPhoneAuthState` (in `kmpauth-core`). Google/Facebook exchange states moved into their provider
   modules — SDK isolation is unchanged (no Facebook SDK unless you depend on
   `kmpauth-facebook`), and `kmpauth-firebase-google`/`-facebook` now carry
   only the deprecated 2.x containers.
@@ -95,7 +94,8 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   auto-registration because a Supabase client cannot exist without the
   project URL and key. Serves email/password sign-in and sign-up, anonymous
   sign-in, password reset, magic-link sign-in (`token_hash`, PKCE `code`
-  and implicit-flow links), reauthentication (as a fresh sign-in),
+  and implicit-flow links), phone SMS OTP sign-in (on every target),
+  reauthentication (as a fresh sign-in),
   Google/Apple/Facebook-Limited-Login id-token exchange, and id-token
   identity linking. Not mapped, failing with a reason: classic Facebook
   access tokens (Supabase's `id_token` grant is OIDC-only), web-flow
@@ -142,15 +142,21 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   operations: `sendPasswordResetEmail`, and passwordless email-link (magic
   link) sign-in via `sendSignInLinkToEmail` / `isSignInWithEmailLink` /
   `signInWithEmailLink`.
-- **Phone number sign-in** (#111).
-  `rememberPhoneAuthState(phoneNumber, ...)` returns a
+- **Phone number sign-in — backend-agnostic** (#111).
+  `rememberPhoneAuthState(phoneNumber, ...)` (in `kmpauth-core`) returns a
   `PhoneAuthState`: `launch()` sends the SMS, `isCodeSent`/`onCodeSent`
   signal when to show the code input, `submitCode(code)` completes sign-in and
-  `cancel()` abandons the flow. Android supports automatic SMS verification
-  (Play services); iOS falls back to Firebase's reCAPTCHA when needed. On
-  Desktop and JS/web launching reports a failed `Result` — the Firebase Java
-  SDK does not implement phone auth, and the web flow would need a reCAPTCHA
-  verifier KMPAuth does not provide yet.
+  `cancel()` abandons the flow. Served through the new
+  `AuthProviderBackend.signInWithPhone(phoneNumber, verificationUi)`
+  operation (`PhoneVerificationUi` hands the backend the user's code and,
+  where needed, the platform UI handle), so every backend can implement it:
+  - **Firebase**: Android (automatic SMS verification when Play services
+    can; reCAPTCHA/Play Integrity fallback) and iOS. Desktop/web/wasm
+    report a failed `Result` — those flows need a reCAPTCHA verifier KMPAuth
+    does not provide.
+  - **Supabase**: **every target** via plain SMS OTP (enable the Phone
+    provider and an SMS sender in the dashboard).
+  `KMPAuth.signInWithPhone(...)` exposes the same flow outside composables.
 - **Microsoft sign-in** (#173, #95).
   `rememberMicrosoftAuthState(requestScopes, customParameters,
   linkAccount, onResult)` — Firebase drives the OAuth web flow, no Microsoft

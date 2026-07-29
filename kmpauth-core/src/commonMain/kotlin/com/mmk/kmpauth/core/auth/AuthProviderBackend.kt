@@ -71,6 +71,31 @@ public interface AuthProviderBackend {
     )
 
     /**
+     * Signs in with a phone number: sends an SMS verification code, then
+     * obtains the code the user received through
+     * [PhoneVerificationUi.awaitVerificationCode] and completes sign-in
+     * with it. Driven by `rememberPhoneAuthState`, which supplies the
+     * [verificationUi] wired to its Compose state.
+     *
+     * The default implementation reports the operation as unsupported.
+     *
+     * @param phoneNumber Phone number in E.164 format (e.g. `+15551234567`).
+     * @param verificationUi Hooks back into the caller's UI: code retrieval
+     * and — where a backend needs it — the platform UI handle.
+     * @param linkWithCurrentUser true links the phone credential to the
+     * currently signed-in user instead of creating a new session.
+     */
+    public suspend fun signInWithPhone(
+        phoneNumber: String,
+        verificationUi: PhoneVerificationUi,
+        linkWithCurrentUser: Boolean = false,
+    ): Result<KMPAuthUser> = Result.failure(
+        UnsupportedOperationException(
+            "This AuthProviderBackend does not support phone number sign-in."
+        )
+    )
+
+    /**
      * Sends a password-reset email for the account registered under
      * [email].
      *
@@ -248,6 +273,14 @@ public object KMPAuthBackend : AuthProviderBackend {
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> =
         activeBackend()?.signInAnonymously() ?: noBackendFailure()
+
+    override suspend fun signInWithPhone(
+        phoneNumber: String,
+        verificationUi: PhoneVerificationUi,
+        linkWithCurrentUser: Boolean,
+    ): Result<KMPAuthUser> =
+        activeBackend()?.signInWithPhone(phoneNumber, verificationUi, linkWithCurrentUser)
+            ?: noBackendFailure()
 
     override suspend fun sendPasswordResetEmail(
         email: String,

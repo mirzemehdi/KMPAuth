@@ -329,11 +329,11 @@ session through the registered backend):
   | `GithubButtonUiContainer` | `rememberGithubAuthState` | `kmpauth-firebase` |
   | `OAuthContainer` | `rememberOAuthState(provider = "...")` | `kmpauth-firebase` |
 
-  New in 3.0, no 2.x equivalent: `rememberMicrosoftAuthState` and
-  `rememberPhoneAuthState` (`kmpauth-firebase`),
-  `rememberEmailAuthState` and `rememberAnonymousAuthState`
-  (`kmpauth-core`), `rememberAppleSignInState` (native Apple credential,
-  `kmpauth-apple`).
+  New in 3.0, no 2.x equivalent: `rememberMicrosoftAuthState`
+  (`kmpauth-firebase`), `rememberEmailAuthState`,
+  `rememberAnonymousAuthState` and `rememberPhoneAuthState`
+  (`kmpauth-core`, served by the registered backend),
+  `rememberAppleSignInState` (native Apple credential, `kmpauth-apple`).
 
 Also changed in 3.0:
 
