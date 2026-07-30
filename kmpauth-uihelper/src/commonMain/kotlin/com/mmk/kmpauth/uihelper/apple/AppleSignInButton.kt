@@ -2,31 +2,25 @@ package com.mmk.kmpauth.uihelper.apple
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.uihelper.theme.Fonts
@@ -35,7 +29,6 @@ import io.github.mirzemehdi.kmpauth_uihelper.generated.resources.ic_apple_logo_b
 import io.github.mirzemehdi.kmpauth_uihelper.generated.resources.ic_apple_logo_white
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import kotlin.math.roundToInt
 
 
 
@@ -54,23 +47,21 @@ public fun AppleSignInButtonIconOnly(
 ) {
     val buttonColor = getButtonColor(mode)
     val borderStroke = getBorderStroke(mode)
-    var buttonHeight by remember { mutableStateOf(44) }
-    val localDensity = LocalDensity.current
 
     Button(
-        modifier = modifier
-            .onGloballyPositioned { coordinates ->
-                buttonHeight =
-                    with(localDensity) { coordinates.size.height.toDp().value.roundToInt() }
-            },
+        modifier = modifier,
         contentPadding = PaddingValues(0.dp),
         onClick = onClick,
         shape = shape,
         colors = buttonColor,
         border = borderStroke,
     ) {
-        AppleIcon(modifier = Modifier.size(buttonHeight.dp), mode = mode)
-
+        // The official logo asset is a square whose side matches the button
+        // height; its internal margins put the glyph at the size Apple's
+        // button spec requires.
+        BoxWithConstraints {
+            AppleIcon(modifier = Modifier.size(maxHeight.orDefaultButtonHeight()), mode = mode)
+        }
     }
 }
 
@@ -97,48 +88,41 @@ public fun AppleSignInButton(
 
     val buttonColor = getButtonColor(mode)
     val borderStroke = getBorderStroke(mode)
-    val horizontalPadding = 0.dp
-    val iconTextPadding = 0.dp
-    var fontSize by remember { mutableStateOf(19) }
-    var buttonHeight by remember { mutableStateOf(44) }
-    var marginEnd by remember { mutableStateOf(0) }
-    val localDensity = LocalDensity.current
     Button(
-        modifier = modifier
-            .onGloballyPositioned { coordinates ->
-
-                val height =
-                    with(localDensity) { coordinates.size.height.toDp().value.roundToInt() }
-                val width = with(localDensity) { coordinates.size.width.toDp().value.roundToInt() }
-                marginEnd = (width * 0.08).roundToInt()
-                buttonHeight = height
-                fontSize = ((height * 0.43).roundToInt())
-            }.defaultMinSize(minWidth = 140.dp, minHeight = 30.dp),
-        contentPadding = PaddingValues(horizontal = horizontalPadding),
+        // Apple's button spec: minimum size 140x30.
+        modifier = modifier.defaultMinSize(minWidth = 140.dp, minHeight = 30.dp),
+        contentPadding = PaddingValues(0.dp),
         onClick = onClick,
         shape = shape,
         colors = buttonColor,
         border = borderStroke,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            AppleIcon(modifier = Modifier.size(buttonHeight.dp), mode = mode)
-            Spacer(modifier = Modifier.width(iconTextPadding))
-            Text(
-                modifier = Modifier.graphicsLayer {
-                    translationY = (-1).dp.toPx()
-                }
-                    .padding(end = marginEnd.dp),
-                text = text,
-                fontSize = fontSize.sp,
-                maxLines = 1,
-                fontFamily = fontFamily,
-            )
+        BoxWithConstraints {
+            val buttonHeight = maxHeight.orDefaultButtonHeight()
+            // Apple's button spec: the logo is a square whose side is the
+            // button height (the asset's internal margins size the glyph),
+            // and the title is 43% of the button height. Logo and title are
+            // rendered as one centered group, so the layout stays symmetric
+            // at any width - the glyph's own margins provide the spacing.
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                AppleIcon(modifier = Modifier.size(buttonHeight), mode = mode)
+                Text(
+                    text = text,
+                    fontSize = (buttonHeight.value * 0.43).sp,
+                    maxLines = 1,
+                    fontFamily = fontFamily,
+                )
+            }
         }
-
     }
-
-
 }
+
+/** Apple's default button height, used when the incoming constraints are unbounded. */
+private fun Dp.orDefaultButtonHeight(): Dp = if (this == Dp.Infinity) 44.dp else this
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable

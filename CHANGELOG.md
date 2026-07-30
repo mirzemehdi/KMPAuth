@@ -5,6 +5,22 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- `AppleSignInButton` content is centered symmetrically at any width. The
+  previous implementation padded only the end of the title by 8% of the
+  button width (a misread of Apple's symmetric side-margin rule), which
+  pushed the logo+title group visibly left of center on wide buttons —
+  most noticeable next to `GoogleSignInButton` at full width on Desktop.
+  Also drops the `onGloballyPositioned` size-feedback loop and the -1dp
+  text nudge; the title still follows Apple's spec (43% of button height,
+  logo square sized to the button height, 140x30 minimum).
+
+### Changed
+- Sample app launch buttons disable and show a progress spinner while their
+  flow is in progress (`SignInState.isInProgress`).
+
 ## [3.0.0-beta01] — 2026-07-29
 
 The API surface for 3.0 is final with this release — remaining work before
