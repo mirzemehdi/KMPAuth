@@ -22,6 +22,7 @@ import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.providers.builtin.IDToken
 import io.github.jan.supabase.auth.providers.builtin.OTP
 import io.github.jan.supabase.auth.status.SessionStatus
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withTimeoutOrNull
@@ -361,6 +362,24 @@ public class SupabaseAuthBackend(
      */
     override fun currentUser(): KMPAuthUser? =
         supabaseClient.auth.currentUserOrNull()?.let(::SupabaseKMPAuthUser)
+
+    override val currentUserFlow: Flow<KMPAuthUser?>
+        get() = supabaseClient.auth.sessionStatus.map { status ->
+            (status as? SessionStatus.Authenticated)
+                ?.session?.user?.let(::SupabaseKMPAuthUser)
+        }
+
+    /**
+     * The Supabase access token (a GoTrue JWT verifiable against the
+     * project's JWT secret / JWKS). [forceRefresh] refreshes the session
+     * first.
+     */
+    override suspend fun currentUserIdToken(forceRefresh: Boolean): Result<String> =
+        runCatchingCancellable {
+            if (forceRefresh) supabaseClient.auth.refreshCurrentSession()
+            supabaseClient.auth.currentAccessTokenOrNull()
+                ?: throw IllegalStateException("No signed-in user to get an ID token for")
+        }
 
     private fun requireCurrentUser(): KMPAuthUser =
         supabaseClient.auth.currentUserOrNull()?.let(::SupabaseKMPAuthUser)

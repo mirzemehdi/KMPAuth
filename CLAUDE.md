@@ -87,7 +87,10 @@ Everything that isn't a launchable flow goes through the **`KMPAuth`
 facade** (`kmpauth-core`): `initialize { }` (one-stop setup at app start -
 provider modules contribute extensions on `KMPAuthConfiguration`, e.g.
 `kmpauth-google`'s `google(credentials)`; `GoogleAuthProvider.create` still
-works), `currentUser()`, `signOut()`, `signIn(credential)`, `signUp`,
+works), `currentUser()`, `currentUserFlow` (re-emits after linking upgrades
+the current user — raw Firebase listeners don't), `currentUserIdToken(forceRefresh)`
+(bearer JWT for the app's own server; REST engine refreshes via the Secure
+Token exchange), `signOut()`, `signIn(credential)`, `signUp`,
 `signInAnonymously`, `reauthenticate(credential)`, `deleteAccount()`,
 `sendPasswordResetEmail`, email-link sign-in, and
 `registerBackendProvider`/`getBackendProvider`/`requireBackendProvider`.
@@ -116,7 +119,9 @@ security-sensitive op → reauthenticate and retry); keep new cross-backend
 error conditions on this pattern. `KMPAuthUser.providerIds` lists the
 account's linked providers in `AuthProviderIds` convention on every backend
 (Supabase GoTrue names are translated) for provider-routing UI like
-reauthentication.
+reauthentication; `KMPAuthUser.isAnonymous` flags guest sessions, and the
+Firebase user's `email`/`displayName`/`photoUrl` fall back across linked
+providers (filtering literal "null" strings).
 
 Provider resolution must not happen during composition: guard on
 `LocalInspectionMode` and return `NoOpSignInState`, or IDE previews crash

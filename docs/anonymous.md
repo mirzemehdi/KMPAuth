@@ -11,6 +11,10 @@ val anonymousSignIn = rememberAnonymousAuthState(onResult = { result: Result<KMP
 Button(onClick = { anonymousSignIn.launch() }) { Text("Continue as guest") }
 ```
 
+`KMPAuthUser.isAnonymous` is true for these sessions — gate account UI on
+it (e.g. show "Create account" instead of "Profile" for guests). It flips
+to false once the account is upgraded.
+
 ## Upgrading a guest to a permanent account
 
 Sign in with any auth state using `linkAccount = true` (e.g.

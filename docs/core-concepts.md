@@ -46,6 +46,8 @@ registered backend:
 KMPAuth.initialize { /* one-stop setup - see Getting started */ }
 
 KMPAuth.currentUser()                 // KMPAuthUser? - null when signed out
+KMPAuth.currentUserFlow               // Flow<KMPAuthUser?> - reactive auth state
+KMPAuth.currentUserIdToken()          // Result<String> - JWT for your own server
 KMPAuth.signOut()
 KMPAuth.signIn(credential)            // exchange a credential you obtained yourself
 KMPAuth.signUp(email, password)
@@ -58,6 +60,26 @@ KMPAuth.signInWithEmailLink(email, link)
 KMPAuth.reauthenticate(credential)
 KMPAuth.deleteAccount()               // irreversible; may need reauthentication first
 ```
+
+### Reactive auth state and API calls to your own server
+
+`KMPAuth.currentUserFlow` emits on every auth-state change — sign-in,
+sign-out, and (unlike Firebase's raw listener) also after linking upgrades
+the current user, so a guest-to-Google upgrade re-emits without manual
+triggers:
+
+```kotlin
+val user: StateFlow<KMPAuthUser?> = KMPAuth.currentUserFlow
+    .stateIn(scope, SharingStarted.Eagerly, KMPAuth.currentUser())
+```
+
+`KMPAuth.currentUserIdToken(forceRefresh = true)` returns the signed-in
+user's JWT for an `Authorization: Bearer` header — your server verifies it
+against Firebase's public keys (or the Supabase project's JWT secret).
+
+`KMPAuthUser` also exposes `isAnonymous` (guest sessions) and falls back
+across the linked providers for `email`/`displayName`/`photoUrl`, so a
+guest upgraded with a Google account shows the Google name and photo.
 
 ### Reauthentication
 

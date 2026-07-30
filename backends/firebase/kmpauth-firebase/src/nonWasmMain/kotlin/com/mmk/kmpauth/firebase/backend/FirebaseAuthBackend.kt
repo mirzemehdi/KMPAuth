@@ -7,20 +7,38 @@ import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import dev.gitlive.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.Flow
 
 /**
  * [KMPAuthUser] view over a Firebase user. The native
  * [dev.gitlive.firebase.auth.FirebaseUser] stays reachable through [raw].
+ *
+ * [email], [displayName] and [photoUrl] fall back to the first linked
+ * provider that has the value when the account-level field is empty — a
+ * guest upgraded by linking a Google account gets the Google name and
+ * photo without hand-rolling the aggregation. (Some SDKs report missing
+ * provider values as the literal string "null"; those are filtered.)
  */
 @KMPAuthInternalApi
 public class FirebaseKMPAuthUser(private val user: FirebaseUser) : KMPAuthUser {
     override val uid: String get() = user.uid
-    override val email: String? get() = user.email
-    override val displayName: String? get() = user.displayName
-    override val photoUrl: String? get() = user.photoURL
+    override val email: String?
+        get() = user.email.orFromProviders { it.email }
+    override val displayName: String?
+        get() = user.displayName.orFromProviders { it.displayName }
+    override val photoUrl: String?
+        get() = user.photoURL.orFromProviders { it.photoURL }
     override val providerId: String? get() = user.providerId
+    override val isAnonymous: Boolean get() = user.isAnonymous
     override val providerIds: List<String> get() = user.providerData.map { it.providerId }
     override val raw: Any get() = user
+
+    private inline fun String?.orFromProviders(
+        crossinline value: (dev.gitlive.firebase.auth.UserInfo) -> String?,
+    ): String? = takeUnless { it.isNullOrEmpty() || it == "null" }
+        ?: user.providerData.firstNotNullOfOrNull {
+            value(it)?.takeUnless { v -> v.isEmpty() || v == "null" }
+        }
 }
 
 public actual object FirebaseAuthBackend : AuthProviderBackend {
@@ -73,9 +91,14 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
 
     override suspend fun deleteAccount(): Result<Unit> = engine.deleteAccount()
 
+    override suspend fun currentUserIdToken(forceRefresh: Boolean): Result<String> =
+        engine.currentUserIdToken(forceRefresh)
+
     actual override suspend fun signOut(): Unit = engine.signOut()
 
     actual override fun currentUser(): KMPAuthUser? = engine.currentUser()
+
+    override val currentUserFlow: Flow<KMPAuthUser?> get() = engine.currentUserFlow
 
     /**
      * Adapts a legacy `Result<FirebaseUser?>` callback (the deprecated 2.x

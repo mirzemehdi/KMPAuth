@@ -1,6 +1,9 @@
 package com.mmk.kmpauth.core.auth
 
 import com.mmk.kmpauth.core.KMPAuthInternalApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Pluggable authentication backend. KMPAuth ships a Firebase implementation
@@ -187,11 +190,38 @@ public interface AuthProviderBackend {
         )
     )
 
+    /**
+     * The signed-in user's ID token (a JWT the app's own backend can
+     * verify), e.g. for an `Authorization: Bearer` header. [forceRefresh]
+     * true skips the cached token and obtains a fresh one.
+     *
+     * Fails with no user signed in. The default implementation reports the
+     * operation as unsupported.
+     */
+    public suspend fun currentUserIdToken(forceRefresh: Boolean = false): Result<String> =
+        Result.failure(
+            UnsupportedOperationException(
+                "This AuthProviderBackend does not expose the user's ID token."
+            )
+        )
+
     /** Signs out the current user. */
     public suspend fun signOut()
 
     /** Currently signed-in user, or null when signed out. */
     public fun currentUser(): KMPAuthUser?
+
+    /**
+     * The signed-in user as a [Flow]: emits the current value on collection
+     * and again whenever the auth state changes (sign-in, sign-out, and —
+     * unlike raw Firebase listeners — also after linking upgrades the
+     * current user).
+     *
+     * The default implementation emits a single snapshot; backends with a
+     * native listener override it.
+     */
+    public val currentUserFlow: Flow<KMPAuthUser?>
+        get() = flow { emit(currentUser()) }
 }
 
 /**
@@ -364,11 +394,25 @@ public object KMPAuthBackend : AuthProviderBackend {
     override suspend fun deleteAccount(): Result<Unit> =
         activeBackend()?.deleteAccount() ?: noBackendFailure()
 
+    override suspend fun currentUserIdToken(forceRefresh: Boolean): Result<String> =
+        activeBackend()?.currentUserIdToken(forceRefresh) ?: noBackendFailure()
+
     override suspend fun signOut() {
         activeBackend()?.signOut()
     }
 
     override fun currentUser(): KMPAuthUser? = activeBackend()?.currentUser()
+
+    /**
+     * Delegates to the default backend's flow. The backend is resolved at
+     * collection time, so a flow collected before registration or a default
+     * switch picks up the backend active when collection starts.
+     */
+    override val currentUserFlow: Flow<KMPAuthUser?>
+        get() = flow {
+            val backend = activeBackend()
+            if (backend != null) emitAll(backend.currentUserFlow) else emit(null)
+        }
 
     private const val NO_BACKEND_MESSAGE: String =
         "No AuthProviderBackend is registered. Add the kmpauth-firebase " +

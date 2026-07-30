@@ -32,6 +32,7 @@ public class SupabaseKMPAuthUser(private val user: UserInfo) : KMPAuthUser {
         get() = user.userMetadata.stringOrNull("avatar_url", "picture")
     override val providerId: String?
         get() = user.appMetadata.stringOrNull("provider")
+    override val isAnonymous: Boolean get() = user.isAnonymous == true
     override val providerIds: List<String>
         get() {
             val providers = (user.appMetadata?.get("providers") as? JsonArray)

@@ -13,7 +13,9 @@ import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.core.runCatchingCancellable
-import kotlin.concurrent.Volatile
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -42,6 +44,7 @@ internal class FirebaseRestKMPAuthUser(internal val user: FirebaseRestUser) : KM
     override val displayName: String? get() = user.displayName
     override val photoUrl: String? get() = user.photoUrl
     override val providerId: String? get() = user.providerId
+    override val isAnonymous: Boolean get() = user.isAnonymous
     override val providerIds: List<String> get() = user.providerIds
     override val raw: Any get() = user
 }
@@ -97,8 +100,13 @@ internal class FirebaseRestAuthEngine(
         )
     }
 
-    @Volatile
-    private var session: FirebaseRestUser? = null
+    private val sessionFlow = MutableStateFlow<FirebaseRestUser?>(null)
+
+    private var session: FirebaseRestUser?
+        get() = sessionFlow.value
+        set(value) {
+            sessionFlow.value = value
+        }
 
     override suspend fun signIn(
         credential: AuthCredential,
@@ -175,9 +183,9 @@ internal class FirebaseRestAuthEngine(
         return FirebaseRestUser(
             uid = info["localId"]?.jsonPrimitive?.content
                 ?: throw IllegalStateException("Firebase Null user"),
-            email = info["email"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
-            displayName = info["displayName"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
-            photoUrl = info["photoUrl"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
+            email = info.profileField("email"),
+            displayName = info.profileField("displayName"),
+            photoUrl = info.profileField("photoUrl"),
             providerId = providerId,
             idToken = flowResult.idToken,
             refreshToken = flowResult.refreshToken,
@@ -191,6 +199,18 @@ internal class FirebaseRestAuthEngine(
         get("providerUserInfo")?.jsonArray.orEmpty().mapNotNull {
             it.jsonObject["providerId"]?.jsonPrimitive?.content
         }
+
+    /**
+     * A profile field from an accounts:lookup user entry, falling back to
+     * the first linked provider that has it - so a guest upgraded by
+     * linking keeps the provider's name/photo/email.
+     */
+    private fun JsonObject.profileField(key: String): String? =
+        this[key]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() && it != "null" }
+            ?: get("providerUserInfo")?.jsonArray.orEmpty().firstNotNullOfOrNull {
+                it.jsonObject[key]?.jsonPrimitive?.content
+                    ?.takeIf { v -> v.isNotEmpty() && v != "null" }
+            }
 
     override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
         runCatchingCancellable {
@@ -340,6 +360,41 @@ internal class FirebaseRestAuthEngine(
 
     override fun currentUser(): KMPAuthUser? = session?.let { FirebaseRestKMPAuthUser(it) }
 
+    override val currentUserFlow: Flow<KMPAuthUser?>
+        get() = sessionFlow.map { user -> user?.let(::FirebaseRestKMPAuthUser) }
+
+    override suspend fun currentUserIdToken(forceRefresh: Boolean): Result<String> =
+        runCatchingCancellable {
+            val current = session
+                ?: throw IllegalStateException("No signed-in user to get an ID token for")
+            if (!forceRefresh) return@runCatchingCancellable current.idToken
+            val refreshToken = current.refreshToken
+                ?: return@runCatchingCancellable current.idToken
+            // Secure Token service exchanges the refresh token for a fresh
+            // ID token (the REST counterpart of the SDKs' getIdToken(true)).
+            val url = "https://securetoken.googleapis.com/v1/token?key=${apiKeyProvider()}"
+            val response = json.parseToJsonElement(
+                transport.post(
+                    url,
+                    buildJsonObject {
+                        put("grant_type", "refresh_token")
+                        put("refresh_token", refreshToken)
+                    }.toString(),
+                )
+            ).jsonObject
+            response["error"]?.jsonObject?.let { error ->
+                val message = error["message"]?.jsonPrimitive?.content ?: "UNKNOWN_ERROR"
+                throw IllegalStateException("Firebase token refresh failed: $message")
+            }
+            val idToken = response["id_token"]?.jsonPrimitive?.content
+                ?: throw IllegalStateException("Firebase token refresh returned no ID token")
+            session = current.copy(
+                idToken = idToken,
+                refreshToken = response["refresh_token"]?.jsonPrimitive?.content ?: refreshToken,
+            )
+            idToken
+        }
+
     private fun requireSession(): FirebaseRestUser =
         session ?: throw IllegalStateException("No signed-in user to reauthenticate")
 
@@ -432,10 +487,9 @@ internal class FirebaseRestAuthEngine(
                     .get("users")?.jsonArray?.firstOrNull()?.jsonObject
                 if (info != null) {
                     user = user.copy(
-                        displayName = info["displayName"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
-                        photoUrl = info["photoUrl"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
-                        email = user.email
-                            ?: info["email"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
+                        displayName = info.profileField("displayName"),
+                        photoUrl = info.profileField("photoUrl"),
+                        email = user.email ?: info.profileField("email"),
                         providerIds = info.linkedProviderIds().ifEmpty { user.providerIds },
                     )
                 }

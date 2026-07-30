@@ -32,8 +32,10 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackend : com/mm
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/firebase/backend/FirebaseAuthBackend;
 	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun currentUserIdToken-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getBackendId ()Ljava/lang/String;
+	public fun getCurrentUserFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -54,8 +56,10 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseAuthBackendService :
 	public static final field $stable I
 	public fun <init> ()V
 	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun currentUserIdToken-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getBackendId ()Ljava/lang/String;
+	public fun getCurrentUserFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -78,6 +82,7 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseKMPAuthUser : com/mm
 	public fun getProviderIds ()Ljava/util/List;
 	public fun getRaw ()Ljava/lang/Object;
 	public fun getUid ()Ljava/lang/String;
+	public fun isAnonymous ()Z
 }
 
 public final class com/mmk/kmpauth/firebase/github/GithubButtonUiContainerKt {

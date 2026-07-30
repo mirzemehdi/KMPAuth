@@ -8,6 +8,7 @@ import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.KMPAuthLogger
 import com.mmk.kmpauth.core.logger.currentLogger
+import kotlinx.coroutines.flow.Flow
 
 /**
  * KMPAuth's main entry point for everything that isn't a launchable
@@ -114,6 +115,32 @@ public object KMPAuth {
 
     /** Currently signed-in user, or null when signed out. */
     public fun currentUser(): KMPAuthUser? = KMPAuthBackend.currentUser()
+
+    /**
+     * The signed-in user's ID token (a JWT your own server can verify) —
+     * e.g. for an `Authorization: Bearer` header on API calls. Fails when
+     * no user is signed in. [forceRefresh] true skips the cached token:
+     *
+     * ```
+     * val token = KMPAuth.currentUserIdToken(forceRefresh = true).getOrNull()
+     * ```
+     */
+    public suspend fun currentUserIdToken(forceRefresh: Boolean = false): Result<String> =
+        KMPAuthBackend.currentUserIdToken(forceRefresh)
+
+    /**
+     * The signed-in user as a [Flow]: emits the current value on collection
+     * and again on every auth-state change — sign-in, sign-out, and after
+     * linking upgrades the current user. Drive reactive UI or repositories
+     * from this instead of polling [currentUser]:
+     *
+     * ```
+     * val user: StateFlow<KMPAuthUser?> = KMPAuth.currentUserFlow
+     *     .stateIn(scope, SharingStarted.Eagerly, KMPAuth.currentUser())
+     * ```
+     */
+    public val currentUserFlow: Flow<KMPAuthUser?>
+        get() = KMPAuthBackend.currentUserFlow
 
     /** Signs out the current user. */
     public suspend fun signOut(): Unit = KMPAuthBackend.signOut()
