@@ -1,15 +1,15 @@
 // swift-tools-version: 5.9
 import PackageDescription
 let package = Package(
-  name: "_backends_firebase_kmpauth_firebase_google",
+  name: "_deprecated_kmpauth_firebase_google",
   platforms: [
     .iOS("16.0")
   ],
   products: [
     .library(
-      name: "_backends_firebase_kmpauth_firebase_google",
+      name: "_deprecated_kmpauth_firebase_google",
       type: .none,
-      targets: ["_backends_firebase_kmpauth_firebase_google"]
+      targets: ["_deprecated_kmpauth_firebase_google"]
     )
   ],
   dependencies: [
@@ -24,7 +24,7 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "_backends_firebase_kmpauth_firebase_google",
+      name: "_deprecated_kmpauth_firebase_google",
       dependencies: [
         .product(
           name: "FirebaseAuth",
