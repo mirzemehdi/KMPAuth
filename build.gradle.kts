@@ -64,3 +64,25 @@ dependencies {
     dokka(project(":deprecated:kmpauth-firebase-facebook"))
     dokka(project(":kmpauth-uihelper"))
 }
+
+// Force patched versions of vulnerable npm packages in the Kotlin/JS dev
+// toolchain (Dependabot alerts on kotlin-js-store/*.lock). Dev-server/test
+// tooling only - nothing here ships in the published artifacts. Revisit on
+// Kotlin upgrades; drop entries once the toolchain's own ranges catch up.
+// (brace-expansion is pinned across two majors by different tools and can't
+// be forced to a single version; its DoS advisories only affect local
+// tooling input.)
+plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
+    the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
+        resolution("webpack-dev-server", "5.2.6")
+        resolution("ws", "8.21.0")
+        resolution("undici", "6.27.0")
+        resolution("fast-uri", "3.1.4")
+        resolution("body-parser", "1.20.6")
+    }
+}
+plugins.withType<org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin> {
+    the<org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootExtension>().apply {
+        resolution("ws", "8.21.0")
+    }
+}
