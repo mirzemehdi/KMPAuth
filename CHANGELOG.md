@@ -73,8 +73,10 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
 - On Desktop and JS, the unimplemented Firebase flows (OAuth/GitHub/Apple web
   flow, Facebook) now report a failed `Result` explaining why instead of
   silently doing nothing when launched. The same applies to the native
-  `rememberAppleSignInState` (`kmpauth-apple`) on non-Apple targets, which
-  previously only logged.
+  `rememberAppleSignInState` (`kmpauth-apple`) on non-Apple targets and to
+  `rememberFacebookSignInState`/`rememberFacebookAuthState` on
+  Desktop/JS/wasm (Meta's SDK is Android/iOS-only), which previously only
+  logged.
 - The deprecated 2.x `*UiContainer` composables are unchanged: they keep their
   `Result<FirebaseUser?>` callbacks (unwrapping through `KMPAuthUser.raw`) and
   remain non-wasm.

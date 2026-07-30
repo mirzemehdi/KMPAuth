@@ -13,6 +13,7 @@ kotlin {
             commonWebpackConfig {
                 outputFileName = "webApp.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    port = 8082 // TEMP-E2E: Docker holds 8080 on this machine
                     static = (static ?: mutableListOf()).apply {
                         // Serve sources to debug inside browser
                         add(project.projectDir.path)
