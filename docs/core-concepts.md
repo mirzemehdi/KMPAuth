@@ -76,6 +76,18 @@ KMPAuth.reauthenticate(
 )
 ```
 
+Route to the right flow with `user.providerIds` — the account's linked
+providers in `AuthProviderIds` convention on every backend:
+
+```kotlin
+val user = KMPAuth.currentUser() ?: return
+when {
+    AuthProviderIds.EMAIL in user.providerIds -> askForPassword()
+    AuthProviderIds.APPLE in user.providerIds -> appleReauth.launch()
+    AuthProviderIds.GOOGLE in user.providerIds -> googleReauth.launch()
+}
+```
+
 ### Deleting the account
 
 `KMPAuth.deleteAccount()` permanently deletes the signed-in user and ends the

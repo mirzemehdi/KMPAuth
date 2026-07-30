@@ -255,8 +255,13 @@ public abstract interface class com/mmk/kmpauth/core/auth/KMPAuthUser {
 	public abstract fun getEmail ()Ljava/lang/String;
 	public abstract fun getPhotoUrl ()Ljava/lang/String;
 	public abstract fun getProviderId ()Ljava/lang/String;
+	public fun getProviderIds ()Ljava/util/List;
 	public abstract fun getRaw ()Ljava/lang/Object;
 	public abstract fun getUid ()Ljava/lang/String;
+}
+
+public final class com/mmk/kmpauth/core/auth/KMPAuthUser$DefaultImpls {
+	public static fun getProviderIds (Lcom/mmk/kmpauth/core/auth/KMPAuthUser;)Ljava/util/List;
 }
 
 public final class com/mmk/kmpauth/core/auth/KMPAuthUserCollisionException : java/lang/Exception {

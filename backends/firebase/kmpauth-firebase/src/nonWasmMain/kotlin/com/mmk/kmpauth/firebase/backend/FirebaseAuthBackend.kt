@@ -19,6 +19,7 @@ public class FirebaseKMPAuthUser(private val user: FirebaseUser) : KMPAuthUser {
     override val displayName: String? get() = user.displayName
     override val photoUrl: String? get() = user.photoURL
     override val providerId: String? get() = user.providerId
+    override val providerIds: List<String> get() = user.providerData.map { it.providerId }
     override val raw: Any get() = user
 }
 

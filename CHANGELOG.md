@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`KMPAuthUser.providerIds`**: ids of every identity provider linked to
+  the account, in `AuthProviderIds` convention on both backends (Supabase's
+  GoTrue names are translated — `email` → `password`, `google` →
+  `google.com`, ...). Routes provider-dependent UI such as reauthentication:
+  `AuthProviderIds.APPLE in user.providerIds -> appleReauth.launch()`.
 - **Typed account-collision detection**: linking or signing up with a
   credential whose identity already belongs to another account now fails
   with `KMPAuthUserCollisionException` (kmpauth-core) on every backend

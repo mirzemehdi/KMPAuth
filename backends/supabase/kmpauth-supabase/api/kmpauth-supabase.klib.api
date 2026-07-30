@@ -55,6 +55,8 @@ final class com.mmk.kmpauth.supabase/SupabaseKMPAuthUser : com.mmk.kmpauth.core.
         final fun <get-photoUrl>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.photoUrl.<get-photoUrl>|<get-photoUrl>(){}[0]
     final val providerId // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.providerId|{}providerId[0]
         final fun <get-providerId>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.providerId.<get-providerId>|<get-providerId>(){}[0]
+    final val providerIds // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.providerIds|{}providerIds[0]
+        final fun <get-providerIds>(): kotlin.collections/List<kotlin/String> // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.providerIds.<get-providerIds>|<get-providerIds>(){}[0]
     final val raw // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.raw|{}raw[0]
         final fun <get-raw>(): kotlin/Any // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.raw.<get-raw>|<get-raw>(){}[0]
     final val uid // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.uid|{}uid[0]

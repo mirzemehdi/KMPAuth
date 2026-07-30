@@ -32,6 +32,7 @@ internal data class FirebaseRestUser(
     val idToken: String,
     val refreshToken: String?,
     val isAnonymous: Boolean,
+    val providerIds: List<String> = emptyList(),
 )
 
 @KMPAuthInternalApi
@@ -41,6 +42,7 @@ internal class FirebaseRestKMPAuthUser(internal val user: FirebaseRestUser) : KM
     override val displayName: String? get() = user.displayName
     override val photoUrl: String? get() = user.photoUrl
     override val providerId: String? get() = user.providerId
+    override val providerIds: List<String> get() = user.providerIds
     override val raw: Any get() = user
 }
 
@@ -180,8 +182,15 @@ internal class FirebaseRestAuthEngine(
             idToken = flowResult.idToken,
             refreshToken = flowResult.refreshToken,
             isAnonymous = false,
+            providerIds = info.linkedProviderIds().ifEmpty { listOf(providerId) },
         )
     }
+
+    /** Linked provider ids from an accounts:lookup user entry. */
+    private fun JsonObject.linkedProviderIds(): List<String> =
+        get("providerUserInfo")?.jsonArray.orEmpty().mapNotNull {
+            it.jsonObject["providerId"]?.jsonPrimitive?.content
+        }
 
     override suspend fun reauthenticate(credential: AuthCredential): Result<Unit> =
         runCatchingCancellable {
@@ -414,6 +423,7 @@ internal class FirebaseRestAuthEngine(
             idToken = idToken,
             refreshToken = response["refreshToken"]?.jsonPrimitive?.content,
             isAnonymous = anonymous,
+            providerIds = listOfNotNull(providerId),
         )
         if (user.displayName == null && !anonymous) {
             // Password/oob responses omit profile fields; enrich from lookup.
@@ -426,6 +436,7 @@ internal class FirebaseRestAuthEngine(
                         photoUrl = info["photoUrl"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
                         email = user.email
                             ?: info["email"]?.jsonPrimitive?.content?.takeIf { it.isNotEmpty() },
+                        providerIds = info.linkedProviderIds().ifEmpty { user.providerIds },
                     )
                 }
             }

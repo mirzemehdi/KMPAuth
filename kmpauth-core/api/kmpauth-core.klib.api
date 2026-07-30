@@ -56,6 +56,8 @@ abstract interface com.mmk.kmpauth.core.auth/KMPAuthUser { // com.mmk.kmpauth.co
         abstract fun <get-raw>(): kotlin/Any? // com.mmk.kmpauth.core.auth/KMPAuthUser.raw.<get-raw>|<get-raw>(){}[0]
     abstract val uid // com.mmk.kmpauth.core.auth/KMPAuthUser.uid|{}uid[0]
         abstract fun <get-uid>(): kotlin/String // com.mmk.kmpauth.core.auth/KMPAuthUser.uid.<get-uid>|<get-uid>(){}[0]
+    open val providerIds // com.mmk.kmpauth.core.auth/KMPAuthUser.providerIds|{}providerIds[0]
+        open fun <get-providerIds>(): kotlin.collections/List<kotlin/String> // com.mmk.kmpauth.core.auth/KMPAuthUser.providerIds.<get-providerIds>|<get-providerIds>(){}[0]
 }
 
 abstract interface com.mmk.kmpauth.core.auth/PhoneAuthState : com.mmk.kmpauth.core/SignInState { // com.mmk.kmpauth.core.auth/PhoneAuthState|null[0]

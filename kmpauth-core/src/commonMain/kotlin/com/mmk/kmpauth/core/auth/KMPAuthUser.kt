@@ -27,6 +27,24 @@ public interface KMPAuthUser {
     public val providerId: String?
 
     /**
+     * Ids of every identity provider linked to this account, using
+     * [AuthProviderIds] conventions — e.g. `["password"]` for an email
+     * user, `["apple.com"]` after Sign in with Apple, several entries
+     * after linking. Use it to route provider-dependent UI such as
+     * reauthentication:
+     *
+     * ```
+     * when {
+     *     AuthProviderIds.EMAIL in user.providerIds -> askForPassword()
+     *     AuthProviderIds.APPLE in user.providerIds -> appleReauth.launch()
+     * }
+     * ```
+     *
+     * Empty when the backend does not expose linked identities.
+     */
+    public val providerIds: List<String> get() = emptyList()
+
+    /**
      * The backend's native user object (e.g. `dev.gitlive.firebase.auth.FirebaseUser`).
      * Escape hatch for backend-specific functionality; may be null for fakes.
      */

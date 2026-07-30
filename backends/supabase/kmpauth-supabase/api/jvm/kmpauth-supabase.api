@@ -51,6 +51,7 @@ public final class com/mmk/kmpauth/supabase/SupabaseKMPAuthUser : com/mmk/kmpaut
 	public fun getEmail ()Ljava/lang/String;
 	public fun getPhotoUrl ()Ljava/lang/String;
 	public fun getProviderId ()Ljava/lang/String;
+	public fun getProviderIds ()Ljava/util/List;
 	public fun getRaw ()Ljava/lang/Object;
 	public fun getUid ()Ljava/lang/String;
 }

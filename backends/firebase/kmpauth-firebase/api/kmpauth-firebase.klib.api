@@ -91,6 +91,8 @@ final class com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser : com.mmk.kmpau
         final fun <get-photoUrl>(): kotlin/String? // com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser.photoUrl.<get-photoUrl>|<get-photoUrl>(){}[0]
     final val providerId // com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser.providerId|{}providerId[0]
         final fun <get-providerId>(): kotlin/String? // com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser.providerId.<get-providerId>|<get-providerId>(){}[0]
+    final val providerIds // com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser.providerIds|{}providerIds[0]
+        final fun <get-providerIds>(): kotlin.collections/List<kotlin/String> // com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser.providerIds.<get-providerIds>|<get-providerIds>(){}[0]
     final val raw // com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser.raw|{}raw[0]
         final fun <get-raw>(): kotlin/Any // com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser.raw.<get-raw>|<get-raw>(){}[0]
     final val uid // com.mmk.kmpauth.firebase.backend/FirebaseKMPAuthUser.uid|{}uid[0]

@@ -269,30 +269,47 @@ private fun FirebaseSection(
         AuthButton(anonymousAuth, "Continue as guest")
 
         // Reauthentication always needs a FRESH credential of a provider the
-        // current user has linked: email users re-enter their password (the
-        // email block below), Apple users re-run the native sheet.
+        // current user has linked - user.providerIds routes to the right
+        // flow: Apple/Google re-run their native flow here; email users
+        // re-enter their password (the email block below has the fields).
         val backend = LocalKMPAuthBackend.current
         val scope = rememberCoroutineScope()
+        val reauthWith: (String) -> (Result<AuthCredential>) -> Unit = { label ->
+            { credentialResult ->
+                credentialResult.fold(
+                    onSuccess = { credential ->
+                        scope.launch {
+                            backend.reauthenticate(credential).fold(
+                                onSuccess = { onStatus("Firebase: reauthenticated via $label") },
+                                onFailure = { onStatus("Firebase $label reauth failed: ${it.message}") },
+                            )
+                        }
+                    },
+                    onFailure = { onStatus("Firebase $label reauth failed: ${it.message}") },
+                )
+            }
+        }
         val appleReauth = rememberAppleSignInState(onResult = { result ->
-            result.fold(
-                onSuccess = { apple ->
-                    scope.launch {
-                        backend.reauthenticate(
-                            AuthCredential.IdToken(
-                                providerId = AuthProviderIds.APPLE,
-                                idToken = apple.idToken,
-                                rawNonce = apple.nonce,
-                            ),
-                        ).fold(
-                            onSuccess = { onStatus("Firebase: reauthenticated via Apple") },
-                            onFailure = { onStatus("Firebase Apple reauth failed: ${it.message}") },
-                        )
-                    }
-                },
-                onFailure = { onStatus("Firebase Apple reauth failed: ${it.message}") },
-            )
+            reauthWith("Apple")(result.map { apple ->
+                AuthCredential.IdToken(AuthProviderIds.APPLE, apple.idToken, rawNonce = apple.nonce)
+            })
         })
-        OutlinedButton(onClick = { appleReauth.launch() }) { Text("Reauthenticate (Apple, iOS)") }
+        val googleReauth = rememberGoogleSignInState(onResult = { result ->
+            reauthWith("Google")(result.map { google ->
+                AuthCredential.IdToken(AuthProviderIds.GOOGLE, google.idToken)
+            })
+        })
+        OutlinedButton(onClick = {
+            val user = KMPAuth.currentUser()
+            when {
+                user == null -> onStatus("No signed-in user to reauthenticate")
+                AuthProviderIds.APPLE in user.providerIds -> appleReauth.launch()
+                AuthProviderIds.GOOGLE in user.providerIds -> googleReauth.launch()
+                AuthProviderIds.EMAIL in user.providerIds ->
+                    onStatus("Email user: fill the password below and press Reauthenticate")
+                else -> onStatus("No reauth flow wired for providers ${user.providerIds}")
+            }
+        }) { Text("Reauthenticate (auto-detect)") }
 
         EmailAuthBlock(label = "Firebase", report = report, onStatus = onStatus)
         PhoneAuthBlock(label = "Firebase", report = report)

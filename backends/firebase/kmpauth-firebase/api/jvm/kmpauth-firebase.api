@@ -75,6 +75,7 @@ public final class com/mmk/kmpauth/firebase/backend/FirebaseKMPAuthUser : com/mm
 	public fun getEmail ()Ljava/lang/String;
 	public fun getPhotoUrl ()Ljava/lang/String;
 	public fun getProviderId ()Ljava/lang/String;
+	public fun getProviderIds ()Ljava/util/List;
 	public fun getRaw ()Ljava/lang/Object;
 	public fun getUid ()Ljava/lang/String;
 }
