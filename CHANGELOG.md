@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   codes; Supabase maps GoTrue's `email_exists`/`phone_exists`/
   `user_already_exists`/`identity_already_exists`. The original backend
   exception stays available as `cause`.
+- **Typed requires-recent-login detection**: security-sensitive
+  operations rejected because the session's sign-in is too old (most
+  commonly `deleteAccount`) fail with
+  `KMPAuthRecentLoginRequiredException` (kmpauth-core) — detect,
+  `reauthenticate` with a fresh credential, retry. Firebase maps the
+  SDK's `FirebaseAuthRecentLoginRequiredException` and the REST engine's
+  `CREDENTIAL_TOO_OLD_LOGIN_AGAIN`.
 - **Account deletion**: `KMPAuth.deleteAccount()` (and
   `AuthProviderBackend.deleteAccount()`, default-unsupported for custom
   backends). Firebase deletes the current user on every target (GitLive

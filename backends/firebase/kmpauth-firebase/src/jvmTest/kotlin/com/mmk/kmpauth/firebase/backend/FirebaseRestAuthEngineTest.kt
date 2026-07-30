@@ -3,6 +3,7 @@ package com.mmk.kmpauth.firebase.backend
 import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
+import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -235,6 +236,20 @@ class FirebaseRestAuthEngineTest {
         )
 
         assertIs<KMPAuthUserCollisionException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun staleSessionDeleteSurfacesTypedRecentLoginRequired() = runTest {
+        val transport = ScriptedTransport()
+        transport.responses += userResponse
+        transport.responses += lookupResponse
+        transport.responses += """{"error":{"message":"CREDENTIAL_TOO_OLD_LOGIN_AGAIN"}}"""
+        val engine = engine(transport)
+
+        engine.signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+        val result = engine.deleteAccount()
+
+        assertIs<KMPAuthRecentLoginRequiredException>(result.exceptionOrNull())
     }
 
     @Test

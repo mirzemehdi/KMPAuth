@@ -5,6 +5,7 @@ import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
+import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
@@ -15,6 +16,7 @@ import dev.gitlive.firebase.auth.ActionCodeSettings
 import dev.gitlive.firebase.auth.AndroidPackageName
 import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FacebookAuthProvider
+import dev.gitlive.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.OAuthProvider
@@ -35,7 +37,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         credential: AuthCredential,
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> = signInInternal(credential, linkWithCurrentUser)
-        .mappingCollision()
+        .mappingFirebaseErrors()
 
     private suspend fun signInInternal(
         credential: AuthCredential,
@@ -104,7 +106,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         val currentUser = Firebase.auth.currentUser
             ?: throw IllegalStateException("No signed-in user to delete")
         currentUser.delete()
-    }
+    }.mappingFirebaseErrors()
 
     override suspend fun signUp(
         email: String,
@@ -113,7 +115,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         Firebase.auth.createUserWithEmailAndPassword(email, password)
             .user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }.mappingCollision()
+    }.mappingFirebaseErrors()
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> = runCatchingCancellable {
         Firebase.auth.signInAnonymously().user?.let(::FirebaseKMPAuthUser)
@@ -142,7 +144,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         }
         result.user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }.mappingCollision()
+    }.mappingFirebaseErrors()
 
     override suspend fun sendPasswordResetEmail(
         email: String,
@@ -175,7 +177,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         }
         result.user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }.mappingCollision()
+    }.mappingFirebaseErrors()
 
     override suspend fun signOut() {
         Firebase.auth.signOut()
@@ -185,23 +187,33 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         Firebase.auth.currentUser?.let { FirebaseKMPAuthUser(it) }
 
     /**
-     * Surfaces account collisions as the backend-agnostic
-     * [KMPAuthUserCollisionException] with a guaranteed non-empty message —
-     * the iOS SDK sometimes reports collisions with an empty one, which made
-     * them undetectable from common code.
+     * Surfaces well-known Firebase failures as KMPAuth's backend-agnostic
+     * exception types with guaranteed non-empty messages — the iOS SDK
+     * sometimes reports them with an empty one, which made them
+     * undetectable from common code.
      */
-    private fun <T> Result<T>.mappingCollision(): Result<T> = fold(
+    private fun <T> Result<T>.mappingFirebaseErrors(): Result<T> = fold(
         onSuccess = { this },
         onFailure = { error ->
-            if (error is FirebaseAuthUserCollisionException) {
-                Result.failure(
+            when (error) {
+                is FirebaseAuthUserCollisionException -> Result.failure(
                     KMPAuthUserCollisionException(
                         message = error.message?.takeIf { it.isNotBlank() }
                             ?: "This credential is already associated with a different user account.",
                         cause = error,
                     )
                 )
-            } else this
+
+                is FirebaseAuthRecentLoginRequiredException -> Result.failure(
+                    KMPAuthRecentLoginRequiredException(
+                        message = error.message?.takeIf { it.isNotBlank() }
+                            ?: "This operation requires a recent sign-in. Reauthenticate and retry.",
+                        cause = error,
+                    )
+                )
+
+                else -> this
+            }
         },
     )
 

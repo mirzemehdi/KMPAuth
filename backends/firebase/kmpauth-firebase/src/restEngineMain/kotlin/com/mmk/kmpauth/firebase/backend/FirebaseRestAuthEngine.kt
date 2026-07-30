@@ -7,6 +7,7 @@ import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
+import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
@@ -388,9 +389,11 @@ internal class FirebaseRestAuthEngine(
             currentLogger.log("Firebase REST auth error: $message")
             // Codes the Identity Toolkit API reports when the credential or
             // email already belongs to a different existing account.
-            val isCollision = COLLISION_ERROR_CODES.any { message.startsWith(it) }
-            if (isCollision) {
+            if (COLLISION_ERROR_CODES.any { message.startsWith(it) }) {
                 throw KMPAuthUserCollisionException("Firebase auth failed: $message")
+            }
+            if (message.startsWith("CREDENTIAL_TOO_OLD_LOGIN_AGAIN")) {
+                throw KMPAuthRecentLoginRequiredException("Firebase auth failed: $message")
             }
             throw IllegalStateException("Firebase auth failed: $message")
         }
