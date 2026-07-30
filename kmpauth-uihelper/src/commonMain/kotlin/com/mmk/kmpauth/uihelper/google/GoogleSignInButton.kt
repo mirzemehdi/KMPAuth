@@ -2,12 +2,12 @@ package com.mmk.kmpauth.uihelper.google
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -84,36 +84,40 @@ public fun GoogleSignInButton(
     val borderStroke = getBorderStroke(mode)
 
     val horizontalPadding = if (isAndroidPlatform()) 12.dp else 16.dp
-    val iconTextPadding = if (isAndroidPlatform()) 10.dp else 12.dp
     Button(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = horizontalPadding),
+        contentPadding = PaddingValues(0.dp),
         onClick = onClick,
         shape = shape,
         colors = buttonColor,
         border = borderStroke,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            GoogleIcon()
-            Spacer(modifier = Modifier.width(iconTextPadding))
+        // Icon at the leading edge, title centered on the button axis -
+        // independent of each other, so stacked full-width sign-in buttons
+        // keep every icon and every title on the same axis.
+        Box(modifier = Modifier.fillMaxSize()) {
+            GoogleIcon(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = horizontalPadding)
+                    .size(20.dp),
+            )
             Text(
+                modifier = Modifier.align(Alignment.Center),
                 text = text,
                 maxLines = 1,
                 fontSize = fontSize,
                 fontFamily = Fonts.robotoFontFamily,
             )
         }
-
     }
-
-
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun GoogleIcon() {
+private fun GoogleIcon(modifier: Modifier = Modifier.size(20.dp)) {
     Image(
-        modifier = Modifier.size(20.dp),
+        modifier = modifier,
         painter = painterResource(Res.drawable.ic_google),
         contentDescription = "googleIcon"
     )

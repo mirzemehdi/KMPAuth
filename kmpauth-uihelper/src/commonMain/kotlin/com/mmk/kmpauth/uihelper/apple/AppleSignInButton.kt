@@ -2,13 +2,13 @@ package com.mmk.kmpauth.uihelper.apple
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -99,18 +99,26 @@ public fun AppleSignInButton(
     ) {
         BoxWithConstraints {
             val buttonHeight = maxHeight.orDefaultButtonHeight()
-            // Apple's button spec: the logo is a square whose side is the
-            // button height (the asset's internal margins size the glyph),
-            // and the title is 43% of the button height. Logo and title are
-            // rendered as one centered group, so the layout stays symmetric
-            // at any width - the glyph's own margins provide the spacing.
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                AppleIcon(modifier = Modifier.size(buttonHeight), mode = mode)
+            // Apple's left-aligned button layout: the logo square (side =
+            // button height, glyph margins built into the asset) sits at the
+            // leading edge and the title (43% of the button height) is
+            // centered on the button axis. Icon and title positions are
+            // independent of each other, so a stack of full-width sign-in
+            // buttons keeps every logo and every title on the same axis.
+            // The start padding compensates the asset's internal margin
+            // ((1 - 0.43) / 2 of the height) so the visible glyph starts at
+            // the same offset as the other providers' 16dp-padded icons.
+            val glyphMargin = buttonHeight * ((1f - 0.43f) / 2)
+            Box(modifier = Modifier.fillMaxSize()) {
+                AppleIcon(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = (16.dp - glyphMargin).coerceAtLeast(0.dp))
+                        .size(buttonHeight),
+                    mode = mode,
+                )
                 Text(
+                    modifier = Modifier.align(Alignment.Center),
                     text = text,
                     fontSize = (buttonHeight.value * 0.43).sp,
                     maxLines = 1,
