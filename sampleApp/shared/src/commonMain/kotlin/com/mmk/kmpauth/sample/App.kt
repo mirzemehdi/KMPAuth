@@ -32,7 +32,6 @@ import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.EmailAuthMode
-import com.mmk.kmpauth.core.auth.KMPAuthBackend
 import com.mmk.kmpauth.core.auth.LocalKMPAuthBackend
 import com.mmk.kmpauth.core.auth.ProvideKMPAuthBackend
 import com.mmk.kmpauth.supabase.SUPABASE_BACKEND_ID
@@ -103,18 +102,19 @@ private fun StatusCard(status: String, onStatus: (String) -> Unit) {
     // Both backends were registered in KMPAuth.initialize { } - the
     // registry hands back either one by id.
     val supabaseBackend = KMPAuth.requireBackendProvider(SUPABASE_BACKEND_ID)
+
     val scope = rememberCoroutineScope()
     Section(title = "Status") {
         Text(status, style = MaterialTheme.typography.bodyMedium)
         Text(
-            "Firebase user: ${KMPAuthBackend.currentUser()?.uid ?: "-"} · " +
+            "Firebase user: ${KMPAuth.currentUser()?.uid ?: "-"} · " +
                 "Supabase user: ${supabaseBackend.currentUser()?.uid ?: "-"}",
             style = MaterialTheme.typography.bodySmall,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = {
                 scope.launch {
-                    KMPAuthBackend.signOut()
+                    KMPAuth.signOut()
                     onStatus("Signed out of Firebase")
                 }
             }) { Text("Sign out (Firebase)") }
