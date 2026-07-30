@@ -40,7 +40,9 @@ import com.mmk.kmpauth.core.auth.LocalKMPAuthBackend
 import com.mmk.kmpauth.core.auth.ProvideKMPAuthBackend
 import com.mmk.kmpauth.supabase.SUPABASE_BACKEND_ID
 import androidx.compose.runtime.CompositionLocalProvider
+import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.rememberAnonymousAuthState
 import com.mmk.kmpauth.core.auth.rememberEmailAuthState
 import com.mmk.kmpauth.core.auth.rememberOAuthState
@@ -80,7 +82,21 @@ fun App() {
                     onSuccess = { user ->
                         "$source: signed in as ${user.displayName ?: user.email ?: user.uid}"
                     },
-                    onFailure = { error -> "$source failed: ${error.message}" },
+                    onFailure = { error ->
+                        // The typed core exceptions make the two well-known
+                        // conditions detectable without message matching.
+                        when (error) {
+                            is KMPAuthUserCollisionException ->
+                                "$source: this identity already has an account - " +
+                                    "sign in WITHOUT the link checkbox to use it. (${error.message})"
+
+                            is KMPAuthRecentLoginRequiredException ->
+                                "$source: session too old - press Reauthenticate " +
+                                    "(auto-detect) and retry. (${error.message})"
+
+                            else -> "$source failed: ${error.message}"
+                        }
+                    },
                 )
             }
         }
@@ -131,13 +147,23 @@ private fun StatusCard(status: String, onStatus: (String) -> Unit) {
                 }
             }) { Text("Sign out (Supabase)") }
         }
-        // Deletes the default-backend (Firebase) user. Firebase requires a
-        // recent sign-in - on requires-recent-login, reauthenticate first.
+        // Deletes the default-backend (Firebase) user. A stale session fails
+        // with the typed KMPAuthRecentLoginRequiredException - reauthenticate
+        // with a fresh credential, then retry.
         OutlinedButton(onClick = {
             scope.launch {
                 KMPAuth.deleteAccount().fold(
                     onSuccess = { onStatus("Account deleted") },
-                    onFailure = { onStatus("Delete account failed: ${it.message}") },
+                    onFailure = { error ->
+                        onStatus(
+                            if (error is KMPAuthRecentLoginRequiredException) {
+                                "Delete needs a recent sign-in: press Reauthenticate " +
+                                    "(auto-detect) in the Firebase section, then delete again."
+                            } else {
+                                "Delete account failed: ${error.message}"
+                            }
+                        )
+                    },
                 )
             }
         }) { Text("Delete account (Firebase)") }
