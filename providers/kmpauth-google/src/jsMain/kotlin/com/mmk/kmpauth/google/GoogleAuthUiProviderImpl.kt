@@ -87,15 +87,39 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         scopes: List<String>,
         presetIdToken: String?,
     ): Result<GoogleUser> = suspendCancellableCoroutine { continuation ->
+        var resumed = false
         val tokenClientConfig = createTokenClientConfig(
             clientId = credentials.serverId,
             scope = scopes.joinToString(" "),
             prompt = if (filterByAuthorizedAccounts) "none" else "select_account",
             callback = { tokenResponse: dynamic ->
-                CoroutineScope(continuation.context).launch {
-                    continuation.handleTokenResponse(tokenResponse, presetIdToken)
+                if (!resumed) {
+                    resumed = true
+                    CoroutineScope(continuation.context).launch {
+                        continuation.handleTokenResponse(tokenResponse, presetIdToken)
+                    }
                 }
-            }
+            },
+            // Without this, a blocked or user-closed popup never invokes any
+            // callback and the flow hangs with isInProgress stuck (GIS only
+            // reports those through error_callback).
+            errorCallback = { error: dynamic ->
+                val type = (error?.type as? String) ?: "unknown"
+                showConsoleError("GoogleAuthUiProvider: token flow failed: $type")
+                if (!resumed && continuation.isActive) {
+                    resumed = true
+                    continuation.resume(
+                        Result.failure(
+                            IllegalStateException(
+                                "Google sign-in could not open its popup ($type). " +
+                                    "Allow popups for this site, and make sure this " +
+                                    "origin is listed in the OAuth client's " +
+                                    "Authorized JavaScript origins."
+                            )
+                        )
+                    )
+                }
+            },
         )
         val tokenClient = initTokenClient(tokenClientConfig)
         requestAccessToken(tokenClient)
@@ -198,6 +222,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
 private fun createTokenClientConfig(
     clientId: String,
     callback: (dynamic) -> Unit,
+    errorCallback: (dynamic) -> Unit,
     scope: String,
     prompt: String
 ): dynamic {
@@ -206,6 +231,7 @@ private fun createTokenClientConfig(
         obj, json(
             "client_id" to clientId,
             "callback" to callback,
+            "error_callback" to errorCallback,
             "scope" to scope,
             "prompt" to prompt
         )

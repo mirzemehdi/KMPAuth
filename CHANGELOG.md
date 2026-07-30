@@ -220,6 +220,12 @@ stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
   FedCM-enabled) first, filling profile data from the JWT claims, and only
   run the token flow when an access token is requested (`requestAccessToken`
   or extra scopes) or the One Tap prompt is suppressed.
+- **Web Google sign-in no longer hangs when the browser blocks the OAuth
+  popup.** GIS reports a blocked or user-closed popup only through its
+  `error_callback`, which was not registered — `launch()` then never
+  resolved and `isInProgress` stayed true. Both web targets now register
+  it and report a failed `Result` naming the cause (allow popups /
+  authorize the origin for the OAuth client).
 - **`filterByAuthorizedAccounts` documentation was inverted** (#117). The
   KDoc claimed true shows all accounts; actually true limits the chooser to
   accounts that previously signed in to the app - and when none exists the

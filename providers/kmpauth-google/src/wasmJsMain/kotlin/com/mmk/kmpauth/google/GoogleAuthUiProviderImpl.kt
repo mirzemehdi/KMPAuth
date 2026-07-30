@@ -91,15 +91,39 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         scopes: List<String>,
         presetIdToken: String?,
     ): Result<GoogleUser> = suspendCancellableCoroutine { continuation ->
+        var resumed = false
         val tokenClientConfig = createTokenClientConfig(
             clientId = credentials.serverId,
             scope = scopes.joinToString(" "),
             prompt = if (filterByAuthorizedAccounts) "none" else "select_account",
             callback = { tokenResponse: JsAny ->
-                CoroutineScope(continuation.context).launch {
-                    continuation.handleTokenResponse(tokenResponse, presetIdToken)
+                if (!resumed) {
+                    resumed = true
+                    CoroutineScope(continuation.context).launch {
+                        continuation.handleTokenResponse(tokenResponse, presetIdToken)
+                    }
                 }
-            }
+            },
+            // Without this, a blocked or user-closed popup never invokes any
+            // callback and the flow hangs with isInProgress stuck (GIS only
+            // reports those through error_callback).
+            errorCallback = { error: JsAny ->
+                val type = getErrorType(error) ?: "unknown"
+                showConsoleError("GoogleAuthUiProvider: token flow failed: $type")
+                if (!resumed && continuation.isActive) {
+                    resumed = true
+                    continuation.resume(
+                        Result.failure(
+                            IllegalStateException(
+                                "Google sign-in could not open its popup ($type). " +
+                                    "Allow popups for this site, and make sure this " +
+                                    "origin is listed in the OAuth client's " +
+                                    "Authorized JavaScript origins."
+                            )
+                        )
+                    )
+                }
+            },
         )
 
         val tokenClient = initTokenClient(tokenClientConfig)
@@ -201,11 +225,12 @@ private fun fetchGoogleUserInfoPromise(accessToken: String): JsAny =
 
 @JsFun(
     """
-    (config, clientId, scope, prompt, callback) => {
+    (config, clientId, scope, prompt, callback, errorCallback) => {
         config.client_id = clientId;
         config.scope = scope;
         config.prompt = prompt;
         config.callback = callback;
+        config.error_callback = errorCallback;
     }
 """
 )
@@ -214,20 +239,24 @@ private external fun setTokenClientConfigPropsImpl(
     clientId: String,
     scope: String,
     prompt: String,
-    callback: (JsAny) -> Unit
+    callback: (JsAny) -> Unit,
+    errorCallback: (JsAny) -> Unit,
 )
 
 
 private fun createTokenClientConfig(
     clientId: String,
     callback: (JsAny) -> Unit,
+    errorCallback: (JsAny) -> Unit,
     scope: String,
     prompt: String
 ): JsAny {
     val obj: JsAny = createEmptyObject()
-    setTokenClientConfigPropsImpl(obj, clientId, scope, prompt, callback)
+    setTokenClientConfigPropsImpl(obj, clientId, scope, prompt, callback, errorCallback)
     return obj
 }
+
+private fun getErrorType(error: JsAny): String? = js("error && error.type ? error.type : null")
 
 
 private fun createEmptyObject(): JsAny = js("({})")
