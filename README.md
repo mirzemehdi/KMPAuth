@@ -1,403 +1,242 @@
-# KMPAuth - Kotlin Multiplatform Authentication Library
+# KMPAuth — Kotlin Multiplatform Authentication Library
+
 [![Build](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build_and_publish.yml/badge.svg)](https://github.com/mirzemehdi/KMPAuth/actions/workflows/build_and_publish.yml)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.2.0-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.4.0-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.mirzemehdi/kmpauth-google?color=blue)](https://search.maven.org/search?q=g:io.github.mirzemehdi+kmpauth)
 
 ![badge-android](http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat)
 ![badge-ios](http://img.shields.io/badge/platform-ios-AAAAFF.svg?style=flat)
-![badge-web](http://img.shields.io/badge/platform-web-FFCC66.svg?style=flat)
 ![badge-desktop](http://img.shields.io/badge/platform-desktop-FF8E8E.svg?style=flat)
+![badge-web](http://img.shields.io/badge/platform-web-FFCC66.svg?style=flat)
 
+Simple and easy-to-use authentication for Compose Multiplatform apps on
+**Android, iOS, Desktop (JVM) and Web (JS + wasm)**. Sign in with **Google,
+Apple, Facebook, GitHub, Microsoft, email/password, magic links, phone
+number or anonymously** — backed by **Firebase** or **Supabase** (or your
+own backend), with every API callable from `commonMain` on every target.
 
-Simple and easy to use Kotlin Multiplatform Authentication library targeting iOS, Android, Desktop and Web (`kmpauth-firebase` module doesn't have web support yet). Supporting **Google**, **Apple**, **Github**, **Facebook** authentication integrations using Firebase.   
-Because I am using KMPAuth in [FindTravelNow](https://github.com/mirzemehdi/FindTravelNow-KMM/) production KMP project, I'll support development of this library :).   
-Related blog post: [Integrating Google Sign-In into Kotlin Multiplatform](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891)  
-You can check out [Documentation](https://mirzemehdi.github.io/KMPAuth) for full library api information.
-
-## Sample App and Code
 <p style="text-align: center;">
-  <img src="https://github.com/mirzemehdi/KMPAuth/assets/32781662/f5a3cd28-6ef2-46bf-9b07-a045ce217b34)" width="200" alt="SampleApp"/>  
+  <img src="https://github.com/mirzemehdi/KMPAuth/assets/32781662/f5a3cd28-6ef2-46bf-9b07-a045ce217b34)" width="200" alt="SampleApp"/>
 </p>
 
-```kotlin
-@Composable
-fun AuthUiHelperButtonsAndFirebaseAuth(
-    modifier: Modifier = Modifier,
-    onFirebaseResult: (Result<FirebaseUser?>) -> Unit,
-) {
-    Column(modifier = modifier,verticalArrangement = Arrangement.spacedBy(10.dp)) {
+## What's supported where
 
-        //Google Sign-In Button and authentication with Firebase
-        GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
-            GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
-        }
+Every sign-in method is served by a **backend** (or by your own server, when
+the method just hands you a token). So two questions: which backend runs on
+your platforms, and which methods that backend serves.
 
-        //Apple Sign-In Button and authentication with Firebase
-        AppleButtonUiContainer(onResult = onFirebaseResult) {
-            AppleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
-        }
+| Backend | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Firebase | ✅ | ✅ | ✅ (REST) | ✅ | ✅ (REST²) |
+| Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-        //Facebook Sign-In Button and authentication with Firebase
-        FacebookButtonUiContainer(
-            onResult = { result -> /* handle FirebaseUser result or error */ },
-            linkAccount = false
-        ) {
-            FacebookSignInButton(onClick = { this.onClick() })
-        }
+("your server" below = no backend needed — the state hands you the
+provider's token to verify yourself.)
 
-        //Github Sign-In with Custom Button and authentication with Firebase
-        GithubButtonUiContainer(onResult = onFirebaseResult) {
-            Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
-        }
+| Sign-in method | Works with | Android | iOS | Desktop (JVM) | Web (JS) | Web (wasm) |
+|---|---|:---:|:---:|:---:|:---:|:---:|
+| Google | your server · Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Apple | Firebase · Supabase | ✅ | ✅ native | ✅ | ✅⁴ | ✅⁴ |
+| Apple (native token, no backend) | your server | — | ✅ | — | — | — |
+| Facebook (native SDK login) | your server · Firebase · Supabase¹ | ✅ | ✅ | — | — | — |
+| GitHub / Microsoft / Facebook-web / any OAuth | Firebase · Supabase | ✅ | ✅ | ✅ | ✅⁴ | ✅⁴ |
+| Email (password / reset / magic link) | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Phone number | Firebase · Supabase | ✅ | ✅ | ✅³ | ✅³ | ✅³ |
+| Anonymous | Firebase · Supabase | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-    }
-}
+¹ Supabase accepts Facebook Limited Login (OIDC) tokens only. Meta's SDK
+exists only on Android/iOS — on other platforms use the browser-OAuth row
+(`rememberOAuthState("facebook.com")` with Firebase, or
+`OAuthWebFlow("facebook.com")` with Supabase).
+² Firebase on wasm runs on the REST engine (no Firebase SDK there): email,
+anonymous, id-token exchange, email link, password reset, reauthentication —
+not browser web flows or phone.
+³ Beyond Android/iOS only with Supabase (SMS OTP); Firebase phone auth
+needs the mobile SDKs.
+⁴ Only with Supabase (`KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))`):
+Desktop works out of the box, Android/iOS need Supabase's deep-link setup,
+and on web the flow is a full-page redirect — the session is restored after
+reload.
 
-```
+Everything compiles and is callable from `commonMain` on **all** targets — a
+feature unavailable on the current platform reports a failed `Result` with
+the reason instead of not compiling or silently doing nothing.
 
-  
-
-
-You can check out more [sample codes](https://github.com/mirzemehdi/KMPAuth/blob/main/sampleApp/composeApp/src/commonMain/kotlin/com/mmk/kmpauth/sample/App.kt) here.
-
-## Features
-- ✅ Google One Tap Sign-In (without Firebase)
-- ✅ [Google Sign-In with Firebase](#google-sign-in)
-- ✅ [Apple Sign-In with Firebase](#apple-sign-in)
-- ✅ [Github Sign-In with Firebase](#github-sign-in)
-- ✅ [Facebook Sign-In (android and ios) with Firebase](#facebook-sign-in)
-- ✅ Apple, Google, Facebook "Sign in with " UiHelper buttons (according to each brand's guideline)
-- 📱 Multiplatform (android, iOS, jvm and web (js,wasm))
-
-## Installation
-KMPAuth is available on Maven Central. In your root project `build.gradle.kts` file (or `settings.gradle` file) add `mavenCentral()` to repositories.
+## Installation (short version)
 
 ```kotlin
-repositories { 
-  mavenCentral()
+commonMain.dependencies {
+    // Identity providers - native SDK sign-in, no backend required:
+    implementation("io.github.mirzemehdi:kmpauth-google:<version>")   // Google sign-in
+    implementation("io.github.mirzemehdi:kmpauth-apple:<version>")    // if needed: native Sign in with Apple (iOS)
+    implementation("io.github.mirzemehdi:kmpauth-facebook:<version>") // if needed: Facebook login (Android/iOS)
+
+    implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") // if needed: branded sign-in buttons
+
+    // Session backend - pick one (or both):
+    implementation("io.github.mirzemehdi:kmpauth-firebase:<version>") // Firebase backend
+    implementation("io.github.mirzemehdi:kmpauth-supabase:<version>") // if needed: Supabase backend
 }
 ```
 
-Then in your shared module add desired dependencies in `commonMain`. Latest version: [![Maven Central](https://img.shields.io/maven-central/v/io.github.mirzemehdi/kmpauth-google?color=blue)](https://search.maven.org/search?q=g:io.github.mirzemehdi+kmpauth).
-```kotlin
-sourceSets {
-  commonMain.dependencies {
-    implementation("io.github.mirzemehdi:kmpauth-google:<version>") //Google One Tap Sign-In 
-    implementation("io.github.mirzemehdi:kmpauth-firebase:<version>") //Integrated Authentications with Firebase
-    implementation("io.github.mirzemehdi:kmpauth-firebase-facebook:<version>") //Facebook authentication with Firebase
-    implementation("io.github.mirzemehdi:kmpauth-uihelper:<version>") //UiHelper SignIn buttons (AppleSignIn, GoogleSignInButton)
+iOS apps add the native SDKs via Swift Package Manager — see
+[Getting started](docs/getting-started.md).
 
-  }
-}
-```
-**_You will also need to include Google Sign-In and/or FirebaseAuth library to your ios app using Swift Package Manager or Cocoapods._**   
+## Pick your setup
 
-**Note**: If in iOS you get `MissingResourceException`, I wrote solution in this [issue's comment section](https://github.com/mirzemehdi/KMPAuth/issues/2).
+### 1. No backend — you verify the token yourself ([Google](docs/google.md) · [Facebook](docs/facebook.md) · [Apple](docs/apple.md))
 
------
-
-### Google Sign-In
-For Google Sign-In you can either use only one-tap sign in functionality, or also implementing firebase google authentication integration to that.
-You need to set up OAuth 2.0 in Google Cloud Platform Console. 
-For steps you can follow this [link](https://support.google.com/cloud/answer/6158849). **_Pro Easy Tip:_** If you use Firebase and enable Google Sign-In authentication in Firebase 
-it will automatically generate OAuth client IDs for each platform, 
-and one will be **_Web Client ID_** which will be needed for identifying signed-in users in backend server.
-
-#### Platform Setup
-Create GoogleAuthProvider instance by providing _**Web Client Id**_ as a serverID on Application start.
-```kotlin
-GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = WebClientId))
-
-```
-<details>
-  <summary>Android</summary>
-
-##### Android Setup
-There is not any platform specific setup in Android side.
-
-</details>
-
-<details>
-  <summary>iOS</summary>
-
-##### iOS Setup
-Add clientID, and serverId to your `Info.plist` file as below:
-
-```
-<key>GIDServerClientID</key>
-<string>YOUR_SERVER_CLIENT_ID</string>
-
-<key>GIDClientID</key>
-<string>YOUR_IOS_CLIENT_ID</string>
-<key>CFBundleURLTypes</key>
-<array>
-  <dict>
-    <key>CFBundleURLSchemes</key>
-    <array>
-      <string>YOUR_DOT_REVERSED_IOS_CLIENT_ID</string>
-    </array>
-  </dict>
-</array>
-
-```
-
-And finally, you need the code below to implement application delegate function calls on the Swift side.
-
-```swift
-import SwiftUI
-import shared
-import GoogleSignIn
-
-class AppDelegate: NSObject, UIApplicationDelegate {
-
-    func application(
-      _ app: UIApplication,
-      open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-    ) -> Bool {
-      var handled: Bool
-
-      handled = GIDSignIn.sharedInstance.handle(url)
-      if handled {
-        return true
-      }
-
-      // Handle other custom URL types.
-
-      // If not handled by this app, return false.
-      return false
-    }
-
-
-}
-
-@main
-struct iOSApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
-   var body: some Scene {
-      WindowGroup {
-            ContentView().onOpenURL(perform: { url in
-                GIDSignIn.sharedInstance.handle(url)
-            })
-      }
-   }
-}
-
-
-```
-
-</details>
-
-#### Usage
-After configuring above steps this is how you can use:
+Only the provider modules (`kmpauth-google`, `kmpauth-facebook`,
+`kmpauth-apple`). The `rememberXxxSignInState` states hand you the
+provider's credential and stop there — send it to your own server:
 
 ```kotlin
-//Google Sign-In with Custom Button (only one tap sign-in functionality)
-GoogleButtonUiContainer(onGoogleSignInResult = { googleUser ->
-  val idToken = googleUser?.idToken // Send this idToken to your backend to verify
-}) {
-  Button(onClick = { this.onClick() }) { Text("Google Sign-In(Custom Design)") }
+KMPAuth.initialize {
+    google(serverId = WebClientId)
 }
 
+val googleSignIn = rememberGoogleSignInState(onResult = { result ->
+    result.onSuccess { googleUser ->
+        api.login(googleUser.idToken) // verify server-side
+    }.onFailure { error -> /* cancelled, misconfigured, ... */ }
+})
+GoogleSignInButton { googleSignIn.launch() }
+
+// same shape for Facebook and native Apple:
+val facebookSignIn = rememberFacebookSignInState(onResult = { result: Result<FacebookUser> -> })
+val appleSignIn = rememberAppleSignInState(onResult = { result: Result<AppleUser> -> })
 ```
 
-Google Sign-In Button and authentication with Firebase. You need to implement `kmpauth-uihelper` dependency
-```kotlin
-GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
-  GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
-}
-```
+### 2. Firebase ([guide](docs/firebase.md))
 
-Google Sign-In IconOnly Button and authentication with Firebase. You need to implement `kmpauth-uihelper` dependency
-```kotlin
-GoogleButtonUiContainerFirebase(onResult = onFirebaseResult) {
-  GoogleSignInButtonIconOnly(onClick = { this.onClick() })
-}
-
-```
-
-### Apple Sign-In
-After enabling and configuring Apple Sign-In in Firebase, make sure you added "Sign In with Apple" capability in XCode. Then, you can use it as below in your @Composable function:
-```kotlin
-//Apple Sign-In with Custom Button and authentication with Firebase
-AppleButtonUiContainer(onResult = onFirebaseResult) {
-  //Any View, you just need to delegate child view's click to this UI Container's click method
-  Button(onClick = { this.onClick() }) { Text("Apple Sign-In (Custom Design)") }
-}
-
-```
-
-Apple Sign-In with AppleSignInButton. You need to implement `kmpauth-uihelper` dependency
-```kotlin
-AppleButtonUiContainer(onResult = onFirebaseResult) {
-  AppleSignInButton(modifier = Modifier.fillMaxWidth()) { this.onClick() }
-}
-```
-
-Apple Sign-In IconOnly Button. You need to implement `kmpauth-uihelper` dependency
-```kotlin
-AppleButtonUiContainer(onResult = onFirebaseResult) {
-  AppleSignInButtonIconOnly(onClick = { this.onClick() })
-}
-
-```
-
-### Github Sign-In
-After enabling and configuring Github Sign-In in Firebase, you can use it as below in your @Composable function:
-```kotlin
-//Github Sign-In with Custom Button and authentication with Firebase
-GithubButtonUiContainer(onResult = onFirebaseResult) {
-  //Any View, you just need to delegate child view's click to this UI Container's click method
-  Button(onClick = { this.onClick() }) { Text("Github Sign-In (Custom Design)") }
-}
-
-```
-### Facebook Sign-In
-
-
-#### Usage Example
-```kotlin
-
-//Facebook button with icon
-FacebookButtonUiContainerFirebase(
-    onResult = { result -> /* handle FirebaseUser result or error */ },
-    linkAccount = false
-) {
-    FacebookSignInButtonIconOnly(onClick = { this.onClick() })
-}
-
-//Icon Only Button
-FacebookButtonUiContainerFirebase(
-    modifier = Modifier.fillMaxWidth().height(44.dp),
-    onResult = { result -> /* handle result */ },
-    linkAccount = false
-) {
-    FacebookSignInButton(fontSize = 19.sp) { this.onClick() }
-}
-
-//Custom Button
-FacebookButtonUiContainerFirebase(
-    modifier = Modifier.fillMaxWidth().height(44.dp),
-    onResult = { result -> /* handle result */ },
-    linkAccount = false
-) {
-    //Your custom Button here
-    YourCustomButton(fontSize = 19.sp) { this.onClick() }
-}
-
-```
-
-#### Android Setup
-Add these to your `res/values/strings.xml`:
-```xml
-<string name="facebook_app_id">YOUR_FACEBOOK_APP_ID</string>
-<string name="fb_login_protocol_scheme">fbYOUR_FACEBOOK_APP_ID</string>
-<string name="facebook_client_token">YOUR_FACEBOOK_CLIENT_TOKEN</string>
-```
-Add these metadata tags and Facebook Activity to your `AndroidManifest.xml` inside the `<application>` tag:
-```xml
-<meta-data
-    android:name="com.facebook.sdk.ApplicationId"
-    android:value="@string/facebook_app_id" />
-
-<meta-data
-    android:name="com.facebook.sdk.ClientToken"
-    android:value="@string/facebook_client_token" />
-
-<activity
-    android:name="com.facebook.FacebookActivity"
-    android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-    android:label="@string/app_name" />
-```
-For Facebook Login, on Your Main Activity's activity result call `KMPAuth.handleFacebookActivityResult` function:
+Add `kmpauth-firebase` — the backend registers itself, and on Android/iOS
+there is zero configuration (the SDK reads `google-services.json` /
+`GoogleService-Info.plist`). The `rememberXxxAuthState` states exchange the
+credential for a Firebase session; account operations live on `KMPAuth`:
 
 ```kotlin
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    KMPAuth.handleFacebookActivityResult(requestCode, resultCode, data)
-    super.onActivityResult(requestCode, resultCode, data)
-}
-```
-
-#### IOS Setup
-Add Facebook Login SDK Swift Package, and add below to your Info.plist:
-
-```xml
-<key>CFBundleURLTypes</key>
-<array>
-  <dict>
-    <key>CFBundleURLSchemes</key>
-    <array>
-      <string>fbFACEBOOK_APP_ID</string> <!-- Your Facebook App ID with 'fb' prefix -->
-    </array>
-  </dict>
-</array>
-
-<key>FacebookAppID</key>
-<string>FACEBOOK_APP_ID</string>
-
-<key>FacebookClientToken</key>
-<string>YOUR_FACEBOOK_CLIENT_TOKEN</string>
-
-<key>FacebookDisplayName</key>
-<string>YourAppDisplayName</string>
-
-<key>LSApplicationQueriesSchemes</key>
-<array>
-  <string>fbapi</string>
-  <string>fb-messenger-api</string>
-  <string>fbauth2</string>
-  <string>fbshareextension</string>
-</array>
-
-```
-
-Initialize Facebook SDK on Ios Swift side
-```swift
-
-func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        FirebaseApp.configure()
-        // Initialize Facebook SDK. 
-        FBSDKCoreKit.ApplicationDelegate.shared.application(
-            application,
-            didFinishLaunchingWithOptions: launchOptions
-        )
-        return true
-    }
-
-func application(
-    _ app: UIApplication,
-    open url: URL,
-    options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-) -> Bool {
-    
-    var handled: Bool
-    handled = FBSDKCoreKit.ApplicationDelegate.shared.application(
-        app,
-        open: url,
-        options: options
-    )
-
-    if handled {
-        return true
-    }
-    
-    return false
+KMPAuth.initialize {
+    google(serverId = WebClientId)
+    // Desktop/Web only - Android/iOS use the bundled config files:
+    firebase(apiKey = "...", projectId = "...", applicationId = "...")
 }
 
+val onResult: (Result<KMPAuthUser>) -> Unit = { result -> /* ... */ }
+
+val googleSignIn = rememberGoogleAuthState(onResult = onResult)
+GoogleSignInButton { googleSignIn.launch() }
+
+val appleSignIn = rememberAppleAuthState(onResult = onResult)       // native on iOS, web flow elsewhere
+val facebookSignIn = rememberFacebookAuthState(onResult = onResult) // kmpauth-facebook, Android/iOS
+val githubSignIn = rememberGithubAuthState(onResult = onResult)     // browser OAuth web flow
+val microsoftSignIn = rememberMicrosoftAuthState(onResult = onResult)
+val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
+val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult)
+val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
+
+KMPAuth.currentUser()
+KMPAuth.signOut()
+KMPAuth.sendPasswordResetEmail(email)
+KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, password))
 ```
 
+### 3. Supabase ([guide](docs/supabase.md))
 
+Add `kmpauth-supabase` (plus a Ktor client engine per platform — see the
+guide) — no Firebase anywhere, works on **every target including wasm**.
+Same states, same `KMPAuth` operations; only the registration differs:
 
-##### Notes
-- You must configure your Facebook App in Facebook Developers Console properly and enable Firebase Facebook provider.
-- Facebook Sign in is supported in Android and iOS only.
-- Facebook Login for iOS - https://developers.facebook.com/docs/facebook-login/android
-- Facebook Login for Android - https://developers.facebook.com/docs/facebook-login/ios
-- Firebase Authentication with Facebook - https://firebase.google.com/docs/auth/android/facebook-login
-- Firebase Authentication with Facebook iOS - https://firebase.google.com/docs/auth/ios/facebook-login
+```kotlin
+KMPAuth.initialize {
+    google(serverId = WebClientId)
+    supabase(url = projectUrl, apiKey = publishableKey)
+}
 
+val onResult: (Result<KMPAuthUser>) -> Unit = { result -> /* ... */ }
 
+val googleSignIn = rememberGoogleAuthState(onResult = onResult)     // id-token grant
+val facebookSignIn = rememberFacebookAuthState(onResult = onResult) // kmpauth-facebook, Limited Login (OIDC), Android/iOS
+val emailSignIn = rememberEmailAuthState(email, password, onResult = onResult)
+val phoneSignIn = rememberPhoneAuthState(phoneNumber, onResult = onResult) // SMS OTP, every target
+val guestSignIn = rememberAnonymousAuthState(onResult = onResult)
 
+// Same composables as with Firebase - the backend behind them differs:
+val appleSignIn = rememberAppleAuthState(onResult = onResult)       // native on iOS, browser flow elsewhere
+val githubSignIn = rememberGithubAuthState(onResult = onResult)     // browser OAuth: Desktop OOTB, mobile via deep links
+val microsoftSignIn = rememberMicrosoftAuthState(onResult = onResult)
+// ...or any GoTrue provider: rememberOAuthState(provider = "gitlab") /
+// KMPAuth.signIn(AuthCredential.OAuthWebFlow("gitlab"))
 
+KMPAuth.sendPasswordResetEmail(email)
+KMPAuth.signOut()
+```
 
+Need Firebase **and** Supabase side by side? Register both in
+`initialize { }` (the first — Firebase — stays the default) and scope
+subtrees with `ProvideKMPAuthBackend("supabase") { ... }` —
+[Custom & multiple backends](docs/custom-backends.md).
+
+### 4. UI helper buttons ([guide](docs/ui-helper.md))
+
+Add `kmpauth-uihelper` for pre-styled buttons following each brand's
+guidelines — they're plain composables, so they wire to any state from the
+setups above (and any clickable of your own works instead):
+
+```kotlin
+GoogleSignInButton(modifier = Modifier.fillMaxWidth()) { googleSignIn.launch() }
+GoogleSignInButtonIconOnly(onClick = { googleSignIn.launch() })
+
+AppleSignInButton(modifier = Modifier.fillMaxWidth()) { appleSignIn.launch() }
+AppleSignInButtonIconOnly(onClick = { appleSignIn.launch() })
+
+FacebookSignInButton(modifier = Modifier.fillMaxWidth()) { facebookSignIn.launch() }
+FacebookSignInButtonIconOnly(onClick = { facebookSignIn.launch() })
+```
+
+## Documentation
+
+Start here — read only what you need:
+
+| Guide | What's in it |
+|---|---|
+| **[Getting started](docs/getting-started.md)** | Dependencies, iOS SPM setup, requirements, `KMPAuth.initialize`, first sign-in |
+| **[Core concepts](docs/core-concepts.md)** | The two state layers, `KMPAuthUser`, the `KMPAuth` object, account linking, reauthentication |
+
+**Identity providers** (bring their own SDK/flow, work with any backend or
+none):
+
+| Guide | Platforms |
+|---|---|
+| [Google](docs/google.md) | Android · iOS · Desktop · JS · wasm |
+| [Apple](docs/apple.md) | Android · iOS (native) · Desktop — or iOS-only without any backend |
+| [Facebook](docs/facebook.md) | Android · iOS |
+
+**Backends & backend-served sign-in** (these flows exist only through
+Firebase/Supabase):
+
+| Guide | What's in it |
+|---|---|
+| [Firebase](docs/firebase.md) | Auto-registration, Android/iOS zero-config, Desktop (REST + browser flows), web notes |
+| [Supabase](docs/supabase.md) | Setup, Ktor engines, what maps to Supabase (works on **wasm**) |
+| [GitHub / Microsoft / any OAuth](docs/oauth-providers.md) | Firebase (Android · iOS · Desktop) or Supabase (every target, see guide) |
+| [Email — password, reset, magic link](docs/email.md) | Served by Firebase or Supabase |
+| [Phone number](docs/phone.md) | Firebase (Android · iOS) or Supabase (every target) |
+| [Anonymous (guest)](docs/anonymous.md) | Served by Firebase or Supabase |
+| [Custom & multiple backends](docs/custom-backends.md) | `AuthProviderBackend`, `LocalKMPAuthBackend` scoping |
+
+Also: [UI helper buttons](docs/ui-helper.md) ·
+[Full API reference](https://mirzemehdi.github.io/KMPAuth) ·
+[Sample app covering every feature](sampleApp/shared/src/commonMain/kotlin/com/mmk/kmpauth/sample/App.kt)
+
+## Migrating from 2.x
+
+Follow the step-by-step [MIGRATION.md](MIGRATION.md) — most 2.x code keeps
+compiling (the `*UiContainer` composables and `GoogleAuthProvider.create`
+still work, deprecated). All notable changes live in
+[CHANGELOG.md](CHANGELOG.md).
+
+---
+
+KMPAuth powers [FindTravelNow](https://github.com/mirzemehdi/FindTravelNow-KMM/),
+a production KMP app, so development is actively supported. Related blog
+post: [Integrating Google Sign-In into Kotlin Multiplatform](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891).

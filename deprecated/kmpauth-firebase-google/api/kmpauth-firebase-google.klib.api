@@ -1,0 +1,10 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, js]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.mirzemehdi:kmpauth-firebase-google>
+final fun com.mmk.kmpauth.firebase.google/GoogleButtonUiContainerFirebase(androidx.compose.ui/Modifier?, kotlin/Boolean, kotlin/Boolean, kotlin/Boolean, kotlin.collections/List<kotlin/String>?, kotlin/Function1<kotlin/Result<dev.gitlive.firebase.auth/FirebaseUser?>, kotlin/Unit>, kotlin/Function3<com.mmk.kmpauth.core/UiContainerScope, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.firebase.google/GoogleButtonUiContainerFirebase|GoogleButtonUiContainerFirebase(androidx.compose.ui.Modifier?;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean;kotlin.collections.List<kotlin.String>?;kotlin.Function1<kotlin.Result<dev.gitlive.firebase.auth.FirebaseUser?>,kotlin.Unit>;kotlin.Function3<com.mmk.kmpauth.core.UiContainerScope,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.mmk.kmpauth.firebase.google/GoogleButtonUiContainerFirebase(androidx.compose.ui/Modifier?, kotlin/Function1<kotlin/Result<dev.gitlive.firebase.auth/FirebaseUser?>, kotlin/Unit>, kotlin/Function3<com.mmk.kmpauth.core/UiContainerScope, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.mmk.kmpauth.firebase.google/GoogleButtonUiContainerFirebase|GoogleButtonUiContainerFirebase(androidx.compose.ui.Modifier?;kotlin.Function1<kotlin.Result<dev.gitlive.firebase.auth.FirebaseUser?>,kotlin.Unit>;kotlin.Function3<com.mmk.kmpauth.core.UiContainerScope,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]

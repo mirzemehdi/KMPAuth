@@ -1,20 +1,13 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.KotlinMultiplatform
-import org.jetbrains.dokka.gradle.DokkaTask
-
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
     alias(libs.plugins.jetbrainsCompose) apply false
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.androidApplication) apply false
-    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.androidKmpLibrary) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
-    alias(libs.plugins.kotlinNativeCocoaPods) apply false
-    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.dokka)
     alias(libs.plugins.googleServices) apply false
-    alias(libs.plugins.kotlinx.serialization).apply(false)
     alias(libs.plugins.mavenPublish) apply false
     alias(libs.plugins.kotlinx.binary.validator)
 }
@@ -26,7 +19,14 @@ apiValidation {
         enabled = true
     }
     ignoredProjects += "sampleApp"
-    ignoredProjects += "composeApp"
+    ignoredProjects += "shared"
+    ignoredProjects += "androidApp"
+    ignoredProjects += "desktopApp"
+    ignoredProjects += "webApp"
+    ignoredProjects += "providers"
+    ignoredProjects += "backends"
+    ignoredProjects += "firebase"
+    ignoredProjects += "deprecated"
 }
 
 
@@ -36,7 +36,14 @@ allprojects {
     group = "io.github.mirzemehdi"
     version = project.properties["kmpAuthVersion"] as String
 
-    val excludedModules = listOf(":sampleApp:composeApp", ":sampleApp")
+    // Sample modules plus the synthetic grouping projects created by nested
+    // include() paths. The real modules inside them (e.g.
+    // :deprecated:kmpauth-firebase-google) DO publish - the deprecated 2.x
+    // container shims must stay on Maven Central for 2.x consumers.
+    val excludedModules = listOf(
+        ":sampleApp:shared", ":sampleApp:androidApp", ":sampleApp:desktopApp", ":sampleApp:webApp", ":sampleApp",
+        ":providers", ":backends", ":backends:firebase", ":deprecated",
+    )
     if (project.path in excludedModules) return@allprojects
 
     apply(plugin = "org.jetbrains.dokka")
@@ -45,4 +52,15 @@ allprojects {
 
 }
 
-
+// Dokka 2.x aggregated documentation site (replaces the removed V1
+// dokkaHtmlMultiModule task). CI publishes the output of
+// :dokkaGeneratePublicationHtml to GitHub Pages.
+dependencies {
+    dokka(project(":kmpauth-core"))
+    dokka(project(":providers:kmpauth-google"))
+    dokka(project(":providers:kmpauth-facebook"))
+    dokka(project(":backends:firebase:kmpauth-firebase"))
+    dokka(project(":deprecated:kmpauth-firebase-google"))
+    dokka(project(":deprecated:kmpauth-firebase-facebook"))
+    dokka(project(":kmpauth-uihelper"))
+}

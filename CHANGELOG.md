@@ -1,0 +1,578 @@
+# Changelog
+
+All notable changes to KMPAuth are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [3.0.0] — 2026-07-30
+
+The stable 3.0 release. Everything below is on top of 3.0.0-beta01; the
+full 3.0 story relative to 2.x spans this and the beta/alpha sections —
+see [MIGRATION.md](MIGRATION.md) for the 2.x → 3.0 guide.
+
+### Added
+- **`KMPAuthUser.providerIds`**: ids of every identity provider linked to
+  the account, in `AuthProviderIds` convention on both backends (Supabase's
+  GoTrue names are translated — `email` → `password`, `google` →
+  `google.com`, ...). Routes provider-dependent UI such as reauthentication:
+  `AuthProviderIds.APPLE in user.providerIds -> appleReauth.launch()`.
+- **Typed account-collision detection**: linking or signing up with a
+  credential whose identity already belongs to another account now fails
+  with `KMPAuthUserCollisionException` (kmpauth-core) on every backend
+  and platform, with a guaranteed non-empty message — detect the
+  guest-upgrade collision with one `is`-check instead of matching
+  backend-specific exception types or (sometimes empty on iOS) error
+  messages. Firebase maps the SDK's `FirebaseAuthUserCollisionException`
+  and the REST engine's `EMAIL_EXISTS`/`FEDERATED_USER_ID_ALREADY_LINKED`/
+  `CREDENTIAL_ALREADY_IN_USE`/`ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL`
+  codes; Supabase maps GoTrue's `email_exists`/`phone_exists`/
+  `user_already_exists`/`identity_already_exists`. The original backend
+  exception stays available as `cause`.
+- **Typed requires-recent-login detection**: security-sensitive
+  operations rejected because the session's sign-in is too old (most
+  commonly `deleteAccount`) fail with
+  `KMPAuthRecentLoginRequiredException` (kmpauth-core) — detect,
+  `reauthenticate` with a fresh credential, retry. Firebase maps the
+  SDK's `FirebaseAuthRecentLoginRequiredException` and the REST engine's
+  `CREDENTIAL_TOO_OLD_LOGIN_AGAIN`.
+- **Account deletion**: `KMPAuth.deleteAccount()` (and
+  `AuthProviderBackend.deleteAccount()`, default-unsupported for custom
+  backends). Firebase deletes the current user on every target (GitLive
+  SDK on Android/iOS/JS, `accounts:delete` on the Desktop/wasm REST
+  engine) — on a requires-recent-login failure, `reauthenticate` and
+  retry. The Supabase backend reports it as unsupported with the
+  idiomatic alternative (an Edge Function calling
+  `auth.admin.deleteUser`; GoTrue has no client-side self-deletion).
+- UiHelper sign-in buttons (`GoogleSignInButton`, `AppleSignInButton`,
+  `FacebookSignInButton`) take an `iconAlignment` parameter:
+  `SignInButtonIconAlignment.Center` (default) centers icon and title as
+  one group; `SignInButtonIconAlignment.Start` pins the icon at the
+  leading edge with the title centered on the button axis, so a stacked
+  column of full-width buttons keeps every provider icon and every title
+  aligned.
+
+### Fixed
+- `AppleSignInButton` is symmetric at any width: it padded only the end
+  of the title by 8% of the button width (a misread of Apple's symmetric
+  side-margin rule), sitting visibly left of center on wide buttons. The
+  title still follows Apple's spec (43% of button height, logo square
+  sized to the button height, 140x30 minimum), and the
+  `onGloballyPositioned` size-feedback loop and -1dp text nudge are gone.
+
+### Changed
+- Sample app launch buttons disable and show a progress spinner while their
+  flow is in progress (`SignInState.isInProgress`).
+
+## [3.0.0-beta01] — 2026-07-29
+
+The API surface for 3.0 is final with this release — remaining work before
+stable is testing and fixes only. See [MIGRATION.md](MIGRATION.md) for the
+2.x → 3.0 guide.
+
+### Changed
+- **`kmpauth-firebase` is the real Firebase module again** — the granular
+  `kmpauth-firebase-core` artifact introduced in the alphas is renamed to
+  `kmpauth-firebase` (backend + Apple/GitHub/Microsoft/OAuth/phone states),
+  and the 2.x aggregator it replaced is gone. The deprecated 2.x Google and
+  Facebook container composables remain published as compatibility shims
+  (`kmpauth-firebase-google`, `kmpauth-firebase-facebook`; removed in 4.0).
+  **2.x upgraders still using `GoogleButtonUiContainerFirebase` /
+  `FacebookButtonUiContainerFirebase` must add the matching shim artifact**
+  — `kmpauth-firebase` alone no longer bundles the Google sign-in stack
+  (MIGRATION §5).
+- **Backend-agnostic auth states — the `Firebase` prefix is gone** and the
+  names now mark the two layers: `rememberXxxSignInState` returns the
+  provider's credential (unchanged: `rememberGoogleSignInState`,
+  `rememberFacebookSignInState`, `rememberAppleSignInState`), while
+  `rememberXxxAuthState` exchanges it for a session through the registered
+  `AuthProviderBackend` (Firebase today, Supabase-ready):
+  `rememberGoogleAuthState` (in `kmpauth-google`), `rememberFacebookAuthState`
+  (in `kmpauth-facebook`), `rememberAppleAuthState`, `rememberGithubAuthState`,
+  `rememberAppleAuthState` (in `kmpauth-apple`),
+  `rememberGithubAuthState`, `rememberMicrosoftAuthState`,
+  `rememberOAuthState(provider)`, `rememberEmailAuthState`,
+  `rememberAnonymousAuthState` and `rememberPhoneAuthState` (in
+  `kmpauth-core`). Every `rememberXxxAuthState` is **backend-generic**: the
+  browser OAuth states drive the new backend `signIn(OAuthWebFlow)`
+  operation (Firebase runs its native web-flow UI on Android/iOS, the
+  hosted-handler loopback on Desktop; Supabase runs supabase-kt's browser
+  flow), and Apple's state exchanges the native iOS credential through the
+  backend's `id_token` grant — carrying the first-authorization full name
+  via the new `AuthCredential.IdToken.displayName` field — with the web
+  flow everywhere else. The same composable works against Firebase or
+  Supabase, whichever is registered. Google/Facebook exchange states moved into their provider
+  modules — SDK isolation is unchanged (no Facebook SDK unless you depend on
+  `kmpauth-facebook`), and `kmpauth-firebase-google`/`-facebook` now carry
+  only the deprecated 2.x containers.
+- **The Firebase backend registers itself automatically** when
+  `kmpauth-firebase` is in the dependencies: `ServiceLoader` discovery
+  on JVM/Android (R8 keep rule ships in the consumer rules) and eager
+  load-time registration on iOS/JS/wasm - no setup call needed.
+  `KMPAuth.registerBackendProvider(backend)` exists for custom backends or
+  overriding the default; an explicit registration always wins.
+- **Every Firebase API is callable from `commonMain`, including on wasm**
+  (#179-adjacent). No GitLive types in signatures: every `onResult` receives
+  `Result<KMPAuthUser>` — non-null; a backend producing no user is a failure
+  with a reason, never a null success. The native
+  `dev.gitlive.firebase.auth.FirebaseUser` stays reachable through
+  `KMPAuthUser.raw`. On wasm (no Firebase SDK target) the backend runs on
+  the REST engine (below); only the browser web flows and phone report
+  failed `Result`s there.
+- **`KMPAuth` is the single client-facing entry point** for everything that
+  isn't a launchable sign-in state: `currentUser()`, `signOut()`,
+  `signIn(credential)`, `signUp(email, password)`, `signInAnonymously()`,
+  `reauthenticate(credential)`, `sendPasswordResetEmail`, email-link sign-in
+  (`sendSignInLinkToEmail` / `isSignInWithEmailLink` / `signInWithEmailLink`),
+  plus `registerBackendProvider(backend)` / `getBackendProvider()` /
+  `requireBackendProvider()`. With no backend registered, `Result`-returning
+  operations fail with a how-to-register message instead of throwing. Link
+  configuration uses `EmailActionCodeSettings` (KMPAuth's own type in
+  `kmpauth-core`) instead of GitLive's `ActionCodeSettings`.
+- On Desktop and JS, the unimplemented Firebase flows (OAuth/GitHub/Apple web
+  flow, Facebook) now report a failed `Result` explaining why instead of
+  silently doing nothing when launched. The same applies to the native
+  `rememberAppleSignInState` (`kmpauth-apple`) on non-Apple targets and to
+  `rememberFacebookSignInState`/`rememberFacebookAuthState` on
+  Desktop/JS/wasm (Meta's SDK is Android/iOS-only), which previously only
+  logged.
+- The deprecated 2.x `*UiContainer` composables are unchanged: they keep their
+  `Result<FirebaseUser?>` callbacks (unwrapping through `KMPAuthUser.raw`) and
+  remain non-wasm.
+
+### Added
+- **Several backends side by side via `LocalKMPAuthBackend`**. The
+  backend-generic auth states (`rememberEmailAuthState`,
+  `rememberAnonymousAuthState`, `rememberGoogleAuthState`,
+  `rememberFacebookAuthState`) read their backend from a composition local
+  defaulting to the registered `KMPAuthBackend` - single-backend apps write
+  nothing, and scoping a subtree to a standalone instance (e.g.
+  `SupabaseAuthBackend(url, apiKey)`) is one `CompositionLocalProvider`
+  wrapper. The sample app shows Firebase and Supabase as parallel sections.
+- **Flat configuration overloads**: `google(serverId = ...)`,
+  `firebase(apiKey = ..., projectId = ..., applicationId = ...)`,
+  `supabase(url = ..., apiKey = ...)` — no wrapper objects needed at the
+  call site (the options-object overloads remain).
+- **Keyed backend registry**: backends register under
+  `AuthProviderBackend.backendId` (`FIREBASE_BACKEND_ID`,
+  `SUPABASE_BACKEND_ID`, custom ids) and several can be registered at once
+  from `KMPAuth.initialize { }`. The first registered backend is the
+  default (with Firebase + Supabase together, Firebase); switch it with
+  `defaultBackendProvider("supabase")` in the DSL or
+  `KMPAuth.setDefaultBackendProvider(id)`, and fetch any backend with
+  `KMPAuth.getBackendProvider(id)` / `requireBackendProvider(id)`. Scoping
+  a compose subtree to a registered backend is
+  `ProvideKMPAuthBackend("supabase") { ... }` — no backend instances held
+  in app code.
+- **Supabase auth backend — `kmpauth-supabase`** (#138). The first
+  non-Firebase `AuthProviderBackend`, over the community
+  [supabase-kt](https://github.com/supabase-community/supabase-kt) SDK, on
+  every target including wasm. Registered explicitly —
+  `KMPAuth.initialize { supabase(SupabaseBackendOptions(url, apiKey)) }`
+  (or pass an existing `SupabaseClient`); there is no config-file
+  auto-registration because a Supabase client cannot exist without the
+  project URL and key. Serves email/password sign-in and sign-up, anonymous
+  sign-in, password reset, magic-link sign-in (`token_hash`, PKCE `code`
+  and implicit-flow links), phone SMS OTP sign-in (on every target),
+  reauthentication (as a fresh sign-in),
+  Google/Apple/Facebook-Limited-Login id-token exchange, id-token
+  identity linking, and **browser OAuth**
+  (`KMPAuth.signIn(AuthCredential.OAuthWebFlow("github.com"))` — GitHub,
+  Azure/Microsoft, GitLab, Discord and every other GoTrue provider;
+  Desktop catches the redirect out of the box via supabase-kt's localhost
+  callback server, Android/iOS use supabase-kt's deep-link setup, web is a
+  full-page redirect with the session restored after reload). Not mapped,
+  failing with a reason: classic Facebook access tokens (Supabase's
+  `id_token` grant is OIDC-only), browser-OAuth identity linking (use
+  `auth.linkIdentity`), and email/password linking (Supabase uses
+  `auth.updateUser`). Consumers add a Ktor client engine per platform, as
+  in any supabase-kt setup.
+- **Desktop (JVM) web-flow sign-in** (#81). `rememberOAuthState`/GitHub/
+  Microsoft/Apple states now work on Desktop: the state serves a one-page
+  site on a loopback port, opens it in the system browser, and the official
+  Firebase JS SDK on that page runs `signInWithPopup` against the project's
+  hosted auth handler (`https://<authDomain>/__/auth/handler`) - the same
+  https redirect target Android uses, so every console-configured provider
+  works, including Apple (which forbids direct localhost redirects). The
+  page hands the Firebase session back to the app; nothing but that single
+  flow is served, and the config is injected as markup-inert JSON.
+- **`firebase(FirebaseBackendOptions(apiKey, projectId, applicationId))` in
+  `KMPAuth.initialize { }`** - Desktop/Web Firebase configuration through
+  the KMPAuth entry point instead of a direct GitLive `Firebase.initialize`
+  call (which still works); no-op on Android/iOS where the SDK reads the
+  bundled config files.
+- **Desktop (JVM) and wasm Firebase auth work** (#204, #179). GitLive's
+  firebase-java-sdk has no auth implementation and GitLive has no wasm
+  target at all, so on those platforms the Firebase backend talks to the
+  Firebase Auth REST API (Identity Toolkit) directly - a shared REST engine
+  with the JDK's built-in HTTP client on Desktop and fetch on wasm, no Ktor
+  (#78). On wasm this serves email/password, anonymous, email link,
+  password reset, reauthentication and id-token exchange (web Google
+  sign-in produces the ID token via One Tap), configured via
+  `firebase(apiKey = ..., projectId = ..., applicationId = ...)`; browser
+  web flows and phone stay unavailable there. Supported on Desktop: email/password sign-in
+  and sign-up, anonymous, email link, password reset, reauthentication, and
+  Google/Facebook/Apple token exchange - `rememberGoogleAuthState` is now
+  fully functional on Desktop (the loopback already produced the ID token).
+  Requires GitLive's `Firebase.initialize(...)` with the web API key at
+  desktop app start; the session is held in memory (no disk persistence
+  yet). Browser-based flows (GitHub/Microsoft/generic OAuth, Apple web
+  flow) and phone remain unavailable on Desktop (#81). The desktop Google
+  loopback already sends and validates OAuth `state` (and a nonce), which
+  also resolves #80.
+- **`KMPAuth.initialize { }` one-stop setup**. Provider modules contribute
+  their configuration as extensions on the scope - `kmpauth-google` adds
+  `google(GoogleAuthCredentials(serverId))` (equivalent to
+  `GoogleAuthProvider.create`, which still works); `logger { }` and
+  `backendProvider(backend)` (custom backends only) are built in.
+- **Email authentication** (#97, #110).
+  `rememberEmailAuthState(email, password, mode, linkAccount, onResult)`
+  signs in or — with `EmailAuthMode.SignUp` — creates the account; field values
+  are read at launch time, so the state is created once and reused as the user
+  types. The flows that don't fit a launchable state are `KMPAuth`
+  operations: `sendPasswordResetEmail`, and passwordless email-link (magic
+  link) sign-in via `sendSignInLinkToEmail` / `isSignInWithEmailLink` /
+  `signInWithEmailLink`.
+- **Phone number sign-in — backend-agnostic** (#111).
+  `rememberPhoneAuthState(phoneNumber, ...)` (in `kmpauth-core`) returns a
+  `PhoneAuthState`: `launch()` sends the SMS, `isCodeSent`/`onCodeSent`
+  signal when to show the code input, `submitCode(code)` completes sign-in and
+  `cancel()` abandons the flow. Served through the new
+  `AuthProviderBackend.signInWithPhone(phoneNumber, verificationUi)`
+  operation (`PhoneVerificationUi` hands the backend the user's code and,
+  where needed, the platform UI handle), so every backend can implement it:
+  - **Firebase**: Android (automatic SMS verification when Play services
+    can; reCAPTCHA/Play Integrity fallback) and iOS. Desktop/web/wasm
+    report a failed `Result` — those flows need a reCAPTCHA verifier KMPAuth
+    does not provide.
+  - **Supabase**: **every target** via plain SMS OTP (enable the Phone
+    provider and an SMS sender in the dashboard).
+  `KMPAuth.signInWithPhone(...)` exposes the same flow outside composables.
+- **Microsoft sign-in** (#173, #95).
+  `rememberMicrosoftAuthState(requestScopes, customParameters,
+  linkAccount, onResult)` — Firebase drives the OAuth web flow, no Microsoft
+  SDK involved. Restrict to one Azure AD tenant via
+  `customParameters = mapOf("tenant" to "...")`.
+- **Anonymous (guest) sign-in**.
+  `rememberAnonymousAuthState(onResult)` creates or resumes a
+  temporary account; upgrade it later by signing in with any auth state
+  using `linkAccount = true`, which keeps the anonymous uid and its data.
+- **Reauthentication** (#167). Firebase requires a recent sign-in before
+  security-sensitive operations (account deletion, password change). The
+  provider-agnostic `KMPAuth.reauthenticate(credential)` accepts
+  any credential — `AuthCredential.EmailPassword`, or a fresh
+  `AuthCredential.IdToken` from rerunning the Google/Apple/Facebook flow.
+  `AuthCredential` gains the `EmailPassword` variant, and the Firebase
+  backend can now also exchange Apple `IdToken` (idToken + rawNonce) and
+  Facebook Limited-Login OIDC credentials directly.
+
+  All of these are served by the registered backend and report failures as
+  `Result` values — including on Desktop (JVM), where the Firebase backend
+  talks to the Firebase Auth REST API (see the #204 entry above). Only phone
+  sign-in stays unavailable on Desktop/web, and on wasm the Firebase backend
+  reports failed `Result`s (no Firebase SDK there).
+
+### Fixed
+- **Web (JS/wasm) Google sign-in returns an ID token** (#146). Google's GIS
+  splits tokens across two flows - the OAuth token client used before only
+  ever returns an access token, so `GoogleUser.idToken` was always empty on
+  web and Firebase/backend exchange was impossible. The web implementations
+  now obtain the ID token via Sign in with Google (`google.accounts.id`,
+  FedCM-enabled) first, filling profile data from the JWT claims, and only
+  run the token flow when an access token is requested (`requestAccessToken`
+  or extra scopes) or the One Tap prompt is suppressed.
+- **Web Google sign-in no longer hangs when the browser blocks the OAuth
+  popup.** GIS reports a blocked or user-closed popup only through its
+  `error_callback`, which was not registered — `launch()` then never
+  resolved and `isInProgress` stayed true. Both web targets now register
+  it and report a failed `Result` naming the cause (allow popups /
+  authorize the origin for the OAuth client).
+- **`filterByAuthorizedAccounts` documentation was inverted** (#117). The
+  KDoc claimed true shows all accounts; actually true limits the chooser to
+  accounts that previously signed in to the app - and when none exists the
+  flow deliberately retries with all accounts so first-time users can sign
+  in, which is why a device with two authorized accounts still shows both.
+
+## [3.0.0-alpha04] — 2026-07-19
+
+### Added
+- **`requestAccessToken` for Google sign-in** (#90, #129). Android's Credential
+  Manager returns an ID token only; an access token requires a separate
+  authorization request with its own consent prompt. That was previously
+  triggered implicitly by passing scopes other than `email`/`profile`, which was
+  undocumented and — because the check compared the scope *list* — meant
+  reordering the same scopes changed the result. There is now an explicit flag:
+
+  ```kotlin
+  val googleSignIn = rememberGoogleSignInState(
+      requestAccessToken = true,
+      onResult = { result -> result.getOrNull()?.accessToken },
+  )
+  ```
+
+  Requesting scopes beyond `email`/`profile` still implies it, and that check now
+  compares sets, so ordering no longer matters. The flag has no effect on iOS,
+  desktop, JS and wasm, which always return an access token.
+- `GoogleUser` is now documented, including the per-platform availability of
+  `accessToken` and `serverAuthCode` — the legacy Android fallback never returns
+  an access token, which is why it appeared to be missing (#129).
+- **Compose resources are packaged again on Android.** `kmpauth-uihelper`'s icons
+  and font never reached consuming apps, so every sign-in button crashed at
+  runtime with
+  `MissingResourceException: Missing resource with path: composeResources/…`.
+  AGP 9's KMP library plugin disables Android resources by default, and Compose
+  Multiplatform resources ship as Android assets, so the modules generated their
+  `composeResources` but published none of them. The convention plugin now sets
+  `androidResources { enable = true }`.
+- **Apple sign-in button logo is the size Apple specifies** (#169). Apple's
+  official logo asset is exported on a 56×56 artboard whose content box is the
+  inner 44×44, but the button rendered the whole artboard — so the export margin
+  ate into the button and the glyph came out at 34% of the button height instead
+  of the ~43% Apple's button spec requires. The artwork is unchanged; only the
+  export margin is removed, so the content box now maps to the button.
+
+## [3.0.0-alpha03] — 2026-07-19
+
+### Changed
+- **Google sign-in now reports why it failed** (#102, #103, #67). Every failure
+  path used to return `null` and log the reason, so apps could not tell a
+  cancelled sign-in from a misconfigured client, a missing credential or a
+  token parsing error — and neither could their users' bug reports.
+  `GoogleAuthUiProvider.signIn(...)` and `rememberGoogleSignInState`'s
+  `onResult` now use `Result<GoogleUser>`, carrying the underlying exception
+  (`GetCredentialException`, `NoCredentialException`, `ApiException`,
+  `GoogleIdTokenParsingException`, …). This also makes Google consistent with
+  `rememberFacebookSignInState` and `rememberAppleSignInState`, which already
+  used `Result<T>`.
+
+  ```kotlin
+  val googleSignIn = rememberGoogleSignInState(onResult = { result ->
+      result.onSuccess { user -> /* user.idToken */ }
+            .onFailure { error -> /* show or report the reason */ }
+  })
+  ```
+
+  The deprecated `GoogleButtonUiContainer` keeps its 2.x
+  `(GoogleUser?) -> Unit` callback and is unaffected;
+  `rememberFirebaseGoogleSignInState` is unchanged but now propagates the real
+  Google failure instead of a generic "id token is null".
+
+### Fixed
+- **Google Sign-In now works in minified release builds** (#144). `kmpauth-google`
+  ships consumer R8/ProGuard rules, so apps no longer need to add keep rules of
+  their own. Credential Manager resolves its Play services provider
+  reflectively; R8 stripped it in release builds, which is why sign-in worked in
+  debug and silently did nothing once minified. Any module can now ship rules by
+  placing a `consumer-rules.pro` next to its build file — the convention plugin
+  publishes it with the artifact.
+- **Google sign-in composables no longer crash IDE previews** (#162).
+  `rememberGoogleSignInState` and `rememberFirebaseGoogleSignInState` resolved
+  the provider during composition via `GoogleAuthProvider.get()`, which throws
+  `IllegalArgumentException` when `create()` has not been called — and a
+  `@Preview` never runs application startup. Both now return an inert
+  `SignInState` when `LocalInspectionMode` is true, so previews render and
+  `launch()` is a no-op. The deprecated `GoogleButtonUiContainer` /
+  `GoogleButtonUiContainerFirebase` are thin wrappers over these states, so
+  they are fixed too.
+
+## [3.0.0-alpha02] — 2026-07-19
+
+### Fixed
+- **KMPAuth no longer depends on Ktor at all.** Building on the client removal
+  below, the desktop Google OAuth loopback moved from `ktor-server-netty` to the
+  JDK's built-in `com.sun.net.httpserver`, so **Ktor and Netty are gone from
+  desktop/JVM consumers too** — the same version-clash risk that hit Android in
+  #78 applied to desktop apps using their own Ktor. Behavior is unchanged
+  (same routes, same fixed-port binding and error handling).
+  **Desktop packaging note:** `com.sun.net.httpserver` lives in the
+  `jdk.httpserver` JDK module; apps packaged with jpackage/jlink must declare
+  `modules("jdk.httpserver")` or sign-in fails at runtime.
+- **KMPAuth no longer drags a Ktor client onto consumers** (#78). `kmpauth-core`
+  depended on the full Ktor client stack — `ktor-client-core`,
+  `ktor-client-content-negotiation`, `ktor-client-logging`,
+  `ktor-serialization-kotlinx-json` and the OkHttp/Darwin/JS engines — to build
+  an `HttpClient` that nothing in the library ever used. Apps on a different
+  Ktor version were pushed onto KMPAuth's, producing crashes such as
+  `NoClassDefFoundError: io/ktor/client/plugins/contentnegotiation/ContentNegotiation`.
+  The dead `HttpClientFactory`/`ServiceLocator` and every Ktor client
+  dependency are removed, so **KMPAuth now contributes no Ktor to Android, iOS,
+  JS or wasm consumers at all**; Ktor remains only as `ktor-server-*` inside
+  `kmpauth-google`'s JVM source set, which powers the desktop OAuth loopback.
+
+### Changed
+- Dependency updates: Gradle 9.4.1 → **9.6.1**, Android Gradle Plugin 9.2.0 →
+  **9.2.1** (9.3.0 was tried but needs a newer Android Studio than the project
+  targets), `play-services-auth` 21.4.0 → **21.6.0**,
+  `google-services` 4.4.4 → **4.5.0**, `java-jwt` 4.5.2 → **4.6.0**. Kotlin,
+  Compose Multiplatform, Ktor, GitLive Firebase, Firebase BoM, the Facebook SDK,
+  `androidx.credentials` and `googleid` were already on their latest stable
+  releases.
+
+### Added
+- **`kmpauth-apple`: native Sign in with Apple without Firebase** (#60). New
+  `rememberAppleSignInState(...)` returns an `AppleUser` carrying Apple's
+  identity token (JWT), the raw nonce, and — on the user's first authorization
+  only — `email`/`fullName`. The token is verifiable by any backend against
+  Apple's public keys, so no client secret is needed on the client.
+  **Apple platforms only:** on Android, JVM, JS and wasmJs the state is a
+  logged no-op, because Apple's web OAuth flow returns an authorization code
+  that must be exchanged with a client secret server-side; use
+  `rememberFirebaseAppleSignInState` there. `kmpauth-firebase-core` now
+  delegates its iOS Apple authorization to this module instead of carrying its
+  own copy of the `ASAuthorization` flow.
+  **Breaking:** `AppleSignInRequestScope` moved from
+  `com.mmk.kmpauth.firebase.apple` to `com.mmk.kmpauth.apple` so both flows
+  share one type (matching how `kmpauth-firebase-facebook` reuses
+  `FacebookSignInRequestScope` from `kmpauth-facebook`). Update the import;
+  nothing else changes. See MIGRATION section 9.
+
+### Changed
+- **Facebook on Android: classic login no longer requires `onActivityResult`.**
+  With `FacebookLoginTracking.Enabled`, KMPAuth now launches Facebook Login
+  through the SDK's `logInWithReadPermissions(ActivityResultRegistryOwner,
+  CallbackManager, permissions)` overload (the pattern used by Facebook's own
+  Compose sample), so apps no longer need to override `onActivityResult` or
+  call `KMPAuth.handleFacebookActivityResult` for that mode.
+  `FacebookLoginTracking.Limited` (the default) still needs it: Limited Login
+  requires a nonce, which the Facebook SDK only accepts via
+  `LoginConfiguration`, and that API has no `ActivityResultRegistryOwner`
+  overload — the SDK exposes one only as a `private` function. Calling
+  `handleFacebookActivityResult` when it is not needed remains harmless (#199).
+
+## [3.0.0-alpha01] — 2026-07-08
+
+See [MIGRATION.md](MIGRATION.md) for the step-by-step 2.x → 3.0 upgrade guide.
+
+### Added
+- **`SignInState` API.** New `rememberXxxSignInState(...)` composables
+  (`rememberGoogleSignInState`, `rememberFacebookSignInState`,
+  `rememberFirebaseGoogleSignInState`, `rememberFirebaseAppleSignInState`,
+  `rememberFirebaseGithubSignInState`, `rememberFirebaseOAuthSignInState`,
+  `rememberFirebaseFacebookSignInState`) return a `SignInState` handle with
+  `launch()` and an observable `isInProgress`. Wire `launch()` to any
+  clickable; parameters such as `linkAccount` are read at launch time, so
+  toggling them via recomposition works; double-taps cannot start two flows.
+- **Granular Firebase artifacts.** `kmpauth-firebase` is split into
+  `kmpauth-firebase-core` (FirebaseAuthBackend + Apple/GitHub/OAuth
+  containers) and `kmpauth-firebase-google` (Google + Firebase container).
+  The `kmpauth-firebase` artifact remains published as an aggregator of
+  both (its module lives under `deprecated/` in the repo), so existing
+  dependency declarations keep working; depend on the granular artifacts
+  to avoid pulling the Google Sign-In stack into apps that don't use it.
+- **wasmJs on every module.** `kmpauth-firebase` and
+  `kmpauth-firebase-facebook` now compile for wasmJs too, so a wasm-targeting
+  app can keep them in `commonMain` dependencies. Their Firebase API surface
+  exists on android/ios/jvm/js only (GitLive has no wasm target); on wasm the
+  modules resolve as empty artifacts.
+- **Pluggable auth backends.** New `com.mmk.kmpauth.core.auth` API in
+  `kmpauth-core`: `AuthProviderBackend` (sign-in/sign-out/current-user over
+  a backend-agnostic `AuthCredential` + `KMPAuthUser` model) and the
+  `KMPAuthBackend` registry. Firebase remains the default implementation
+  (registered automatically by `kmpauth-firebase`); a Supabase backend can
+  plug in via `KMPAuthBackend.register(...)` without any changes to UI code.
+- Characterization test suite locking the public 2.x behavior (DI lifecycle,
+  `GoogleAuthProvider` entry points, sign-in overload defaults, public model shapes).
+- **`FacebookLoginTracking` option.** `rememberFacebookSignInState`,
+  `rememberFirebaseFacebookSignInState` and the Facebook containers accept a
+  `loginTracking` parameter (default `Limited`). `Limited` uses Facebook's
+  privacy-friendly Limited Login (OIDC JWT + nonce; no App Tracking
+  Transparency prompt on iOS); `Enabled` uses classic login and returns a
+  Graph-API access token. The mode now determines the token type consistently
+  on **both** Android and iOS, and the Firebase exchange picks the matching
+  credential (`OAuthProvider` for Limited, `FacebookAuthProvider` for Enabled)
+  (#170).
+
+### Changed
+- **Facebook iOS/Android token consistency.** `FacebookUser.accessToken` now
+  holds the same token type on both platforms for a given `loginTracking`
+  mode. Because the new default is `FacebookLoginTracking.Limited`, **Android
+  now returns an OIDC JWT + nonce by default instead of a Graph-API access
+  token** (iOS was already Limited). Apps that send `FacebookUser.accessToken`
+  to a backend expecting a Graph-API access token must pass
+  `loginTracking = FacebookLoginTracking.Enabled` (#170).
+- Sample restructured into `sampleApp/shared` plus per-platform entry
+  modules (`androidApp`, `desktopApp`, `webApp`, `iosApp`) per the AGP 9
+  layout; the iOS framework is now named `shared`. A web sample (js) is new.
+- Build toolchain: Android Gradle Plugin 9.2 (`com.android.kotlin.multiplatform.library`),
+  Gradle 9.4.1. **JVM target raised from 1.8 to 17** for the android and jvm
+  artifacts — consumers need a Java 17+ runtime for desktop/JVM apps.
+- Android artifacts are now published as a **single variant**; the separate
+  `debug` variant is no longer published. Debug builds resolve the release
+  variant automatically.
+- Android host (unit) test task is now `testAndroid` (was
+  `testDebugUnitTest`/`testReleaseUnitTest`).
+- Kotlin 2.2.21 → **2.4.0**; Compose Multiplatform plugin 1.9.3 → 1.11.1; Ktor 3.5.1,
+  kotlinx-serialization 1.11.0, kotlinx-coroutines 1.11.0,
+  Facebook Android SDK 18.3.0, androidx.credentials 1.6.0, googleid 1.2.0,
+  Dokka 2.2.0, vanniktech maven-publish 0.37.0, Firebase Android BoM 34.15.0.
+- Android `compileSdk` raised to 37 (required by androidx.core 1.19);
+  `targetSdk`/`minSdk` unchanged (36/24).
+- **iOS dependencies now integrate via Swift Package Manager instead of
+  CocoaPods.** The `kmpauth_*.podspec` files are no longer published; add
+  GoogleSignIn-iOS / firebase-ios-sdk / facebook-ios-sdk as SPM packages in
+  your Xcode project instead (see MIGRATION.md). iOS minimum deployment
+  target raised from 12.0 to **16.0**; building the library requires
+  Xcode 16.4+.
+
+### Deprecated
+- All `*UiContainer` composables (`GoogleButtonUiContainer`,
+  `GoogleButtonUiContainerFirebase`, `AppleButtonUiContainer`,
+  `GithubButtonUiContainer`, `OAuthContainer`, `FacebookButtonUiContainer`,
+  `FacebookButtonUiContainerFirebase`) in favor of the `SignInState` API.
+  They keep working as thin wrappers over the new implementation and are
+  slated for removal in 4.0.
+- The parameter-less legacy overloads of `GoogleButtonUiContainerFirebase`,
+  `AppleButtonUiContainer`, `GithubButtonUiContainer` and `OAuthContainer`
+  (deprecated since 2.x in favor of the `linkAccount`/
+  `filterByAuthorizedAccounts` overloads) remain deprecated with warnings
+  and are slated for removal in 4.0.
+
+### Fixed
+- **Desktop (JVM) Google Sign-In redirect URI.** The loopback server used a
+  random port that never matched the `redirect_uri` sent to Google, so the
+  callback failed (`redirect_uri_mismatch`, blank callback page, or
+  `id_token=null` on a second attempt). The redirect is now fixed and
+  configurable via `GoogleAuthCredentials(serverId, redirectUri = "http://localhost:8080/callback")` —
+  pass the exact **Authorized redirect URI** registered for your OAuth client
+  in the Google Cloud console (any `http` loopback host/port/path;
+  defaults to `http://localhost:8080/callback`). The callback server binds the
+  URI's port and serves its path; when the port is already in use the failure
+  is logged clearly instead of silently falling back to a random port. The
+  browser now opens only after the server is listening (#172, #177, #181).
+
+### Removed
+- **Koin.** KMPAuth no longer uses or ships Koin. The `@KMPAuthInternalApi`
+  DI types `KMPKoinComponent` and `LibDependencyInitializer` are deleted and
+  the `io.insert-koin:koin-core` dependency is gone from every module.
+  Public entry points (`GoogleAuthProvider.create`, all `*UiContainer`
+  composables) are unchanged — internal wiring is now plain constructor
+  injection. Only code that referenced those two internal-API types directly
+  is affected (see MIGRATION.md).
+- **`iosX64` target.** Dropped from all modules (Compose Multiplatform 1.11+
+  no longer ships iosX64 artifacts; Intel-Mac simulators can use Rosetta
+  with the arm64 simulator target). It was briefly re-added in 2.5.0-alpha01.
+- Stale `api/android/*.api` compatibility dumps (no longer generated or
+  validated under AGP 9's KMP library plugin; the klib and JVM dumps remain
+  the source of truth).
+
+## [2.5.0-alpha01] — 2026-06
+
+### Added
+- Dedicated Facebook auth modules: `kmpauth-facebook` (SDK-only) and
+  `kmpauth-firebase-facebook` (Facebook + Firebase) (#163).
+- `iosX64` target restored (#164).
+
+### Fixed
+- Google JVM sign-in uses a dynamically found port for the OAuth redirect URI (#165).
+
+## [2.4.0] — 2025
+
+### Added
+- `setAutoSelectEnabled(isAutoSelectEnabled)` on Google sign-in (#126).
+- Non-legacy Google sign-in with custom scopes on Android (#132).
+
+### Fixed
+- Icon and text alignment in `FacebookSignInButton` (#142).
+- Compatibility with Firebase Android BoM 34.0.0 (#141).
+
+_Older releases: see [GitHub releases](https://github.com/mirzemehdi/KMPAuth/releases)._
