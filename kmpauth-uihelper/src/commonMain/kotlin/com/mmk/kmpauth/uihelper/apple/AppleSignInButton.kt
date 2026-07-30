@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mmk.kmpauth.uihelper.SignInButtonIconAlignment
 import com.mmk.kmpauth.uihelper.theme.Fonts
 import io.github.mirzemehdi.kmpauth_uihelper.generated.resources.Res
 import io.github.mirzemehdi.kmpauth_uihelper.generated.resources.ic_apple_logo_black
@@ -74,6 +76,9 @@ public fun AppleSignInButtonIconOnly(
  * @param mode [AppleButtonMode]
  * @param text Button's text. As per guideline this text should be "Sign in with Apple",
  * "Sign up with Apple", or "Continue with Apple".
+ * @param iconAlignment [SignInButtonIconAlignment.Center] (default) centers logo and
+ * title as one group; [SignInButtonIconAlignment.Start] pins the logo at the leading
+ * edge with the title centered on the button axis, so stacked sign-in buttons stay aligned.
  */
 @Composable
 public fun AppleSignInButton(
@@ -82,6 +87,7 @@ public fun AppleSignInButton(
     text: String = "Sign in with Apple",
     fontFamily: FontFamily = Fonts.robotoFontFamily,
     shape: Shape = ButtonDefaults.shape,
+    iconAlignment: SignInButtonIconAlignment = SignInButtonIconAlignment.Center,
     onClick: () -> Unit,
 ) {
 
@@ -98,32 +104,40 @@ public fun AppleSignInButton(
         border = borderStroke,
     ) {
         BoxWithConstraints {
+            // Apple's button spec: logo square side = button height (glyph
+            // margins are built into the official asset), title = 43% of
+            // the button height.
             val buttonHeight = maxHeight.orDefaultButtonHeight()
-            // Apple's left-aligned button layout: the logo square (side =
-            // button height, glyph margins built into the asset) sits at the
-            // leading edge and the title (43% of the button height) is
-            // centered on the button axis. Icon and title positions are
-            // independent of each other, so a stack of full-width sign-in
-            // buttons keeps every logo and every title on the same axis.
-            // The start padding compensates the asset's internal margin
-            // ((1 - 0.43) / 2 of the height) so the visible glyph starts at
-            // the same offset as the other providers' 16dp-padded icons.
-            val glyphMargin = buttonHeight * ((1f - 0.43f) / 2)
             Box(modifier = Modifier.fillMaxSize()) {
-                AppleIcon(
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .padding(start = (16.dp - glyphMargin).coerceAtLeast(0.dp))
-                        .size(buttonHeight),
-                    mode = mode,
-                )
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = text,
-                    fontSize = (buttonHeight.value * 0.43).sp,
-                    maxLines = 1,
-                    fontFamily = fontFamily,
-                )
+                when (iconAlignment) {
+                    SignInButtonIconAlignment.Start -> {
+                        // Start padding compensates the asset's internal glyph
+                        // margin so the visible glyph starts where the other
+                        // providers' 16dp-padded icons do.
+                        val glyphMargin = buttonHeight * ((1f - 0.43f) / 2)
+                        AppleIcon(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(start = (16.dp - glyphMargin).coerceAtLeast(0.dp))
+                                .size(buttonHeight),
+                            mode = mode,
+                        )
+                        AppleText(
+                            text = text,
+                            buttonHeight = buttonHeight,
+                            fontFamily = fontFamily,
+                            modifier = Modifier.align(Alignment.Center),
+                        )
+                    }
+
+                    SignInButtonIconAlignment.Center -> Row(
+                        modifier = Modifier.align(Alignment.Center),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        AppleIcon(modifier = Modifier.size(buttonHeight), mode = mode)
+                        AppleText(text = text, buttonHeight = buttonHeight, fontFamily = fontFamily)
+                    }
+                }
             }
         }
     }
@@ -131,6 +145,22 @@ public fun AppleSignInButton(
 
 /** Apple's default button height, used when the incoming constraints are unbounded. */
 private fun Dp.orDefaultButtonHeight(): Dp = if (this == Dp.Infinity) 44.dp else this
+
+@Composable
+private fun AppleText(
+    text: String,
+    buttonHeight: Dp,
+    fontFamily: FontFamily,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        fontSize = (buttonHeight.value * 0.43).sp,
+        maxLines = 1,
+        fontFamily = fontFamily,
+    )
+}
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable

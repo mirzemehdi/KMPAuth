@@ -54,6 +54,7 @@ import com.mmk.kmpauth.google.rememberGoogleAuthState
 import com.mmk.kmpauth.core.KMPAuth
 import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.google.rememberGoogleSignInState
+import com.mmk.kmpauth.uihelper.SignInButtonIconAlignment
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
 import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButton
@@ -464,19 +465,26 @@ private fun PhoneAuthBlock(
 @Composable
 private fun UiHelperSection(report: (String) -> (Result<KMPAuthUser>) -> Unit) {
     Section(title = "UiHelper buttons") {
+        // Start alignment keeps the icons of a stacked column on one axis;
+        // the default (Center) centers icon and title as one group.
         val googleAuth = rememberGoogleAuthState(onResult = report("Firebase/Google"))
         GoogleSignInButton(
             modifier = Modifier.fillMaxWidth().height(44.dp),
             fontSize = 19.sp,
+            iconAlignment = SignInButtonIconAlignment.Start,
         ) { googleAuth.launch() }
 
         val appleAuth = rememberAppleAuthState(onResult = report("Firebase/Apple"))
-        AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { appleAuth.launch() }
+        AppleSignInButton(
+            modifier = Modifier.fillMaxWidth().height(44.dp),
+            iconAlignment = SignInButtonIconAlignment.Start,
+        ) { appleAuth.launch() }
 
         val facebookAuth = rememberFacebookAuthState(onResult = report("Firebase/Facebook"))
         FacebookSignInButton(
             modifier = Modifier.fillMaxWidth().height(44.dp),
             fontSize = 19.sp,
+            iconAlignment = SignInButtonIconAlignment.Start,
         ) { facebookAuth.launch() }
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)) {

@@ -7,19 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+### Added
 - UiHelper sign-in buttons (`GoogleSignInButton`, `AppleSignInButton`,
-  `FacebookSignInButton`) share one layout: provider icon at the leading
-  edge, title centered on the button axis — so a stacked column of
-  full-width buttons keeps every icon and every title aligned. Previously
-  each button centered icon+title as a group (icon position then depends
-  on the title width), and `AppleSignInButton` additionally padded only
-  the end of the title by 8% of the button width (a misread of Apple's
-  symmetric side-margin rule), sitting visibly left of center on wide
-  buttons. The Apple title still follows Apple's spec (43% of button
-  height, logo square sized to the button height, 140x30 minimum), and
-  the `onGloballyPositioned` size-feedback loop and -1dp text nudge are
-  gone.
+  `FacebookSignInButton`) take an `iconAlignment` parameter:
+  `SignInButtonIconAlignment.Center` (default) centers icon and title as
+  one group; `SignInButtonIconAlignment.Start` pins the icon at the
+  leading edge with the title centered on the button axis, so a stacked
+  column of full-width buttons keeps every provider icon and every title
+  aligned.
+
+### Fixed
+- `AppleSignInButton` is symmetric at any width: it padded only the end
+  of the title by 8% of the button width (a misread of Apple's symmetric
+  side-margin rule), sitting visibly left of center on wide buttons. The
+  title still follows Apple's spec (43% of button height, logo square
+  sized to the button height, 140x30 minimum), and the
+  `onGloballyPositioned` size-feedback loop and -1dp text nudge are gone.
 
 ### Changed
 - Sample app launch buttons disable and show a progress spinner while their

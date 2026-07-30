@@ -1,3 +1,11 @@
+public final class com/mmk/kmpauth/uihelper/SignInButtonIconAlignment : java/lang/Enum {
+	public static final field Center Lcom/mmk/kmpauth/uihelper/SignInButtonIconAlignment;
+	public static final field Start Lcom/mmk/kmpauth/uihelper/SignInButtonIconAlignment;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mmk/kmpauth/uihelper/SignInButtonIconAlignment;
+	public static fun values ()[Lcom/mmk/kmpauth/uihelper/SignInButtonIconAlignment;
+}
+
 public abstract interface class com/mmk/kmpauth/uihelper/apple/AppleButtonMode {
 }
 
@@ -26,7 +34,7 @@ public final class com/mmk/kmpauth/uihelper/apple/AppleButtonMode$WhiteWithOutli
 }
 
 public final class com/mmk/kmpauth/uihelper/apple/AppleSignInButtonKt {
-	public static final fun AppleSignInButton (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun AppleSignInButton (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/graphics/Shape;Lcom/mmk/kmpauth/uihelper/SignInButtonIconAlignment;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 	public static final fun AppleSignInButtonIconOnly (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/apple/AppleButtonMode;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 }
 
@@ -50,7 +58,7 @@ public final class com/mmk/kmpauth/uihelper/facebook/FacebookButtonMode$White : 
 }
 
 public final class com/mmk/kmpauth/uihelper/facebook/FacebookSignInButtonKt {
-	public static final fun FacebookSignInButton-22lrwWk (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/facebook/FacebookButtonMode;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/graphics/Shape;JLkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun FacebookSignInButton-n1tc1qA (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/facebook/FacebookButtonMode;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/graphics/Shape;JLcom/mmk/kmpauth/uihelper/SignInButtonIconAlignment;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 	public static final fun FacebookSignInButtonIconOnly (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/facebook/FacebookButtonMode;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 }
 
@@ -88,7 +96,7 @@ public final class com/mmk/kmpauth/uihelper/google/GoogleButtonMode$Neutral : co
 }
 
 public final class com/mmk/kmpauth/uihelper/google/GoogleSignInButtonKt {
-	public static final fun GoogleSignInButton-1-gIjbk (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode;Ljava/lang/String;Landroidx/compose/ui/graphics/Shape;JLkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun GoogleSignInButton-eTAvqXw (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode;Ljava/lang/String;Landroidx/compose/ui/graphics/Shape;JLcom/mmk/kmpauth/uihelper/SignInButtonIconAlignment;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 	public static final fun GoogleSignInButtonIconOnly (Landroidx/compose/ui/Modifier;Lcom/mmk/kmpauth/uihelper/google/GoogleButtonMode;Landroidx/compose/ui/graphics/Shape;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 }
 
