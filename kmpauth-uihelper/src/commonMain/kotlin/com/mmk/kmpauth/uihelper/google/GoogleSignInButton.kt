@@ -104,10 +104,12 @@ public fun GoogleSignInButton(
         Box(modifier = Modifier.fillMaxSize()) {
             when (iconAlignment) {
                 SignInButtonIconAlignment.Start -> {
+                    // Icon centered at horizontalPadding + 12dp, the shared
+                    // axis all providers' Start-aligned icons sit on.
                     GoogleIcon(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
-                            .padding(start = horizontalPadding)
+                            .padding(start = horizontalPadding + 2.dp)
                             .size(20.dp),
                     )
                     GoogleText(text = text, fontSize = fontSize, modifier = Modifier.align(Alignment.Center))

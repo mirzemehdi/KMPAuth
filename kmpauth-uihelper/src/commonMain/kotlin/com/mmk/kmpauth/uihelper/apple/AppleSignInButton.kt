@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -24,6 +25,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.di.isAndroidPlatform
 import com.mmk.kmpauth.uihelper.SignInButtonIconAlignment
 import com.mmk.kmpauth.uihelper.theme.Fonts
 import io.github.mirzemehdi.kmpauth_uihelper.generated.resources.Res
@@ -80,6 +83,7 @@ public fun AppleSignInButtonIconOnly(
  * title as one group; [SignInButtonIconAlignment.Start] pins the logo at the leading
  * edge with the title centered on the button axis, so stacked sign-in buttons stay aligned.
  */
+@OptIn(KMPAuthInternalApi::class)
 @Composable
 public fun AppleSignInButton(
     modifier: Modifier = Modifier.height(44.dp),
@@ -111,14 +115,15 @@ public fun AppleSignInButton(
             Box(modifier = Modifier.fillMaxSize()) {
                 when (iconAlignment) {
                     SignInButtonIconAlignment.Start -> {
-                        // Start padding compensates the asset's internal glyph
-                        // margin so the visible glyph starts where the other
-                        // providers' 16dp-padded icons do.
-                        val glyphMargin = buttonHeight * ((1f - 0.43f) / 2)
+                        // Logo centered at horizontalPadding + 12dp, the
+                        // shared axis all providers' Start-aligned icons sit
+                        // on; the logo square is buttonHeight wide, so its
+                        // center sits at padding + buttonHeight / 2.
+                        val iconCenter = (if (isAndroidPlatform()) 12.dp else 16.dp) + 12.dp
                         AppleIcon(
                             modifier = Modifier
                                 .align(Alignment.CenterStart)
-                                .padding(start = (16.dp - glyphMargin).coerceAtLeast(0.dp))
+                                .padding(start = (iconCenter - buttonHeight / 2).coerceAtLeast(0.dp))
                                 .size(buttonHeight),
                             mode = mode,
                         )
@@ -130,12 +135,22 @@ public fun AppleSignInButton(
                         )
                     }
 
-                    SignInButtonIconAlignment.Center -> Row(
-                        modifier = Modifier.align(Alignment.Center),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        AppleIcon(modifier = Modifier.size(buttonHeight), mode = mode)
-                        AppleText(text = text, buttonHeight = buttonHeight, fontFamily = fontFamily)
+                    // The logo square carries an invisible leading margin
+                    // (glyph centered in a height-sized square) while the
+                    // text edge is flush, so the group's geometric center
+                    // sits right of its optical center by half that margin -
+                    // the offset compensates.
+                    SignInButtonIconAlignment.Center -> {
+                        val glyphLeadingMargin = buttonHeight * ((1f - APPLE_GLYPH_WIDTH_FRACTION) / 2)
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .offset(x = -glyphLeadingMargin / 2),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            AppleIcon(modifier = Modifier.size(buttonHeight), mode = mode)
+                            AppleText(text = text, buttonHeight = buttonHeight, fontFamily = fontFamily)
+                        }
                     }
                 }
             }
@@ -145,6 +160,9 @@ public fun AppleSignInButton(
 
 /** Apple's default button height, used when the incoming constraints are unbounded. */
 private fun Dp.orDefaultButtonHeight(): Dp = if (this == Dp.Infinity) 44.dp else this
+
+/** Width of the visible Apple glyph as a fraction of the square logo asset. */
+private const val APPLE_GLYPH_WIDTH_FRACTION: Float = 15f / 44f
 
 @Composable
 private fun AppleText(

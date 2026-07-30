@@ -465,22 +465,33 @@ private fun PhoneAuthBlock(
 @Composable
 private fun UiHelperSection(report: (String) -> (Result<KMPAuthUser>) -> Unit) {
     Section(title = "UiHelper buttons") {
-        // Start alignment keeps the icons of a stacked column on one axis;
-        // the default (Center) centers icon and title as one group.
         val googleAuth = rememberGoogleAuthState(onResult = report("Firebase/Google"))
+        val appleAuth = rememberAppleAuthState(onResult = report("Firebase/Apple"))
+        val facebookAuth = rememberFacebookAuthState(onResult = report("Firebase/Facebook"))
+
+        Text("iconAlignment = Center (default)", style = MaterialTheme.typography.bodySmall)
+        GoogleSignInButton(
+            modifier = Modifier.fillMaxWidth().height(44.dp),
+            fontSize = 19.sp,
+        ) { googleAuth.launch() }
+        AppleSignInButton(
+            modifier = Modifier.fillMaxWidth().height(44.dp),
+        ) { appleAuth.launch() }
+        FacebookSignInButton(
+            modifier = Modifier.fillMaxWidth().height(44.dp),
+            fontSize = 19.sp,
+        ) { facebookAuth.launch() }
+
+        Text("iconAlignment = Start (stacked icons align)", style = MaterialTheme.typography.bodySmall)
         GoogleSignInButton(
             modifier = Modifier.fillMaxWidth().height(44.dp),
             fontSize = 19.sp,
             iconAlignment = SignInButtonIconAlignment.Start,
         ) { googleAuth.launch() }
-
-        val appleAuth = rememberAppleAuthState(onResult = report("Firebase/Apple"))
         AppleSignInButton(
             modifier = Modifier.fillMaxWidth().height(44.dp),
             iconAlignment = SignInButtonIconAlignment.Start,
         ) { appleAuth.launch() }
-
-        val facebookAuth = rememberFacebookAuthState(onResult = report("Firebase/Facebook"))
         FacebookSignInButton(
             modifier = Modifier.fillMaxWidth().height(44.dp),
             fontSize = 19.sp,
