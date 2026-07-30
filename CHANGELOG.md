@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Typed account-collision detection**: linking or signing up with a
+  credential whose identity already belongs to another account now fails
+  with `KMPAuthUserCollisionException` (kmpauth-core) on every backend
+  and platform, with a guaranteed non-empty message — detect the
+  guest-upgrade collision with one `is`-check instead of matching
+  backend-specific exception types or (sometimes empty on iOS) error
+  messages. Firebase maps the SDK's `FirebaseAuthUserCollisionException`
+  and the REST engine's `EMAIL_EXISTS`/`FEDERATED_USER_ID_ALREADY_LINKED`/
+  `CREDENTIAL_ALREADY_IN_USE`/`ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL`
+  codes; Supabase maps GoTrue's `email_exists`/`phone_exists`/
+  `user_already_exists`/`identity_already_exists`. The original backend
+  exception stays available as `cause`.
 - **Account deletion**: `KMPAuth.deleteAccount()` (and
   `AuthProviderBackend.deleteAccount()`, default-unsupported for custom
   backends). Firebase deletes the current user on every target (GitLive

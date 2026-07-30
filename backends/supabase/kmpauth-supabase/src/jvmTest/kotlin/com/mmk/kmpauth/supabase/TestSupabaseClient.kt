@@ -61,3 +61,9 @@ internal fun MockRequestHandleScope.jsonResponse(content: String) = respond(
     status = HttpStatusCode.OK,
     headers = headersOf(HttpHeaders.ContentType, "application/json"),
 )
+
+internal fun MockRequestHandleScope.errorResponse(content: String, status: HttpStatusCode) = respond(
+    content = content,
+    status = status,
+    headers = headersOf(HttpHeaders.ContentType, "application/json"),
+)

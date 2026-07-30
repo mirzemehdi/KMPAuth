@@ -6,11 +6,14 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.runCatchingCancellable
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.exception.AuthErrorCode
+import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.Apple
 import io.github.jan.supabase.auth.providers.Facebook
 import io.github.jan.supabase.auth.providers.Google
@@ -135,7 +138,7 @@ public class SupabaseAuthBackend(
                 awaitOAuthSession(previousAccessToken)
             }
         }
-    }
+    }.mappingCollision()
 
     /**
      * Waits for the browser OAuth round-trip to produce a session. On
@@ -200,7 +203,7 @@ public class SupabaseAuthBackend(
             } ?: supabaseClient.auth.currentUserOrNull()
             user?.let(::SupabaseKMPAuthUser)
                 ?: throw IllegalStateException("Supabase returned no user for the sign-up")
-        }
+        }.mappingCollision()
 
     /** Requires anonymous sign-ins to be enabled on the Supabase project. */
     override suspend fun signInAnonymously(): Result<KMPAuthUser> = runCatchingCancellable {
@@ -362,6 +365,31 @@ public class SupabaseAuthBackend(
     private fun requireCurrentUser(): KMPAuthUser =
         supabaseClient.auth.currentUserOrNull()?.let(::SupabaseKMPAuthUser)
             ?: throw IllegalStateException("Supabase returned no user for the signed-in session")
+
+    /**
+     * Surfaces GoTrue already-exists errors as the backend-agnostic
+     * [KMPAuthUserCollisionException], matching the Firebase backend.
+     */
+    private fun <T> Result<T>.mappingCollision(): Result<T> = fold(
+        onSuccess = { this },
+        onFailure = { error ->
+            val isCollision = error is AuthRestException && error.errorCode in setOf(
+                AuthErrorCode.EmailExists,
+                AuthErrorCode.PhoneExists,
+                AuthErrorCode.UserAlreadyExists,
+                AuthErrorCode.IdentityAlreadyExists,
+            )
+            if (isCollision) {
+                Result.failure(
+                    KMPAuthUserCollisionException(
+                        message = error.message?.takeIf { it.isNotBlank() }
+                            ?: "This credential is already associated with a different user account.",
+                        cause = error,
+                    )
+                )
+            } else this
+        },
+    )
 
     private companion object {
         /** Upper bound for the browser OAuth round-trip. */

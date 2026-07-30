@@ -8,6 +8,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.core.runCatchingCancellable
@@ -83,6 +84,15 @@ internal class FirebaseRestAuthEngine(
 ) : AuthProviderBackend {
 
     private val json = Json { ignoreUnknownKeys = true }
+
+    private companion object {
+        val COLLISION_ERROR_CODES = listOf(
+            "EMAIL_EXISTS",
+            "FEDERATED_USER_ID_ALREADY_LINKED",
+            "CREDENTIAL_ALREADY_IN_USE",
+            "ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL",
+        )
+    }
 
     @Volatile
     private var session: FirebaseRestUser? = null
@@ -376,6 +386,12 @@ internal class FirebaseRestAuthEngine(
         response["error"]?.jsonObject?.let { error ->
             val message = error["message"]?.jsonPrimitive?.content ?: "UNKNOWN_ERROR"
             currentLogger.log("Firebase REST auth error: $message")
+            // Codes the Identity Toolkit API reports when the credential or
+            // email already belongs to a different existing account.
+            val isCollision = COLLISION_ERROR_CODES.any { message.startsWith(it) }
+            if (isCollision) {
+                throw KMPAuthUserCollisionException("Firebase auth failed: $message")
+            }
             throw IllegalStateException("Firebase auth failed: $message")
         }
         return response

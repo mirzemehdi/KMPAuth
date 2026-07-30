@@ -3,11 +3,13 @@ package com.mmk.kmpauth.firebase.backend
 import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
+import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -205,6 +207,34 @@ class FirebaseRestAuthEngineTest {
         assertContains(transport.calls[1].first, "accounts:delete")
         assertContains(transport.calls[1].second, "\"idToken\":\"t1\"")
         assertNull(engine.currentUser())
+    }
+
+    @Test
+    fun emailExistsSurfacesTypedCollision() = runTest {
+        val transport = ScriptedTransport()
+        transport.responses += """{"error":{"message":"EMAIL_EXISTS"}}"""
+        val engine = engine(transport)
+
+        val result = engine.signUp("a@b.c", "pw")
+
+        assertIs<KMPAuthUserCollisionException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun linkedFederatedIdSurfacesTypedCollision() = runTest {
+        val transport = ScriptedTransport()
+        transport.responses += userResponse
+        transport.responses += lookupResponse
+        transport.responses += """{"error":{"message":"FEDERATED_USER_ID_ALREADY_LINKED : This credential is already associated with a different user account."}}"""
+        val engine = engine(transport)
+
+        engine.signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+        val result = engine.signIn(
+            AuthCredential.IdToken(AuthProviderIds.GOOGLE, idToken = "g"),
+            linkWithCurrentUser = true,
+        )
+
+        assertIs<KMPAuthUserCollisionException>(result.exceptionOrNull())
     }
 
     @Test

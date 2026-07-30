@@ -6,6 +6,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderBackend
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.currentLogger
 import com.mmk.kmpauth.core.runCatchingCancellable
@@ -14,6 +15,7 @@ import dev.gitlive.firebase.auth.ActionCodeSettings
 import dev.gitlive.firebase.auth.AndroidPackageName
 import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FacebookAuthProvider
+import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.PhoneAuthProvider
@@ -30,6 +32,12 @@ import kotlinx.coroutines.CancellationException
 internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
 
     override suspend fun signIn(
+        credential: AuthCredential,
+        linkWithCurrentUser: Boolean,
+    ): Result<KMPAuthUser> = signInInternal(credential, linkWithCurrentUser)
+        .mappingCollision()
+
+    private suspend fun signInInternal(
         credential: AuthCredential,
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> {
@@ -105,7 +113,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         Firebase.auth.createUserWithEmailAndPassword(email, password)
             .user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }
+    }.mappingCollision()
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> = runCatchingCancellable {
         Firebase.auth.signInAnonymously().user?.let(::FirebaseKMPAuthUser)
@@ -134,7 +142,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         }
         result.user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }
+    }.mappingCollision()
 
     override suspend fun sendPasswordResetEmail(
         email: String,
@@ -167,7 +175,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         }
         result.user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }
+    }.mappingCollision()
 
     override suspend fun signOut() {
         Firebase.auth.signOut()
@@ -175,6 +183,27 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
 
     override fun currentUser(): KMPAuthUser? =
         Firebase.auth.currentUser?.let { FirebaseKMPAuthUser(it) }
+
+    /**
+     * Surfaces account collisions as the backend-agnostic
+     * [KMPAuthUserCollisionException] with a guaranteed non-empty message —
+     * the iOS SDK sometimes reports collisions with an empty one, which made
+     * them undetectable from common code.
+     */
+    private fun <T> Result<T>.mappingCollision(): Result<T> = fold(
+        onSuccess = { this },
+        onFailure = { error ->
+            if (error is FirebaseAuthUserCollisionException) {
+                Result.failure(
+                    KMPAuthUserCollisionException(
+                        message = error.message?.takeIf { it.isNotBlank() }
+                            ?: "This credential is already associated with a different user account.",
+                        cause = error,
+                    )
+                )
+            } else this
+        },
+    )
 
     /** Maps the SDK-agnostic settings onto GitLive's ActionCodeSettings. */
     private fun EmailActionCodeSettings.toFirebase(): ActionCodeSettings = ActionCodeSettings(

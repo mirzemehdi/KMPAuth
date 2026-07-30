@@ -253,6 +253,12 @@ public abstract interface class com/mmk/kmpauth/core/auth/KMPAuthUser {
 	public abstract fun getUid ()Ljava/lang/String;
 }
 
+public final class com/mmk/kmpauth/core/auth/KMPAuthUserCollisionException : java/lang/Exception {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/mmk/kmpauth/core/auth/LocalKMPAuthBackendKt {
 	public static final fun ProvideKMPAuthBackend (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
 	public static final fun ProvideKMPAuthBackend (Ljava/lang/String;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V

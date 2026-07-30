@@ -3,6 +3,7 @@ package com.mmk.kmpauth.supabase
 import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
+import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import io.ktor.client.engine.mock.toByteArray
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -314,6 +315,21 @@ class SupabaseAuthBackendTest {
         )
 
         assertTrue(result.isSuccess)
+    }
+
+    @Test
+    fun alreadyRegisteredSignUpSurfacesTypedCollision() = runTest {
+        val engine = RecordingMockEngine {
+            errorResponse(
+                """{"code":422,"error_code":"user_already_exists","msg":"User already registered"}""",
+                io.ktor.http.HttpStatusCode.UnprocessableEntity,
+            )
+        }
+        val backend = SupabaseAuthBackend(engine.client)
+
+        val result = backend.signUp("user@example.com", "secret")
+
+        assertIs<KMPAuthUserCollisionException>(result.exceptionOrNull())
     }
 
     @Test
