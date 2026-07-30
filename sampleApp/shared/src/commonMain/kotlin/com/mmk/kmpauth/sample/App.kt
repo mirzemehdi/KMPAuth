@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -49,6 +52,7 @@ import com.mmk.kmpauth.core.auth.rememberMicrosoftAuthState
 import com.mmk.kmpauth.core.auth.rememberPhoneAuthState
 import com.mmk.kmpauth.google.rememberGoogleAuthState
 import com.mmk.kmpauth.core.KMPAuth
+import com.mmk.kmpauth.core.SignInState
 import com.mmk.kmpauth.google.rememberGoogleSignInState
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
@@ -128,6 +132,26 @@ private fun StatusCard(status: String, onStatus: (String) -> Unit) {
     }
 }
 
+/**
+ * Launch button driven by the state's observable [SignInState.isInProgress]:
+ * disabled with a spinner while the flow runs, so double-taps are impossible
+ * and the user sees something is happening.
+ */
+@Composable
+private fun AuthButton(state: SignInState, label: String) {
+    Button(onClick = { state.launch() }, enabled = !state.isInProgress) {
+        if (state.isInProgress) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(18.dp),
+                strokeWidth = 2.dp,
+                color = LocalContentColor.current,
+            )
+        } else {
+            Text(label)
+        }
+    }
+}
+
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) {
     Card(Modifier.fillMaxWidth()) {
@@ -154,7 +178,7 @@ private fun ProviderOnlySection(onStatus: (String) -> Unit) {
                 onFailure = { "Google credential failed: ${it.message}" },
             ))
         })
-        Button(onClick = { googleSignIn.launch() }) { Text("Google credential") }
+        AuthButton(googleSignIn, "Google credential")
 
         // Access token needs a separate consent prompt on Android (#90/#129).
         val googleWithAccessToken = rememberGoogleSignInState(
@@ -166,7 +190,7 @@ private fun ProviderOnlySection(onStatus: (String) -> Unit) {
                 ))
             },
         )
-        Button(onClick = { googleWithAccessToken.launch() }) { Text("Google + access token") }
+        AuthButton(googleWithAccessToken, "Google + access token")
 
         // Apple platforms only; no-op state elsewhere.
         val appleSignIn = rememberAppleSignInState(onResult = { result ->
@@ -175,7 +199,7 @@ private fun ProviderOnlySection(onStatus: (String) -> Unit) {
                 onFailure = { "Apple credential failed: ${it.message}" },
             ))
         })
-        Button(onClick = { appleSignIn.launch() }) { Text("Apple credential (iOS)") }
+        AuthButton(appleSignIn, "Apple credential (iOS)")
 
         val facebookSignIn = rememberFacebookSignInState(onResult = { result ->
             onStatus(result.fold(
@@ -183,7 +207,7 @@ private fun ProviderOnlySection(onStatus: (String) -> Unit) {
                 onFailure = { "Facebook credential failed: ${it.message}" },
             ))
         })
-        Button(onClick = { facebookSignIn.launch() }) { Text("Facebook credential") }
+        AuthButton(facebookSignIn, "Facebook credential")
 
         // Classic login returns a Graph-API access token instead of the
         // Limited-Login OIDC JWT (counts as tracking on iOS).
@@ -196,7 +220,7 @@ private fun ProviderOnlySection(onStatus: (String) -> Unit) {
                 ))
             },
         )
-        Button(onClick = { facebookClassic.launch() }) { Text("Facebook classic (Graph token)") }
+        AuthButton(facebookClassic, "Facebook classic (Graph token)")
     }
 }
 
@@ -211,26 +235,26 @@ private fun FirebaseSection(
 ) {
     Section(title = "Firebase backend") {
         val googleAuth = rememberGoogleAuthState(onResult = report("Firebase/Google"))
-        Button(onClick = { googleAuth.launch() }) { Text("Google") }
+        AuthButton(googleAuth, "Google")
 
         val appleAuth = rememberAppleAuthState(onResult = report("Firebase/Apple"))
-        Button(onClick = { appleAuth.launch() }) { Text("Apple") }
+        AuthButton(appleAuth, "Apple")
 
         val githubAuth = rememberGithubAuthState(onResult = report("Firebase/GitHub"))
-        Button(onClick = { githubAuth.launch() }) { Text("GitHub") }
+        AuthButton(githubAuth, "GitHub")
 
         val microsoftAuth = rememberMicrosoftAuthState(onResult = report("Firebase/Microsoft"))
-        Button(onClick = { microsoftAuth.launch() }) { Text("Microsoft") }
+        AuthButton(microsoftAuth, "Microsoft")
 
         // Generic state: any provider enabled in the console.
         val yahooAuth = rememberOAuthState(provider = "yahoo.com", onResult = report("Firebase/Yahoo"))
-        Button(onClick = { yahooAuth.launch() }) { Text("Yahoo (generic OAuth)") }
+        AuthButton(yahooAuth, "Yahoo (generic OAuth)")
 
         val facebookAuth = rememberFacebookAuthState(onResult = report("Firebase/Facebook"))
-        Button(onClick = { facebookAuth.launch() }) { Text("Facebook") }
+        AuthButton(facebookAuth, "Facebook")
 
         val anonymousAuth = rememberAnonymousAuthState(onResult = report("Firebase/Guest"))
-        Button(onClick = { anonymousAuth.launch() }) { Text("Continue as guest") }
+        AuthButton(anonymousAuth, "Continue as guest")
 
         EmailAuthBlock(label = "Firebase", report = report, onStatus = onStatus)
         PhoneAuthBlock(label = "Firebase", report = report)
@@ -251,10 +275,10 @@ private fun SupabaseSection(
     ProvideKMPAuthBackend(SUPABASE_BACKEND_ID) {
     Section(title = "Supabase backend") {
         val googleAuth = rememberGoogleAuthState(onResult = report("Supabase/Google"))
-        Button(onClick = { googleAuth.launch() }) { Text("Google") }
+        AuthButton(googleAuth, "Google")
 
         val anonymousAuth = rememberAnonymousAuthState(onResult = report("Supabase/Guest"))
-        Button(onClick = { anonymousAuth.launch() }) { Text("Continue as guest") }
+        AuthButton(anonymousAuth, "Continue as guest")
 
         EmailAuthBlock(label = "Supabase", report = report, onStatus = onStatus)
         PhoneAuthBlock(label = "Supabase", report = report)
@@ -263,19 +287,19 @@ private fun SupabaseSection(
         // the box (supabase-kt catches the redirect on a localhost server);
         // Android/iOS need supabase-kt's deep-link setup.
         val githubAuth = rememberGithubAuthState(onResult = report("Supabase/GitHub"))
-        Button(onClick = { githubAuth.launch() }) { Text("GitHub (web flow)") }
+        AuthButton(githubAuth, "GitHub (web flow)")
 
         val microsoftAuth = rememberMicrosoftAuthState(onResult = report("Supabase/Microsoft"))
-        Button(onClick = { microsoftAuth.launch() }) { Text("Microsoft (web flow)") }
+        AuthButton(microsoftAuth, "Microsoft (web flow)")
 
         // GoTrue provider names work too ("gitlab", "discord", ...).
         val gitlabAuth = rememberOAuthState(provider = "gitlab", onResult = report("Supabase/GitLab"))
-        Button(onClick = { gitlabAuth.launch() }) { Text("GitLab (GoTrue name)") }
+        AuthButton(gitlabAuth, "GitLab (GoTrue name)")
 
         // Native Apple credential on iOS via the id_token grant; browser
         // flow elsewhere.
         val appleAuth = rememberAppleAuthState(onResult = report("Supabase/Apple"))
-        Button(onClick = { appleAuth.launch() }) { Text("Apple") }
+        AuthButton(appleAuth, "Apple")
     }
     }
 }
@@ -330,8 +354,8 @@ private fun EmailAuthBlock(
         onResult = report("$label/Email sign-up"),
     )
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Button(onClick = { emailSignIn.launch() }) { Text("Sign in") }
-        Button(onClick = { emailSignUp.launch() }) { Text("Sign up") }
+        AuthButton(emailSignIn, "Sign in")
+        AuthButton(emailSignUp, "Sign up")
     }
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -417,10 +441,7 @@ private fun PhoneAuthBlock(
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
-        Button(
-            onClick = { phoneAuth.launch() },
-            enabled = !phoneAuth.isInProgress,
-        ) { Text("Phone sign-in") }
+        AuthButton(phoneAuth, "Phone sign-in")
     } else {
         OutlinedTextField(
             value = smsCode,

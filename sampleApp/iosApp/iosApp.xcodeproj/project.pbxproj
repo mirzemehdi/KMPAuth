@@ -100,20 +100,6 @@
 			path = iOSApp.swift;
 			sourceTree = "<group>";
 		};
-		2E32E4AA2DEA6A6900D5F5C9 = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.xcframework;
-			name = FBSDKCoreKit.xcframework;
-			path = "../../kmpauth-facebook/build/cocoapods/synthetic/ios/Pods/FBSDKCoreKit/XCFrameworks/FBSDKCoreKit.xcframework";
-			sourceTree = "<group>";
-		};
-		2E32E4AD2DEA6AAA00D5F5C9 = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.xcframework;
-			name = FBSDKLoginKit.xcframework;
-			path = "../../kmpauth-facebook/build/cocoapods/synthetic/ios/Pods/FBSDKLoginKit/XCFrameworks/FBSDKLoginKit.xcframework";
-			sourceTree = "<group>";
-		};
 		7555FF7B242A565900829871 = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.application;
@@ -211,8 +197,6 @@
 		7555FFB0242A642200829871 = {
 			isa = PBXGroup;
 			children = (
-				2E32E4AD2DEA6AAA00D5F5C9,
-				2E32E4AA2DEA6A6900D5F5C9,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
