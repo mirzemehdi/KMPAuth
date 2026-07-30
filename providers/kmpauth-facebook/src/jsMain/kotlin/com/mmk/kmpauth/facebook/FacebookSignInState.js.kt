@@ -23,8 +23,10 @@ public actual fun rememberFacebookSignInState(
         // (Firebase's web flow, or Supabase's OAuthWebFlow("facebook.com")).
         UnsupportedSignInState(
             reason = "Facebook Login (native SDK) is not supported on JS; " +
-                "use the browser OAuth flow instead - rememberOAuthState(\"facebook.com\") " +
-                "with Firebase, or OAuthWebFlow(\"facebook.com\") with Supabase.",
+                "use the backend browser OAuth flow instead: " +
+                "rememberOAuthState(\"facebook.com\") - on web currently served " +
+                "by the Supabase backend (the Firebase web flow is not " +
+                "implemented on JS yet).",
             onFailure = { currentOnResult(Result.failure(it)) },
         )
     }

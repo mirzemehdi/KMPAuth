@@ -22,9 +22,10 @@ public actual fun rememberFacebookSignInState(
         // platforms use Facebook as a browser OAuth provider instead
         // (Firebase's web flow, or Supabase's OAuthWebFlow("facebook.com")).
         UnsupportedSignInState(
-            reason = "Facebook Login (native SDK) is not supported on JVM; " +
-                "use the browser OAuth flow instead - rememberOAuthState(\"facebook.com\") " +
-                "with Firebase, or OAuthWebFlow(\"facebook.com\") with Supabase.",
+            reason = "Facebook Login (native SDK) is not supported on Desktop; " +
+                "use the backend browser OAuth flow instead: " +
+                "rememberOAuthState(\"facebook.com\") - served on Desktop by both " +
+                "the Firebase and Supabase backends.",
             onFailure = { currentOnResult(Result.failure(it)) },
         )
     }
