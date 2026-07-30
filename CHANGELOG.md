@@ -5,7 +5,11 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] — 2026-07-30
+
+The stable 3.0 release. Everything below is on top of 3.0.0-beta01; the
+full 3.0 story relative to 2.x spans this and the beta/alpha sections —
+see [MIGRATION.md](MIGRATION.md) for the 2.x → 3.0 guide.
 
 ### Added
 - **`KMPAuthUser.providerIds`**: ids of every identity provider linked to

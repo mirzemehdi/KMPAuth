@@ -88,11 +88,12 @@ facade** (`kmpauth-core`): `initialize { }` (one-stop setup at app start -
 provider modules contribute extensions on `KMPAuthConfiguration`, e.g.
 `kmpauth-google`'s `google(credentials)`; `GoogleAuthProvider.create` still
 works), `currentUser()`, `signOut()`, `signIn(credential)`, `signUp`,
-`signInAnonymously`, `reauthenticate(credential)`, `sendPasswordResetEmail`,
-email-link sign-in, and `registerBackendProvider`/`getBackendProvider`/
-`requireBackendProvider`. It delegates to `KMPAuthBackend`; keep new
-session/account operations and setup on this facade rather than inventing
-provider-specific top-level objects. Backend-generic states read their backend from the
+`signInAnonymously`, `reauthenticate(credential)`, `deleteAccount()`,
+`sendPasswordResetEmail`, email-link sign-in, and
+`registerBackendProvider`/`getBackendProvider`/`requireBackendProvider`.
+It delegates to `KMPAuthBackend`; keep new session/account operations and
+setup on this facade rather than inventing provider-specific top-level
+objects. Backend-generic states read their backend from the
 `LocalKMPAuthBackend` composition local (default: registered `KMPAuthBackend`) -
 multi-backend apps scope subtrees with `CompositionLocalProvider`, never
 per-call parameters; configuration extensions ship flat-parameter overloads
@@ -105,7 +106,17 @@ never swallow an exception into a `null` (#102, #103). Platforms where a
 flow cannot work report a failed `Result` (`UnsupportedSignInState`), never
 a silent no-op. Only the deprecated 2.x containers keep their old callbacks
 (`GoogleUser?`, `Result<FirebaseUser?>` via `KMPAuthUser.raw` unwrap) for
-source compat.
+source compat. Well-known failure conditions surface as **typed core
+exceptions with guaranteed non-empty messages**, mapped by every backend
+(the iOS SDK sometimes reports them with empty messages):
+`KMPAuthUserCollisionException` (credential/email already belongs to another
+account — the guest-upgrade collision) and
+`KMPAuthRecentLoginRequiredException` (stale session on a
+security-sensitive op → reauthenticate and retry); keep new cross-backend
+error conditions on this pattern. `KMPAuthUser.providerIds` lists the
+account's linked providers in `AuthProviderIds` convention on every backend
+(Supabase GoTrue names are translated) for provider-routing UI like
+reauthentication.
 
 Provider resolution must not happen during composition: guard on
 `LocalInspectionMode` and return `NoOpSignInState`, or IDE previews crash

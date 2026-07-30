@@ -35,7 +35,7 @@ kotlin {
                 outputFileName = "webAppWasm.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     // The js variant's dev server uses the default 8080.
-                    port = 8081
+                    port = 8082
                 }
             }
         }
