@@ -10,9 +10,8 @@ import com.mmk.kmpauth.firebase.FirebaseBackendOptions
 internal const val WASM_UNSUPPORTED_REASON: String =
     "Firebase browser-flow sign-in is not available on wasm: the Firebase " +
         "SDK (GitLive firebase-kotlin-sdk) has no wasm target, and the REST " +
-        "engine cannot drive a browser OAuth flow. Email/anonymous/id-token " +
-        "sign-in work via the REST engine; for web flows use the Supabase " +
-        "backend."
+        "engine cannot drive a browser OAuth flow. Email, anonymous and " +
+        "id-token sign-in work via the REST engine."
 
 /**
  * Web config for the wasm REST engine, stored by

@@ -242,8 +242,7 @@ internal class FirebaseRestAuthEngine(
         UnsupportedOperationException(
             "Firebase phone sign-in is not available with the REST engine " +
                 "(Desktop/wasm): the Identity Toolkit REST flow requires a " +
-                "reCAPTCHA token. The Supabase backend serves phone OTP on " +
-                "every target."
+                "reCAPTCHA token."
         )
     )
 

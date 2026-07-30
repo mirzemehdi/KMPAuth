@@ -7,6 +7,5 @@ internal actual suspend fun gitLiveOAuthWebFlowSignIn(
     oAuthProvider: OAuthProvider,
     linkAccount: Boolean,
 ): FirebaseUser? = throw UnsupportedOperationException(
-    "Firebase OAuth web-flow sign-in is not implemented on the JS target " +
-        "yet. The Supabase backend serves browser OAuth on web."
+    "Firebase OAuth web-flow sign-in is not implemented on the JS target yet."
 )

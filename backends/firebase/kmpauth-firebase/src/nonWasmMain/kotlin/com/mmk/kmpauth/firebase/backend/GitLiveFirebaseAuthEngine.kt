@@ -115,8 +115,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
             ?: throw UnsupportedOperationException(
                 "Firebase phone sign-in is available on Android and iOS only: " +
                     "the web flow needs a reCAPTCHA verifier KMPAuth does not " +
-                    "provide yet. The Supabase backend serves phone OTP on every " +
-                    "target."
+                    "provide yet."
             )
         val credential =
             PhoneAuthProvider().verifyPhoneNumber(phoneNumber, verificationProvider)
