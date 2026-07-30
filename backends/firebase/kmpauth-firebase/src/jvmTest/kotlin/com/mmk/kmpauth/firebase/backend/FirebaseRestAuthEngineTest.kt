@@ -191,6 +191,31 @@ class FirebaseRestAuthEngineTest {
 
         assertNull(engine.currentUser())
     }
+
+    @Test
+    fun deleteAccountCallsDeleteWithSessionTokenAndSignsOut() = runTest {
+        val transport = ScriptedTransport()
+        transport.responses += """{"localId":"uid-1","idToken":"t1","displayName":"A"}"""
+        transport.responses += """{}"""
+        val engine = engine(transport)
+
+        engine.signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+        engine.deleteAccount().getOrThrow()
+
+        assertContains(transport.calls[1].first, "accounts:delete")
+        assertContains(transport.calls[1].second, "\"idToken\":\"t1\"")
+        assertNull(engine.currentUser())
+    }
+
+    @Test
+    fun deleteAccountWithoutSessionFails() = runTest {
+        val engine = engine(ScriptedTransport())
+
+        val result = engine.deleteAccount()
+
+        assertTrue(result.isFailure)
+        assertContains(result.exceptionOrNull()!!.message!!, "No signed-in user")
+    }
 }
 
 class DesktopWebFlowTest {

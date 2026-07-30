@@ -35,6 +35,7 @@ final object com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend : com.mmk.kmpa
 
     final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.currentUser|currentUser(){}[0]
     final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
+    final suspend fun deleteAccount(): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.deleteAccount|deleteAccount(){}[0]
     final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
     final suspend fun sendPasswordResetEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings?): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.sendPasswordResetEmail|sendPasswordResetEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings?){}[0]
     final suspend fun sendSignInLinkToEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackend.sendSignInLinkToEmail|sendSignInLinkToEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings){}[0]
@@ -66,6 +67,7 @@ final class com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService : com.mm
 
     final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.currentUser|currentUser(){}[0]
     final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
+    final suspend fun deleteAccount(): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.deleteAccount|deleteAccount(){}[0]
     final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
     final suspend fun sendPasswordResetEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings?): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.sendPasswordResetEmail|sendPasswordResetEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings?){}[0]
     final suspend fun sendSignInLinkToEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.firebase.backend/FirebaseAuthBackendService.sendSignInLinkToEmail|sendSignInLinkToEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings){}[0]

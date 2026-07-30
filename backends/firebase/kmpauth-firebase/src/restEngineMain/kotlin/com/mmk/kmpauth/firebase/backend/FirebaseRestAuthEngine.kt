@@ -204,6 +204,15 @@ internal class FirebaseRestAuthEngine(
             session = user
         }
 
+    override suspend fun deleteAccount(): Result<Unit> = runCatchingCancellable {
+        val current = session ?: throw IllegalStateException("No signed-in user to delete")
+        call(
+            "accounts:delete",
+            buildJsonObject { put("idToken", current.idToken) },
+        )
+        session = null
+    }
+
     override suspend fun signUp(email: String, password: String): Result<KMPAuthUser> =
         runCatchingCancellable {
             val user = signedInUser(

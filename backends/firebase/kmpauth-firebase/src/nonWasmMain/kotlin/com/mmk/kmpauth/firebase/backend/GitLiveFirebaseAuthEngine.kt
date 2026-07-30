@@ -92,6 +92,12 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
             currentUser.reauthenticate(firebaseCredential)
         }
 
+    override suspend fun deleteAccount(): Result<Unit> = runCatchingCancellable {
+        val currentUser = Firebase.auth.currentUser
+            ?: throw IllegalStateException("No signed-in user to delete")
+        currentUser.delete()
+    }
+
     override suspend fun signUp(
         email: String,
         password: String,

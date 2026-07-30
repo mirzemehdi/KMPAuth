@@ -2,6 +2,7 @@ public final class com/mmk/kmpauth/core/KMPAuth {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/KMPAuth;
 	public final fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public final fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getBackendProvider ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
 	public final fun getBackendProvider (Ljava/lang/String;)Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
 	public final fun initialize (Lkotlin/jvm/functions/Function1;)V
@@ -135,6 +136,7 @@ public final class com/mmk/kmpauth/core/auth/AuthCredential$OAuthWebFlow : com/m
 
 public abstract interface class com/mmk/kmpauth/core/auth/AuthProviderBackend {
 	public abstract fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getBackendId ()Ljava/lang/String;
 	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -153,6 +155,7 @@ public abstract interface class com/mmk/kmpauth/core/auth/AuthProviderBackend {
 }
 
 public final class com/mmk/kmpauth/core/auth/AuthProviderBackend$DefaultImpls {
+	public static fun deleteAccount-IoAF18A (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static fun getBackendId (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;)Ljava/lang/String;
 	public static fun isSignInWithEmailLink (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;)Z
 	public static fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -219,6 +222,7 @@ public final class com/mmk/kmpauth/core/auth/KMPAuthBackend : com/mmk/kmpauth/co
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/auth/KMPAuthBackend;
 	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getBackendId ()Ljava/lang/String;
 	public final fun getOrNull ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
 	public final fun getOrNull (Ljava/lang/String;)Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;

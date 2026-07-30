@@ -119,6 +119,21 @@ public object KMPAuth {
     public suspend fun signOut(): Unit = KMPAuthBackend.signOut()
 
     /**
+     * Permanently deletes the currently signed-in user's account and signs
+     * the session out. Irreversible.
+     *
+     * Backends typically require a recent sign-in: on a
+     * requires-recent-login failure, [reauthenticate] with a fresh
+     * credential and retry:
+     *
+     * ```
+     * KMPAuth.reauthenticate(AuthCredential.EmailPassword(email, password))
+     *     .onSuccess { KMPAuth.deleteAccount() }
+     * ```
+     */
+    public suspend fun deleteAccount(): Result<Unit> = KMPAuthBackend.deleteAccount()
+
+    /**
      * Exchanges [credential] for a signed-in session — for callers that
      * obtained a credential outside the `rememberXxxSignInState` flows.
      *

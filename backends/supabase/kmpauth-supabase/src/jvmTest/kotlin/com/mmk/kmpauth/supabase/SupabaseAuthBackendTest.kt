@@ -6,6 +6,7 @@ import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import io.ktor.client.engine.mock.toByteArray
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
@@ -313,6 +314,18 @@ class SupabaseAuthBackendTest {
         )
 
         assertTrue(result.isSuccess)
+    }
+
+    @Test
+    fun deleteAccountIsUnsupportedAndNamesTheEdgeFunctionAlternative() = runTest {
+        val engine = RecordingMockEngine { jsonResponse(TEST_SESSION_JSON) }
+        val backend = SupabaseAuthBackend(engine.client)
+
+        val result = backend.deleteAccount()
+
+        val error = assertIs<UnsupportedOperationException>(result.exceptionOrNull())
+        assertContains(error.message!!, "Edge")
+        assertTrue(engine.requests.isEmpty())
     }
 
     @Test

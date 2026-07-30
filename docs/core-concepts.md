@@ -56,6 +56,7 @@ KMPAuth.sendSignInLinkToEmail(email, actionCodeSettings)
 KMPAuth.isSignInWithEmailLink(link)
 KMPAuth.signInWithEmailLink(email, link)
 KMPAuth.reauthenticate(credential)
+KMPAuth.deleteAccount()               // irreversible; may need reauthentication first
 ```
 
 ### Reauthentication
@@ -74,6 +75,14 @@ KMPAuth.reauthenticate(
     AuthCredential.IdToken(AuthProviderIds.GOOGLE, googleUser.idToken)
 )
 ```
+
+### Deleting the account
+
+`KMPAuth.deleteAccount()` permanently deletes the signed-in user and ends the
+session. On Firebase a requires-recent-login failure means: reauthenticate
+(above) and retry. The Supabase backend reports it as unsupported — GoTrue
+only deletes users through the admin API, so expose a Supabase Edge Function
+calling `auth.admin.deleteUser` and invoke that from the app.
 
 ## Auth backends
 

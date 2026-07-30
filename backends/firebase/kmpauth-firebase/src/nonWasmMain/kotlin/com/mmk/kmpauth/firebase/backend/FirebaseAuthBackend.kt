@@ -70,6 +70,8 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
         linkAccount: Boolean,
     ): Result<KMPAuthUser> = engine.signInWithEmailLink(email, link, linkAccount)
 
+    override suspend fun deleteAccount(): Result<Unit> = engine.deleteAccount()
+
     actual override suspend fun signOut(): Unit = engine.signOut()
 
     actual override fun currentUser(): KMPAuthUser? = engine.currentUser()

@@ -330,6 +330,21 @@ public class SupabaseAuthBackend(
         requireCurrentUser()
     }
 
+    /**
+     * Unsupported: GoTrue exposes user deletion only through the admin API
+     * (service-role key), which must never ship in a client. Deletion goes
+     * through the app's own backend — typically a Supabase Edge Function
+     * calling `auth.admin.deleteUser(uid)` for the authenticated caller.
+     */
+    override suspend fun deleteAccount(): Result<Unit> = Result.failure(
+        UnsupportedOperationException(
+            "Supabase has no client-side account deletion - the admin API " +
+                "requires the service-role key. Expose a Supabase Edge " +
+                "Function that calls auth.admin.deleteUser for the " +
+                "authenticated user and invoke it from the app."
+        )
+    )
+
     /** Signs out locally (revokes the current session). */
     override suspend fun signOut() {
         supabaseClient.auth.signOut()

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.apple.rememberAppleSignInState
 import com.mmk.kmpauth.core.auth.AuthCredential
 import com.mmk.kmpauth.core.auth.AuthProviderBackend
+import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.EmailAuthMode
 import com.mmk.kmpauth.core.auth.LocalKMPAuthBackend
@@ -130,6 +131,16 @@ private fun StatusCard(status: String, onStatus: (String) -> Unit) {
                 }
             }) { Text("Sign out (Supabase)") }
         }
+        // Deletes the default-backend (Firebase) user. Firebase requires a
+        // recent sign-in - on requires-recent-login, reauthenticate first.
+        OutlinedButton(onClick = {
+            scope.launch {
+                KMPAuth.deleteAccount().fold(
+                    onSuccess = { onStatus("Account deleted") },
+                    onFailure = { onStatus("Delete account failed: ${it.message}") },
+                )
+            }
+        }) { Text("Delete account (Firebase)") }
     }
 }
 
@@ -256,6 +267,32 @@ private fun FirebaseSection(
 
         val anonymousAuth = rememberAnonymousAuthState(onResult = report("Firebase/Guest"))
         AuthButton(anonymousAuth, "Continue as guest")
+
+        // Reauthentication always needs a FRESH credential of a provider the
+        // current user has linked: email users re-enter their password (the
+        // email block below), Apple users re-run the native sheet.
+        val backend = LocalKMPAuthBackend.current
+        val scope = rememberCoroutineScope()
+        val appleReauth = rememberAppleSignInState(onResult = { result ->
+            result.fold(
+                onSuccess = { apple ->
+                    scope.launch {
+                        backend.reauthenticate(
+                            AuthCredential.IdToken(
+                                providerId = AuthProviderIds.APPLE,
+                                idToken = apple.idToken,
+                                rawNonce = apple.nonce,
+                            ),
+                        ).fold(
+                            onSuccess = { onStatus("Firebase: reauthenticated via Apple") },
+                            onFailure = { onStatus("Firebase Apple reauth failed: ${it.message}") },
+                        )
+                    }
+                },
+                onFailure = { onStatus("Firebase Apple reauth failed: ${it.message}") },
+            )
+        })
+        OutlinedButton(onClick = { appleReauth.launch() }) { Text("Reauthenticate (Apple, iOS)") }
 
         EmailAuthBlock(label = "Firebase", report = report, onStatus = onStatus)
         PhoneAuthBlock(label = "Firebase", report = report)

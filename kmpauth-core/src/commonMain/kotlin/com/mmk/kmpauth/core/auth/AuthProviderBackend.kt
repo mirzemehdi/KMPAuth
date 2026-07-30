@@ -171,6 +171,22 @@ public interface AuthProviderBackend {
         )
     )
 
+    /**
+     * Permanently deletes the currently signed-in user's account and signs
+     * the session out. Irreversible.
+     *
+     * Backends typically require a recent sign-in for this operation — on a
+     * requires-recent-login failure, call [reauthenticate] with a fresh
+     * credential and retry.
+     *
+     * The default implementation reports the operation as unsupported.
+     */
+    public suspend fun deleteAccount(): Result<Unit> = Result.failure(
+        UnsupportedOperationException(
+            "This AuthProviderBackend does not support account deletion."
+        )
+    )
+
     /** Signs out the current user. */
     public suspend fun signOut()
 
@@ -344,6 +360,9 @@ public object KMPAuthBackend : AuthProviderBackend {
         linkAccount: Boolean,
     ): Result<KMPAuthUser> =
         activeBackend()?.signInWithEmailLink(email, link, linkAccount) ?: noBackendFailure()
+
+    override suspend fun deleteAccount(): Result<Unit> =
+        activeBackend()?.deleteAccount() ?: noBackendFailure()
 
     override suspend fun signOut() {
         activeBackend()?.signOut()

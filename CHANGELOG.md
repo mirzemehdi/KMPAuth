@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Account deletion**: `KMPAuth.deleteAccount()` (and
+  `AuthProviderBackend.deleteAccount()`, default-unsupported for custom
+  backends). Firebase deletes the current user on every target (GitLive
+  SDK on Android/iOS/JS, `accounts:delete` on the Desktop/wasm REST
+  engine) — on a requires-recent-login failure, `reauthenticate` and
+  retry. The Supabase backend reports it as unsupported with the
+  idiomatic alternative (an Edge Function calling
+  `auth.admin.deleteUser`; GoTrue has no client-side self-deletion).
 - UiHelper sign-in buttons (`GoogleSignInButton`, `AppleSignInButton`,
   `FacebookSignInButton`) take an `iconAlignment` parameter:
   `SignInButtonIconAlignment.Center` (default) centers icon and title as
