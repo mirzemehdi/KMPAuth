@@ -113,10 +113,21 @@ source compat. Well-known failure conditions surface as **typed core
 exceptions with guaranteed non-empty messages**, mapped by every backend
 (the iOS SDK sometimes reports them with empty messages):
 `KMPAuthUserCollisionException` (credential/email already belongs to another
-account — the guest-upgrade collision) and
+account — the guest-upgrade collision),
 `KMPAuthRecentLoginRequiredException` (stale session on a
-security-sensitive op → reauthenticate and retry); keep new cross-backend
-error conditions on this pattern. `KMPAuthUser.providerIds` lists the
+security-sensitive op → reauthenticate and retry),
+`KMPAuthUserCancelledException` (user dismissed the sign-in UI — mapped on
+every provider/platform incl. iOS where only a localized string existed
+before), `KMPAuthNetworkException` (clearly attributed connectivity
+failures only), `KMPAuthNoAccountAvailableException` and
+`KMPAuthProviderUnavailableException` (user-fixable Android device
+conditions: add a Google account / update Play services — their status
+codes are consumed by kmpauth-google's legacy fallback, so the mapping
+must live in the library); keep new cross-backend error conditions on
+this pattern. On iOS, platform `NSError`s are wrapped in
+`KMPAuthNSErrorException` (core iosMain: `domain`/`code`/`nsError`
+exposed), surfaced directly when unclassified and as the `cause` of typed
+failures. `KMPAuthUser.providerIds` lists the
 account's linked providers in `AuthProviderIds` convention on every backend
 (Supabase GoTrue names are translated) for provider-routing UI like
 reauthentication; `KMPAuthUser.isAnonymous` flags guest sessions, and the
