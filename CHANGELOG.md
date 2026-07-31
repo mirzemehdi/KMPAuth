@@ -5,7 +5,7 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.2] — 2026-07-30
 
 ### Added
 - **Typed cancellation and network failures** (#229). User cancellation —
@@ -22,6 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reduced to a localized description — the wrapper exposes `domain`,
   `code` and the full `nsError`, surfaced directly for unclassified
   failures and as the `cause` of the typed ones.
+- **User-fixable device conditions as typed failures** (#229):
+  `KMPAuthNoAccountAvailableException` (no usable Google account on the
+  device — documented `SIGN_IN_REQUIRED`/`SIGN_IN_FAILED` status codes)
+  and `KMPAuthProviderUnavailableException` (Play services missing,
+  disabled or out of date — `SERVICE_MISSING`/`SERVICE_VERSION_UPDATE_REQUIRED`/
+  `SERVICE_DISABLED`/`API_NOT_CONNECTED`, plus the unhandleable sign-in
+  intent). These signals are only visible inside the library — the
+  Credential Manager exceptions that carry them are consumed by the
+  legacy fallback — so apps could not classify them downstream.
 
 ## [3.0.1] — 2026-07-30
 

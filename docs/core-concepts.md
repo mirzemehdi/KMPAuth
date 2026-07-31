@@ -140,6 +140,10 @@ platform:
   (picker, sheet, popup, back press). Apps usually stay silent.
 - `KMPAuthNetworkException` — clearly attributed connectivity failure;
   retryable.
+- `KMPAuthNoAccountAvailableException` — no usable provider account on the
+  device; tell the user to add one in the device settings.
+- `KMPAuthProviderUnavailableException` — Google Play services missing,
+  disabled or out of date; tell the user to update/enable it.
 - `KMPAuthUserCollisionException` — the identity already has an account
   (see [Anonymous](anonymous.md) for the guest-upgrade pattern).
 - `KMPAuthRecentLoginRequiredException` — reauthenticate and retry.

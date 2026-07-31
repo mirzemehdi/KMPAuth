@@ -55,6 +55,12 @@ No platform-specific setup.
 > Play services on the device; on an emulator use a system image with the
 > **Google Play Store** (images labelled "Google APIs" only ship an older,
 > non-updatable Play services).
+>
+> At runtime this condition reaches your `onResult` as the typed
+> `KMPAuthProviderUnavailableException` (and a device without any Google
+> account as `KMPAuthNoAccountAvailableException`), so the app can tell the
+> user exactly what to fix — see
+> [Typed failures](core-concepts.md#typed-failures).
 
 ### iOS
 
