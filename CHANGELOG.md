@@ -5,6 +5,24 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Typed cancellation and network failures** (#229). User cancellation —
+  the most common non-success outcome, previously indistinguishable from
+  real errors on iOS except by matching a device-localized string — now
+  fails with `KMPAuthUserCancelledException` on every provider and
+  platform: Credential Manager and legacy Play services cancellations on
+  Android, `ASAuthorizationError.canceled` and the GIDSignIn cancel code
+  on iOS, the closed Google popup on web, the Facebook SDK's cancel
+  callback, and Firebase's cancelled OAuth web context. Clearly
+  attributed connectivity failures (Play services network/timeout status
+  codes, `NSURLErrorDomain`) fail with `KMPAuthNetworkException`.
+- **`KMPAuthNSErrorException` (iOS)**: sign-in `NSError`s are no longer
+  reduced to a localized description — the wrapper exposes `domain`,
+  `code` and the full `nsError`, surfaced directly for unclassified
+  failures and as the `cause` of the typed ones.
+
 ## [3.0.1] — 2026-07-30
 
 Closes the gaps that still forced apps to keep a hand-rolled auth layer

@@ -255,6 +255,12 @@ public final class com/mmk/kmpauth/core/auth/KMPAuthBackend : com/mmk/kmpauth/co
 	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class com/mmk/kmpauth/core/auth/KMPAuthNetworkException : java/lang/Exception {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/mmk/kmpauth/core/auth/KMPAuthRecentLoginRequiredException : java/lang/Exception {
 	public static final field $stable I
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -275,6 +281,12 @@ public abstract interface class com/mmk/kmpauth/core/auth/KMPAuthUser {
 public final class com/mmk/kmpauth/core/auth/KMPAuthUser$DefaultImpls {
 	public static fun getProviderIds (Lcom/mmk/kmpauth/core/auth/KMPAuthUser;)Ljava/util/List;
 	public static fun isAnonymous (Lcom/mmk/kmpauth/core/auth/KMPAuthUser;)Z
+}
+
+public final class com/mmk/kmpauth/core/auth/KMPAuthUserCancelledException : java/lang/Exception {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
 public final class com/mmk/kmpauth/core/auth/KMPAuthUserCollisionException : java/lang/Exception {

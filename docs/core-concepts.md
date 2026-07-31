@@ -130,6 +130,36 @@ The Supabase backend reports deletion as unsupported — GoTrue only deletes
 users through the admin API, so expose a Supabase Edge Function calling
 `auth.admin.deleteUser` and invoke that from the app.
 
+## Typed failures
+
+Well-known failure conditions arrive as KMPAuth's own exception types with
+guaranteed non-empty messages, so one `is`-check works on every backend and
+platform:
+
+- `KMPAuthUserCancelledException` — the user dismissed the sign-in UI
+  (picker, sheet, popup, back press). Apps usually stay silent.
+- `KMPAuthNetworkException` — clearly attributed connectivity failure;
+  retryable.
+- `KMPAuthUserCollisionException` — the identity already has an account
+  (see [Anonymous](anonymous.md) for the guest-upgrade pattern).
+- `KMPAuthRecentLoginRequiredException` — reauthenticate and retry.
+
+```kotlin
+result.onFailure { error ->
+    when (error) {
+        is KMPAuthUserCancelledException -> Unit          // stay silent
+        is KMPAuthNetworkException -> showOfflineMessage()
+        else -> showError(error.message)
+    }
+}
+```
+
+Anything unclassified keeps its original exception. On iOS, platform
+`NSError`s are wrapped in `KMPAuthNSErrorException` (exposing `domain`,
+`code` and the full `nsError`) instead of being reduced to a localized
+description — surfaced directly when unclassified, and as the `cause` of
+the typed exceptions otherwise.
+
 ## Auth backends
 
 The `rememberXxxAuthState` flows and `KMPAuth.*` operations are served by a

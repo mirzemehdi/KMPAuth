@@ -74,7 +74,7 @@ internal class GoogleLegacyAuthentication(
             }
         } catch (e: ApiException) {
             currentLogger.log("GoogleLegacyAuth Error: $e")
-            Result.failure(e)
+            Result.failure(e.asKMPAuthError())
         }
     }
 

@@ -2,8 +2,13 @@ package com.mmk.kmpauth.google
 
 import swiftPMImport.io.github.mirzemehdi.providers.kmpauth.google.GIDSignIn
 import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.auth.KMPAuthNSErrorException
+import com.mmk.kmpauth.core.auth.KMPAuthNetworkException
+import com.mmk.kmpauth.core.auth.KMPAuthUserCancelledException
 import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.cinterop.ExperimentalForeignApi
+import platform.Foundation.NSError
+import platform.Foundation.NSURLErrorDomain
 import platform.UIKit.UIApplication
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -46,19 +51,43 @@ internal class GoogleAuthUiProviderImpl : GoogleAuthUiProvider {
                         )
                         continutation.resume(Result.success(googleUser))
                     } else {
-                        continutation.resume(
-                            Result.failure(
-                                IllegalStateException(
-                                    nsError?.localizedDescription
-                                        ?: "Google Sign-In did not return an id token"
-                                )
-                            )
-                        )
+                        continutation.resume(Result.failure(nsError.asSignInError()))
                     }
                 }
 
         }
     }
 
+    private companion object {
+        // GIDSignInErrorCode.canceled in GIDSignIn's error domain.
+        const val GID_SIGN_IN_ERROR_DOMAIN = "com.google.GIDSignIn"
+        const val GID_ERROR_CODE_CANCELED = -5L
+    }
 
+    /**
+     * Classifies the GIDSignIn failure. The full [NSError] stays reachable
+     * through [KMPAuthNSErrorException] — as the failure itself when
+     * unclassified, as the `cause` of the typed exceptions otherwise.
+     */
+    private fun NSError?.asSignInError(): Throwable {
+        if (this == null) {
+            return IllegalStateException("Google Sign-In did not return an id token")
+        }
+        val wrapped = KMPAuthNSErrorException(this)
+        return when {
+            domain == GID_SIGN_IN_ERROR_DOMAIN && code == GID_ERROR_CODE_CANCELED ->
+                KMPAuthUserCancelledException(
+                    message = "The user cancelled the sign-in flow. ($domain $code)",
+                    cause = wrapped,
+                )
+
+            domain == NSURLErrorDomain ->
+                KMPAuthNetworkException(
+                    message = "Google sign-in failed because of a network problem: ${wrapped.message}",
+                    cause = wrapped,
+                )
+
+            else -> wrapped
+        }
+    }
 }

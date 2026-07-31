@@ -7,6 +7,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.KMPAuthUserCancelledException
 import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.currentLogger
@@ -18,6 +19,7 @@ import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FacebookAuthProvider
 import dev.gitlive.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
+import dev.gitlive.firebase.auth.FirebaseAuthWebException
 import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.PhoneAuthProvider
@@ -238,6 +240,18 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
                         cause = error,
                     )
                 )
+
+                // The SDK reports a user-dismissed OAuth web flow as a web
+                // exception whose code/message names a cancelled web context.
+                is FirebaseAuthWebException ->
+                    if (error.message?.contains("cancel", ignoreCase = true) == true) {
+                        Result.failure(
+                            KMPAuthUserCancelledException(
+                                message = "The user cancelled the sign-in flow.",
+                                cause = error,
+                            )
+                        )
+                    } else this
 
                 else -> this
             }

@@ -42,6 +42,7 @@ import com.mmk.kmpauth.supabase.SUPABASE_BACKEND_ID
 import androidx.compose.runtime.CompositionLocalProvider
 import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.KMPAuthUserCancelledException
 import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.rememberAnonymousAuthState
 import com.mmk.kmpauth.core.auth.rememberEmailAuthState
@@ -86,6 +87,9 @@ fun App() {
                         // The typed core exceptions make the two well-known
                         // conditions detectable without message matching.
                         when (error) {
+                            is KMPAuthUserCancelledException ->
+                                "$source: cancelled by the user - a real app stays silent here"
+
                             is KMPAuthUserCollisionException ->
                                 "$source: this identity already has an account - " +
                                     "sign in WITHOUT the link checkbox to use it. (${error.message})"

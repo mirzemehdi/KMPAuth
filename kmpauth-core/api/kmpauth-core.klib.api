@@ -1,5 +1,6 @@
 // Klib ABI Dump
 // Targets: [iosArm64, iosSimulatorArm64, js, wasmJs]
+// Alias: ios => [iosArm64, iosSimulatorArm64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -189,8 +190,16 @@ final class com.mmk.kmpauth.core.auth/EmailActionCodeSettings { // com.mmk.kmpau
     final fun toString(): kotlin/String // com.mmk.kmpauth.core.auth/EmailActionCodeSettings.toString|toString(){}[0]
 }
 
+final class com.mmk.kmpauth.core.auth/KMPAuthNetworkException : kotlin/Exception { // com.mmk.kmpauth.core.auth/KMPAuthNetworkException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // com.mmk.kmpauth.core.auth/KMPAuthNetworkException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+}
+
 final class com.mmk.kmpauth.core.auth/KMPAuthRecentLoginRequiredException : kotlin/Exception { // com.mmk.kmpauth.core.auth/KMPAuthRecentLoginRequiredException|null[0]
     constructor <init>(kotlin/String, kotlin/Throwable? = ...) // com.mmk.kmpauth.core.auth/KMPAuthRecentLoginRequiredException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+}
+
+final class com.mmk.kmpauth.core.auth/KMPAuthUserCancelledException : kotlin/Exception { // com.mmk.kmpauth.core.auth/KMPAuthUserCancelledException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // com.mmk.kmpauth.core.auth/KMPAuthUserCancelledException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
 }
 
 final class com.mmk.kmpauth.core.auth/KMPAuthUserCollisionException : kotlin/Exception { // com.mmk.kmpauth.core.auth/KMPAuthUserCollisionException|null[0]
@@ -302,7 +311,9 @@ final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_OAu
 final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop|#static{}com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop[0]
 final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop|#static{}com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop[0]
 final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop|#static{}com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop[0]
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthNetworkException$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthNetworkException$stableprop|#static{}com_mmk_kmpauth_core_auth_KMPAuthNetworkException$stableprop[0]
 final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthRecentLoginRequiredException$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthRecentLoginRequiredException$stableprop|#static{}com_mmk_kmpauth_core_auth_KMPAuthRecentLoginRequiredException$stableprop[0]
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthUserCancelledException$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthUserCancelledException$stableprop|#static{}com_mmk_kmpauth_core_auth_KMPAuthUserCancelledException$stableprop[0]
 final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthUserCollisionException$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthUserCollisionException$stableprop|#static{}com_mmk_kmpauth_core_auth_KMPAuthUserCollisionException$stableprop[0]
 final val com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuth$stableprop // com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuth$stableprop|#static{}com_mmk_kmpauth_core_KMPAuth$stableprop[0]
 final val com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop // com.mmk.kmpauth.core/com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop|#static{}com_mmk_kmpauth_core_KMPAuthConfiguration$stableprop[0]
@@ -322,7 +333,9 @@ final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthCredential_OAu
 final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop_getter|com_mmk_kmpauth_core_auth_AuthProviderIds$stableprop_getter(){}[0]
 final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop_getter|com_mmk_kmpauth_core_auth_EmailActionCodeSettings$stableprop_getter(){}[0]
 final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop_getter|com_mmk_kmpauth_core_auth_KMPAuthBackend$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthNetworkException$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthNetworkException$stableprop_getter|com_mmk_kmpauth_core_auth_KMPAuthNetworkException$stableprop_getter(){}[0]
 final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthRecentLoginRequiredException$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthRecentLoginRequiredException$stableprop_getter|com_mmk_kmpauth_core_auth_KMPAuthRecentLoginRequiredException$stableprop_getter(){}[0]
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthUserCancelledException$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthUserCancelledException$stableprop_getter|com_mmk_kmpauth_core_auth_KMPAuthUserCancelledException$stableprop_getter(){}[0]
 final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthUserCollisionException$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthUserCollisionException$stableprop_getter|com_mmk_kmpauth_core_auth_KMPAuthUserCollisionException$stableprop_getter(){}[0]
 final fun com.mmk.kmpauth.core.auth/rememberAnonymousAuthState(kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.core.auth/rememberAnonymousAuthState|rememberAnonymousAuthState(kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 final fun com.mmk.kmpauth.core.auth/rememberEmailAuthState(kotlin/String, kotlin/String, com.mmk.kmpauth.core.auth/EmailAuthMode?, kotlin/Boolean, kotlin/Function1<kotlin/Result<com.mmk.kmpauth.core.auth/KMPAuthUser>, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.mmk.kmpauth.core/SignInState // com.mmk.kmpauth.core.auth/rememberEmailAuthState|rememberEmailAuthState(kotlin.String;kotlin.String;com.mmk.kmpauth.core.auth.EmailAuthMode?;kotlin.Boolean;kotlin.Function1<kotlin.Result<com.mmk.kmpauth.core.auth.KMPAuthUser>,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
@@ -337,3 +350,21 @@ final fun com.mmk.kmpauth.core/com_mmk_kmpauth_core_LaunchingSignInState$stablep
 final fun com.mmk.kmpauth.core/com_mmk_kmpauth_core_NoOpSignInState$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core/com_mmk_kmpauth_core_NoOpSignInState$stableprop_getter|com_mmk_kmpauth_core_NoOpSignInState$stableprop_getter(){}[0]
 final fun com.mmk.kmpauth.core/com_mmk_kmpauth_core_UnsupportedSignInState$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core/com_mmk_kmpauth_core_UnsupportedSignInState$stableprop_getter|com_mmk_kmpauth_core_UnsupportedSignInState$stableprop_getter(){}[0]
 final inline fun <#A: kotlin/Any?> com.mmk.kmpauth.core/runCatchingCancellable(kotlin/Function0<#A>): kotlin/Result<#A> // com.mmk.kmpauth.core/runCatchingCancellable|runCatchingCancellable(kotlin.Function0<0:0>){0§<kotlin.Any?>}[0]
+
+// Targets: [ios]
+final class com.mmk.kmpauth.core.auth/KMPAuthNSErrorException : kotlin/Exception { // com.mmk.kmpauth.core.auth/KMPAuthNSErrorException|null[0]
+    constructor <init>(platform.Foundation/NSError) // com.mmk.kmpauth.core.auth/KMPAuthNSErrorException.<init>|<init>(platform.Foundation.NSError){}[0]
+
+    final val code // com.mmk.kmpauth.core.auth/KMPAuthNSErrorException.code|{}code[0]
+        final fun <get-code>(): kotlin/Long // com.mmk.kmpauth.core.auth/KMPAuthNSErrorException.code.<get-code>|<get-code>(){}[0]
+    final val domain // com.mmk.kmpauth.core.auth/KMPAuthNSErrorException.domain|{}domain[0]
+        final fun <get-domain>(): kotlin/String? // com.mmk.kmpauth.core.auth/KMPAuthNSErrorException.domain.<get-domain>|<get-domain>(){}[0]
+    final val nsError // com.mmk.kmpauth.core.auth/KMPAuthNSErrorException.nsError|{}nsError[0]
+        final fun <get-nsError>(): platform.Foundation/NSError // com.mmk.kmpauth.core.auth/KMPAuthNSErrorException.nsError.<get-nsError>|<get-nsError>(){}[0]
+}
+
+// Targets: [ios]
+final val com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthNSErrorException$stableprop // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthNSErrorException$stableprop|#static{}com_mmk_kmpauth_core_auth_KMPAuthNSErrorException$stableprop[0]
+
+// Targets: [ios]
+final fun com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthNSErrorException$stableprop_getter(): kotlin/Int // com.mmk.kmpauth.core.auth/com_mmk_kmpauth_core_auth_KMPAuthNSErrorException$stableprop_getter|com_mmk_kmpauth_core_auth_KMPAuthNSErrorException$stableprop_getter(){}[0]

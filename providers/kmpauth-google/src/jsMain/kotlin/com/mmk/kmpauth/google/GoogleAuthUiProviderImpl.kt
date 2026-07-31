@@ -1,6 +1,7 @@
 package com.mmk.kmpauth.google
 
 import com.mmk.kmpauth.core.KMPAuthInternalApi
+import com.mmk.kmpauth.core.auth.KMPAuthUserCancelledException
 import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.browser.document
 import kotlinx.browser.window
@@ -108,16 +109,19 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 showConsoleError("GoogleAuthUiProvider: token flow failed: $type")
                 if (!resumed && continuation.isActive) {
                     resumed = true
-                    continuation.resume(
-                        Result.failure(
-                            IllegalStateException(
-                                "Google sign-in could not open its popup ($type). " +
-                                    "Allow popups for this site, and make sure this " +
-                                    "origin is listed in the OAuth client's " +
-                                    "Authorized JavaScript origins."
-                            )
+                    val failure = if (type == "popup_closed") {
+                        KMPAuthUserCancelledException(
+                            "The user closed the Google sign-in popup. ($type)"
                         )
-                    )
+                    } else {
+                        IllegalStateException(
+                            "Google sign-in could not open its popup ($type). " +
+                                "Allow popups for this site, and make sure this " +
+                                "origin is listed in the OAuth client's " +
+                                "Authorized JavaScript origins."
+                        )
+                    }
+                    continuation.resume(Result.failure(failure))
                 }
             },
         )
