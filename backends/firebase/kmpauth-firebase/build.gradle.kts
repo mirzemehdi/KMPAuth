@@ -20,14 +20,15 @@ kotlin {
 
     swiftPMDependencies {
         iosMinimumDeploymentTarget = "16.0"
-        // GitLive's bundled FirebaseAuth cinterop (imported as
-        // cocoapods.FirebaseAuth.*) resolves against the real Firebase
-        // frameworks at link time; the version must match what GitLive
-        // was built against.
+        // GitLive's bundled FirebaseAuth cinterop resolves against the real
+        // Firebase frameworks at link time. A range instead of from(): SPM's
+        // `from` caps at <12.0.0, conflicting with consumer apps already on
+        // firebase-ios-sdk 12.x. range() renders as a CLOSED SPM range, so
+        // the upper bound 12.999.999 admits every 12.x and keeps 13.0.0 out.
         swiftPackage(
-            url = "https://github.com/firebase/firebase-ios-sdk.git",
-            version = libs.versions.firebaseIosSdk.get(),
-            products = listOf("FirebaseAuth", "FirebaseCore")
+            url("https://github.com/firebase/firebase-ios-sdk.git"),
+            range(libs.versions.firebaseIosSdk.get(), "12.999.999"),
+            listOf(product("FirebaseAuth"), product("FirebaseCore"))
         )
     }
 

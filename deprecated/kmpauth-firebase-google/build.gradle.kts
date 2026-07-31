@@ -23,10 +23,12 @@ kotlin {
         // Link-time closure of this module's binaries: GitLive's Firebase
         // cinterop (via kmpauth-firebase) and kmpauth-google's
         // GoogleSignIn cinterop.
+        // Closed range: SPM's `from` caps at <12.0.0, conflicting with
+        // consumer apps already on firebase-ios-sdk 12.x.
         swiftPackage(
-            url = "https://github.com/firebase/firebase-ios-sdk.git",
-            version = libs.versions.firebaseIosSdk.get(),
-            products = listOf("FirebaseAuth", "FirebaseCore")
+            url("https://github.com/firebase/firebase-ios-sdk.git"),
+            range(libs.versions.firebaseIosSdk.get(), "12.999.999"),
+            listOf(product("FirebaseAuth"), product("FirebaseCore"))
         )
         swiftPackage(
             url = "https://github.com/google/GoogleSignIn-iOS.git",

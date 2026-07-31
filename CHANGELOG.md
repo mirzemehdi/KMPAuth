@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.3] — 2026-07-30
 
 ### Fixed
+- **firebase-ios-sdk 12.x no longer conflicts** (iOS/SPM). The Firebase
+  modules declared firebase-ios-sdk with SPM's `from: 11.8.0`, which caps
+  resolution at <12.0.0 — apps already depending on firebase-ios-sdk 12.x
+  hit a version conflict and had to hand-edit the generated linkage
+  package. The dependency is now a range admitting every 11.8+/12.x
+  release.
 - **Desktop/wasm sessions survive app restarts.** The REST engine
   (Desktop JVM, wasm) kept its session in memory only, so a restarted app
   was always signed out — an anonymous user got a fresh uid every launch,
