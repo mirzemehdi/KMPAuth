@@ -5,6 +5,17 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Desktop/wasm sessions survive app restarts.** The REST engine
+  (Desktop JVM, wasm) kept its session in memory only, so a restarted app
+  was always signed out — an anonymous user got a fresh uid every launch,
+  orphaning their data. The session (refresh token + profile) now persists
+  in `~/.kmpauth/` on Desktop and `localStorage` on wasm, keyed by API
+  key; the restored ID token is refreshed via the Secure Token exchange
+  on first use. `signOut()`/`deleteAccount()` clear the stored session.
+
 ## [3.0.2] — 2026-07-30
 
 ### Added

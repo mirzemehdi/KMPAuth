@@ -32,8 +32,22 @@ class FirebaseRestAuthEngineTest {
         }
     }
 
-    private fun engine(transport: ScriptedTransport) =
-        FirebaseRestAuthEngine(transport = transport, apiKeyProvider = { "test-key" })
+    private class FakeStorage : FirebaseSessionStorage {
+        val values = mutableMapOf<String, String>()
+        override fun load(key: String): String? = values[key]
+        override fun save(key: String, value: String?) {
+            if (value == null) values.remove(key) else values[key] = value
+        }
+    }
+
+    private fun engine(
+        transport: ScriptedTransport,
+        storage: FirebaseSessionStorage? = null,
+    ) = FirebaseRestAuthEngine(
+        transport = transport,
+        apiKeyProvider = { "test-key" },
+        sessionStorage = storage,
+    )
 
     private val userResponse =
         """{"localId":"uid-1","email":"a@b.c","idToken":"tok","refreshToken":"r"}"""
@@ -253,6 +267,68 @@ class FirebaseRestAuthEngineTest {
     }
 
     @Test
+    fun sessionPersistsAcrossEngineInstancesAndRefreshesOnFirstUse() = runTest {
+        val storage = FakeStorage()
+        val transport = ScriptedTransport()
+        transport.responses += userResponse
+        transport.responses += lookupResponse
+        engine(transport, storage).signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+
+        // "Process restart": a new engine over the same storage.
+        val restartTransport = ScriptedTransport()
+        restartTransport.responses += """{"id_token":"fresh-tok","refresh_token":"r2"}"""
+        val restarted = engine(restartTransport, storage)
+
+        val restored = restarted.currentUser()
+        assertEquals("uid-1", restored?.uid)
+        // The stored ID token has expired; first use refreshes it.
+        assertEquals("fresh-tok", restarted.currentUserIdToken().getOrThrow())
+        assertContains(restartTransport.calls.single().first, "securetoken.googleapis.com")
+    }
+
+    @Test
+    fun jvmDefaultStorageRoundTripsThroughTheRealFile() = runTest {
+        val storage = defaultFirebaseSessionStorage()!!
+        val key = "firebase-session-storage-roundtrip-test"
+        try {
+            val transport = ScriptedTransport()
+            transport.responses += userResponse
+            transport.responses += lookupResponse
+            FirebaseRestAuthEngine(
+                transport = transport,
+                apiKeyProvider = { "storage-roundtrip-test" },
+                sessionStorage = storage,
+            ).signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+
+            val restored = FirebaseRestAuthEngine(
+                transport = ScriptedTransport(),
+                apiKeyProvider = { "storage-roundtrip-test" },
+                sessionStorage = storage,
+            ).currentUser()
+
+            assertEquals("uid-1", restored?.uid)
+        } finally {
+            storage.save(key, null)
+        }
+    }
+
+    @Test
+    fun signOutClearsPersistedSession() = runTest {
+        val storage = FakeStorage()
+        val transport = ScriptedTransport()
+        transport.responses += userResponse
+        transport.responses += lookupResponse
+        val engine = engine(transport, storage)
+
+        engine.signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+        assertTrue(storage.values.isNotEmpty())
+        engine.signOut()
+
+        assertTrue(storage.values.isEmpty())
+        assertNull(engine(ScriptedTransport(), storage).currentUser())
+    }
+
+    @Test
     fun signOutClearsSession() = runTest {
         val transport = ScriptedTransport()
         transport.responses += """{"localId":"uid-1","idToken":"t1","displayName":"A"}"""
@@ -348,6 +424,7 @@ class DesktopWebFlowTest {
                 assertEquals("apple.com", request.providerId)
                 WebFlowResult(idToken = "web-id-token", refreshToken = "web-refresh")
             },
+            sessionStorage = null,
         )
 
         val user = engine.signIn(

@@ -33,7 +33,10 @@ Desktop support is complete:
 - **Email/password, email link, anonymous, reauthentication and
   Google/Facebook/Apple token exchange** run against the **Firebase Auth
   REST API** (GitLive's firebase-java-sdk has no auth implementation). The
-  session is held in memory — no disk persistence yet.
+  session **persists across app restarts** in `~/.kmpauth/` (the refresh
+  token, in plain text — the same trust model as the Firebase CLI's
+  `~/.config/configstore`); the ID token is refreshed automatically on
+  first use after a restart.
 - **Browser flows** ([OAuth/GitHub/Microsoft/Apple](oauth-providers.md))
   open the system browser on a local page that runs Firebase's official JS
   SDK against your project's hosted auth handler

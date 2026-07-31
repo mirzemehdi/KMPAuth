@@ -35,6 +35,8 @@ internal data class FirebaseRestUser(
     val refreshToken: String?,
     val isAnonymous: Boolean,
     val providerIds: List<String> = emptyList(),
+    /** True for a restored session whose stored ID token has expired. */
+    val stale: Boolean = false,
 )
 
 @KMPAuthInternalApi
@@ -77,16 +79,18 @@ internal data class WebFlowRequest(
  * implement auth (#204), and on wasm, where the Firebase SDK has no
  * target at all.
  *
- * The session (current user, tokens) is held in memory for the process
- * lifetime; there is no persistence yet. [webFlowRunner] is the platform's
- * browser OAuth flow — Desktop's loopback page, or null where no flow
- * exists (wasm), in which case `OAuthWebFlow` credentials fail with a
- * reason.
+ * The session persists across restarts through [sessionStorage] (a file
+ * under `~/.kmpauth/` on Desktop, `localStorage` on wasm) — the restored
+ * ID token is refreshed via the Secure Token exchange on first use.
+ * [webFlowRunner] is the platform's browser OAuth flow — Desktop's
+ * loopback page, or null where no flow exists (wasm), in which case
+ * `OAuthWebFlow` credentials fail with a reason.
  */
 internal class FirebaseRestAuthEngine(
     private val transport: FirebaseRestTransport,
     private val apiKeyProvider: () -> String,
     private val webFlowRunner: (suspend (WebFlowRequest) -> WebFlowResult)? = null,
+    private val sessionStorage: FirebaseSessionStorage? = defaultFirebaseSessionStorage(),
 ) : AuthProviderBackend {
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -106,7 +110,20 @@ internal class FirebaseRestAuthEngine(
         get() = sessionFlow.value
         set(value) {
             sessionFlow.value = value
+            runCatching { sessionStorage?.save(storageKey(), value?.toSessionJson()) }
         }
+
+    init {
+        // Restore the previous session, if any. Guarded: the API key may
+        // not be configured yet when the engine is constructed eagerly.
+        runCatching {
+            sessionStorage?.load(storageKey())?.let { raw ->
+                sessionFromJson(raw)?.let { sessionFlow.value = it }
+            }
+        }
+    }
+
+    private fun storageKey(): String = "firebase-session-${apiKeyProvider()}"
 
     override suspend fun signIn(
         credential: AuthCredential,
@@ -121,7 +138,7 @@ internal class FirebaseRestAuthEngine(
                         call(
                             "accounts:signUp",
                             buildJsonObject {
-                                put("idToken", requireSession().idToken)
+                                put("idToken", freshSessionIdToken())
                                 put("email", credential.email)
                                 put("password", credential.password)
                                 put("returnSecureToken", true)
@@ -142,7 +159,14 @@ internal class FirebaseRestAuthEngine(
                 }
 
             is AuthCredential.IdToken -> signedInUser(
-                call("accounts:signInWithIdp", credential.toSignInWithIdpBody(linkWithCurrentUser))
+                call(
+                    "accounts:signInWithIdp",
+                    credential.toSignInWithIdpBody(
+                        linkIdToken = if (linkWithCurrentUser && session != null) {
+                            freshSessionIdToken()
+                        } else null,
+                    ),
+                )
             )
 
             is AuthCredential.OAuthWebFlow -> {
@@ -228,7 +252,7 @@ internal class FirebaseRestAuthEngine(
                 )
 
                 is AuthCredential.IdToken -> signedInUser(
-                    call("accounts:signInWithIdp", credential.toSignInWithIdpBody(link = false))
+                    call("accounts:signInWithIdp", credential.toSignInWithIdpBody(linkIdToken = null))
                 )
 
                 is AuthCredential.OAuthWebFlow -> throw UnsupportedOperationException(
@@ -245,10 +269,10 @@ internal class FirebaseRestAuthEngine(
         }
 
     override suspend fun deleteAccount(): Result<Unit> = runCatchingCancellable {
-        val current = session ?: throw IllegalStateException("No signed-in user to delete")
+        if (session == null) throw IllegalStateException("No signed-in user to delete")
         call(
             "accounts:delete",
-            buildJsonObject { put("idToken", current.idToken) },
+            buildJsonObject { put("idToken", freshSessionIdToken()) },
         )
         session = null
     }
@@ -346,7 +370,7 @@ internal class FirebaseRestAuthEngine(
                 buildJsonObject {
                     put("email", email)
                     put("oobCode", oobCode)
-                    if (linkAccount) session?.let { put("idToken", it.idToken) }
+                    if (linkAccount && session != null) put("idToken", freshSessionIdToken())
                 }
             )
         )
@@ -367,38 +391,54 @@ internal class FirebaseRestAuthEngine(
         runCatchingCancellable {
             val current = session
                 ?: throw IllegalStateException("No signed-in user to get an ID token for")
-            if (!forceRefresh) return@runCatchingCancellable current.idToken
-            val refreshToken = current.refreshToken
-                ?: return@runCatchingCancellable current.idToken
-            // Secure Token service exchanges the refresh token for a fresh
-            // ID token (the REST counterpart of the SDKs' getIdToken(true)).
-            val url = "https://securetoken.googleapis.com/v1/token?key=${apiKeyProvider()}"
-            val response = json.parseToJsonElement(
-                transport.post(
-                    url,
-                    buildJsonObject {
-                        put("grant_type", "refresh_token")
-                        put("refresh_token", refreshToken)
-                    }.toString(),
-                )
-            ).jsonObject
-            response["error"]?.jsonObject?.let { error ->
-                val message = error["message"]?.jsonPrimitive?.content ?: "UNKNOWN_ERROR"
-                throw IllegalStateException("Firebase token refresh failed: $message")
-            }
-            val idToken = response["id_token"]?.jsonPrimitive?.content
-                ?: throw IllegalStateException("Firebase token refresh returned no ID token")
-            session = current.copy(
-                idToken = idToken,
-                refreshToken = response["refresh_token"]?.jsonPrimitive?.content ?: refreshToken,
-            )
-            idToken
+            if (forceRefresh || current.stale) refreshSession(current).idToken
+            else current.idToken
         }
+
+    /**
+     * The session's ID token, refreshed first when the session was restored
+     * from storage (its stored token has expired).
+     */
+    private suspend fun freshSessionIdToken(): String {
+        val current = session ?: throw IllegalStateException("No signed-in user")
+        return if (current.stale) refreshSession(current).idToken else current.idToken
+    }
+
+    /**
+     * Secure Token service exchange: refresh token → fresh ID token (the
+     * REST counterpart of the SDKs' `getIdToken(true)`).
+     */
+    private suspend fun refreshSession(current: FirebaseRestUser): FirebaseRestUser {
+        val refreshToken = current.refreshToken ?: return current
+        val url = "https://securetoken.googleapis.com/v1/token?key=${apiKeyProvider()}"
+        val response = json.parseToJsonElement(
+            transport.post(
+                url,
+                buildJsonObject {
+                    put("grant_type", "refresh_token")
+                    put("refresh_token", refreshToken)
+                }.toString(),
+            )
+        ).jsonObject
+        response["error"]?.jsonObject?.let { error ->
+            val message = error["message"]?.jsonPrimitive?.content ?: "UNKNOWN_ERROR"
+            throw IllegalStateException("Firebase token refresh failed: $message")
+        }
+        val idToken = response["id_token"]?.jsonPrimitive?.content
+            ?: throw IllegalStateException("Firebase token refresh returned no ID token")
+        val refreshed = current.copy(
+            idToken = idToken,
+            refreshToken = response["refresh_token"]?.jsonPrimitive?.content ?: refreshToken,
+            stale = false,
+        )
+        session = refreshed
+        return refreshed
+    }
 
     private fun requireSession(): FirebaseRestUser =
         session ?: throw IllegalStateException("No signed-in user to reauthenticate")
 
-    private fun AuthCredential.IdToken.toSignInWithIdpBody(link: Boolean): JsonObject {
+    private fun AuthCredential.IdToken.toSignInWithIdpBody(linkIdToken: String?): JsonObject {
         val postBody = buildString {
             when (providerId) {
                 AuthProviderIds.FACEBOOK ->
@@ -424,7 +464,7 @@ internal class FirebaseRestAuthEngine(
             put("requestUri", "http://localhost")
             put("returnSecureToken", true)
             put("returnIdpCredential", true)
-            if (link) session?.let { put("idToken", it.idToken) }
+            linkIdToken?.let { put("idToken", it) }
         }
     }
 
