@@ -6,6 +6,7 @@ import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUser
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.firebase.FirebaseBackendOptions
+import kotlinx.coroutines.flow.Flow
 
 internal const val WASM_UNSUPPORTED_REASON: String =
     "Firebase browser-flow sign-in is not available on wasm: the Firebase " +
@@ -93,7 +94,12 @@ public actual object FirebaseAuthBackend : AuthProviderBackend {
 
     override suspend fun deleteAccount(): Result<Unit> = engine.deleteAccount()
 
+    override suspend fun currentUserIdToken(forceRefresh: Boolean): Result<String> =
+        engine.currentUserIdToken(forceRefresh)
+
     actual override suspend fun signOut(): Unit = engine.signOut()
 
     actual override fun currentUser(): KMPAuthUser? = engine.currentUser()
+
+    override val currentUserFlow: Flow<KMPAuthUser?> get() = engine.currentUserFlow
 }

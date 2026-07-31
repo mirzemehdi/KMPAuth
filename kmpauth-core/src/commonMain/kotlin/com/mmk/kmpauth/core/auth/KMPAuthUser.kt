@@ -27,6 +27,12 @@ public interface KMPAuthUser {
     public val providerId: String?
 
     /**
+     * True for a guest session created by anonymous sign-in. Becomes false
+     * once the account is upgraded by linking a real credential.
+     */
+    public val isAnonymous: Boolean get() = false
+
+    /**
      * Ids of every identity provider linked to this account, using
      * [AuthProviderIds] conventions — e.g. `["password"]` for an email
      * user, `["apple.com"]` after Sign in with Apple, several entries

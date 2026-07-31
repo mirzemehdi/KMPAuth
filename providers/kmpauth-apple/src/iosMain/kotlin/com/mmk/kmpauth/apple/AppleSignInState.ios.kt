@@ -8,6 +8,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
+import com.mmk.kmpauth.core.auth.KMPAuthNSErrorException
+import com.mmk.kmpauth.core.auth.KMPAuthNetworkException
+import com.mmk.kmpauth.core.auth.KMPAuthUserCancelledException
 import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -26,6 +29,8 @@ import platform.AuthenticationServices.ASAuthorizationAppleIDProvider
 import platform.AuthenticationServices.ASAuthorizationController
 import platform.AuthenticationServices.ASAuthorizationControllerDelegateProtocol
 import platform.AuthenticationServices.ASAuthorizationControllerPresentationContextProvidingProtocol
+import platform.AuthenticationServices.ASAuthorizationErrorCanceled
+import platform.AuthenticationServices.ASAuthorizationErrorDomain
 import platform.AuthenticationServices.ASAuthorizationScopeEmail
 import platform.AuthenticationServices.ASAuthorizationScopeFullName
 import platform.AuthenticationServices.ASPresentationAnchor
@@ -34,6 +39,7 @@ import platform.CoreCrypto.CC_SHA256_DIGEST_LENGTH
 import platform.Foundation.NSError
 import platform.Foundation.NSPersonNameComponents
 import platform.Foundation.NSString
+import platform.Foundation.NSURLErrorDomain
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.create
 import platform.Security.SecRandomCopyBytes
@@ -186,14 +192,31 @@ private class AppleAuthorizationDelegate(
         controller: ASAuthorizationController,
         didCompleteWithError: NSError,
     ) {
-        onResult(
-            Result.failure(
-                IllegalStateException(
-                    didCompleteWithError.localizedFailureReason
-                        ?: didCompleteWithError.localizedDescription
-                )
+        onResult(Result.failure(didCompleteWithError.asAppleSignInError()))
+    }
+}
+
+/**
+ * Classifies the AuthenticationServices failure. The full [NSError] stays
+ * reachable through [KMPAuthNSErrorException] — as the failure itself when
+ * unclassified, as the `cause` of the typed exceptions otherwise.
+ */
+private fun NSError.asAppleSignInError(): Throwable {
+    val wrapped = KMPAuthNSErrorException(this)
+    return when {
+        domain == ASAuthorizationErrorDomain && code == ASAuthorizationErrorCanceled ->
+            KMPAuthUserCancelledException(
+                message = "The user cancelled the sign-in flow. ($domain $code)",
+                cause = wrapped,
             )
-        )
+
+        domain == NSURLErrorDomain ->
+            KMPAuthNetworkException(
+                message = "Apple sign-in failed because of a network problem: ${wrapped.message}",
+                cause = wrapped,
+            )
+
+        else -> wrapped
     }
 }
 

@@ -113,7 +113,7 @@ internal class GoogleAuthUiProviderImpl(
             checkLegacyGoogleSignIn(filterByAuthorizedAccounts, isAutoSelectEnabled, scopes)
         } else {
             currentLogger.log("GoogleAuthUiProvider: No valid credential response found")
-            Result.failure(e)
+            Result.failure(e.asKMPAuthError())
         }
     }
 

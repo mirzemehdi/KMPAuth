@@ -8,6 +8,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
+import com.mmk.kmpauth.core.auth.KMPAuthUserCancelledException
 import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.UByteVar
@@ -101,7 +102,11 @@ private suspend fun signIn(
                     return@logInFromViewController
                 }
                 if (result?.isCancelled() == true) {
-                    resumeOnce(Result.failure(IllegalStateException("User cancelled the login process")))
+                    resumeOnce(
+                        Result.failure(
+                            KMPAuthUserCancelledException("The user cancelled the sign-in flow.")
+                        )
+                    )
                     return@logInFromViewController
                 }
 

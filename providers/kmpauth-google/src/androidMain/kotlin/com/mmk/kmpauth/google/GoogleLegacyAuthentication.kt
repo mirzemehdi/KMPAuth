@@ -38,7 +38,7 @@ internal class GoogleLegacyAuthentication(
             activityResultLauncher.launch(signInClient)
         } catch (e: ActivityNotFoundException) {
             currentLogger.log("GoogleLegacyAuth Error: $e")
-            return Result.failure(e)
+            return Result.failure(e.asKMPAuthError())
         }
 
         withContext(Dispatchers.Default) {
@@ -74,7 +74,7 @@ internal class GoogleLegacyAuthentication(
             }
         } catch (e: ApiException) {
             currentLogger.log("GoogleLegacyAuth Error: $e")
-            Result.failure(e)
+            Result.failure(e.asKMPAuthError())
         }
     }
 

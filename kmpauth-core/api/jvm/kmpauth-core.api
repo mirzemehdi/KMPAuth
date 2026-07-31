@@ -2,9 +2,12 @@ public final class com/mmk/kmpauth/core/KMPAuth {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/KMPAuth;
 	public final fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public final fun currentUserIdToken-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun currentUserIdToken-gIAlu-s$default (Lcom/mmk/kmpauth/core/KMPAuth;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getBackendProvider ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
 	public final fun getBackendProvider (Ljava/lang/String;)Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
+	public final fun getCurrentUserFlow ()Lkotlinx/coroutines/flow/Flow;
 	public final fun initialize (Lkotlin/jvm/functions/Function1;)V
 	public final fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public final fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -136,8 +139,11 @@ public final class com/mmk/kmpauth/core/auth/AuthCredential$OAuthWebFlow : com/m
 
 public abstract interface class com/mmk/kmpauth/core/auth/AuthProviderBackend {
 	public abstract fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun currentUserIdToken-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun currentUserIdToken-gIAlu-s$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getBackendId ()Ljava/lang/String;
+	public fun getCurrentUserFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sendPasswordResetEmail-0E7RQCE (Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -155,8 +161,11 @@ public abstract interface class com/mmk/kmpauth/core/auth/AuthProviderBackend {
 }
 
 public final class com/mmk/kmpauth/core/auth/AuthProviderBackend$DefaultImpls {
+	public static fun currentUserIdToken-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun currentUserIdToken-gIAlu-s$default (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static fun deleteAccount-IoAF18A (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static fun getBackendId (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;)Ljava/lang/String;
+	public static fun getCurrentUserFlow (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;)Lkotlinx/coroutines/flow/Flow;
 	public static fun isSignInWithEmailLink (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;)Z
 	public static fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static fun sendPasswordResetEmail-0E7RQCE (Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;Ljava/lang/String;Lcom/mmk/kmpauth/core/auth/EmailActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -222,8 +231,10 @@ public final class com/mmk/kmpauth/core/auth/KMPAuthBackend : com/mmk/kmpauth/co
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mmk/kmpauth/core/auth/KMPAuthBackend;
 	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun currentUserIdToken-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getBackendId ()Ljava/lang/String;
+	public fun getCurrentUserFlow ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getOrNull ()Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
 	public final fun getOrNull (Ljava/lang/String;)Lcom/mmk/kmpauth/core/auth/AuthProviderBackend;
 	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
@@ -244,6 +255,24 @@ public final class com/mmk/kmpauth/core/auth/KMPAuthBackend : com/mmk/kmpauth/co
 	public fun signUp-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class com/mmk/kmpauth/core/auth/KMPAuthNetworkException : java/lang/Exception {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/mmk/kmpauth/core/auth/KMPAuthNoAccountAvailableException : java/lang/Exception {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/mmk/kmpauth/core/auth/KMPAuthProviderUnavailableException : java/lang/Exception {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/mmk/kmpauth/core/auth/KMPAuthRecentLoginRequiredException : java/lang/Exception {
 	public static final field $stable I
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -258,10 +287,18 @@ public abstract interface class com/mmk/kmpauth/core/auth/KMPAuthUser {
 	public fun getProviderIds ()Ljava/util/List;
 	public abstract fun getRaw ()Ljava/lang/Object;
 	public abstract fun getUid ()Ljava/lang/String;
+	public fun isAnonymous ()Z
 }
 
 public final class com/mmk/kmpauth/core/auth/KMPAuthUser$DefaultImpls {
 	public static fun getProviderIds (Lcom/mmk/kmpauth/core/auth/KMPAuthUser;)Ljava/util/List;
+	public static fun isAnonymous (Lcom/mmk/kmpauth/core/auth/KMPAuthUser;)Z
+}
+
+public final class com/mmk/kmpauth/core/auth/KMPAuthUserCancelledException : java/lang/Exception {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
 public final class com/mmk/kmpauth/core/auth/KMPAuthUserCollisionException : java/lang/Exception {

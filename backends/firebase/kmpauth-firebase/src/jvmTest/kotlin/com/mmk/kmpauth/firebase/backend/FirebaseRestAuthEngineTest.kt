@@ -5,6 +5,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -181,6 +182,74 @@ class FirebaseRestAuthEngineTest {
 
         assertTrue(result.isFailure)
         assertContains(result.exceptionOrNull()!!.message!!, "different user")
+    }
+
+    @Test
+    fun currentUserIdTokenReturnsCachedToken() = runTest {
+        val transport = ScriptedTransport()
+        transport.responses += userResponse
+        transport.responses += lookupResponse
+        val engine = engine(transport)
+
+        engine.signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+
+        assertEquals("tok", engine.currentUserIdToken().getOrThrow())
+        assertEquals(2, transport.calls.size, "cached token must not hit the network")
+    }
+
+    @Test
+    fun currentUserIdTokenForceRefreshExchangesRefreshToken() = runTest {
+        val transport = ScriptedTransport()
+        transport.responses += userResponse
+        transport.responses += lookupResponse
+        transport.responses += """{"id_token":"fresh-tok","refresh_token":"r2"}"""
+        val engine = engine(transport)
+
+        engine.signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+        val token = engine.currentUserIdToken(forceRefresh = true).getOrThrow()
+
+        assertEquals("fresh-tok", token)
+        assertContains(transport.calls[2].first, "securetoken.googleapis.com/v1/token")
+        assertContains(transport.calls[2].second, "\"refresh_token\":\"r\"")
+        // The refreshed token becomes the session token.
+        assertEquals("fresh-tok", engine.currentUserIdToken().getOrThrow())
+    }
+
+    @Test
+    fun currentUserIdTokenWithoutSessionFails() = runTest {
+        val result = engine(ScriptedTransport()).currentUserIdToken()
+
+        assertTrue(result.isFailure)
+        assertContains(result.exceptionOrNull()!!.message!!, "No signed-in user")
+    }
+
+    @Test
+    fun currentUserFlowEmitsOnSignInAndSignOut() = runTest {
+        val transport = ScriptedTransport()
+        transport.responses += userResponse
+        transport.responses += lookupResponse
+        val engine = engine(transport)
+        val states = mutableListOf<String?>()
+        val job = backgroundScope.launch(kotlinx.coroutines.Dispatchers.Unconfined) {
+            engine.currentUserFlow.collect { states.add(it?.uid) }
+        }
+
+        engine.signIn(AuthCredential.EmailPassword("a@b.c", "pw")).getOrThrow()
+        engine.signOut()
+        job.cancel()
+
+        assertEquals(listOf(null, "uid-1", null), states)
+    }
+
+    @Test
+    fun anonymousUserIsFlaggedAnonymous() = runTest {
+        val transport = ScriptedTransport()
+        transport.responses += """{"localId":"anon-1","idToken":"tok"}"""
+        val engine = engine(transport)
+
+        val user = engine.signInAnonymously().getOrThrow()
+
+        assertTrue(user.isAnonymous)
     }
 
     @Test

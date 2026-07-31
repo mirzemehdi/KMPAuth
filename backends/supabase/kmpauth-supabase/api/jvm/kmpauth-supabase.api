@@ -13,8 +13,10 @@ public final class com/mmk/kmpauth/supabase/KMPAuthSupabaseConfigurationKt {
 public final class com/mmk/kmpauth/supabase/SupabaseAuthBackend : com/mmk/kmpauth/core/auth/AuthProviderBackend {
 	public fun <init> (Lio/github/jan/supabase/SupabaseClient;)V
 	public fun currentUser ()Lcom/mmk/kmpauth/core/auth/KMPAuthUser;
+	public fun currentUserIdToken-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun deleteAccount-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getBackendId ()Ljava/lang/String;
+	public fun getCurrentUserFlow ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getSupabaseClient ()Lio/github/jan/supabase/SupabaseClient;
 	public fun isSignInWithEmailLink (Ljava/lang/String;)Z
 	public fun reauthenticate-gIAlu-s (Lcom/mmk/kmpauth/core/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -54,5 +56,6 @@ public final class com/mmk/kmpauth/supabase/SupabaseKMPAuthUser : com/mmk/kmpaut
 	public fun getProviderIds ()Ljava/util/List;
 	public fun getRaw ()Ljava/lang/Object;
 	public fun getUid ()Ljava/lang/String;
+	public fun isAnonymous ()Z
 }
 

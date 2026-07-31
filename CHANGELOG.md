@@ -5,6 +5,61 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.2] — 2026-07-30
+
+### Added
+- **Typed cancellation and network failures** (#229). User cancellation —
+  the most common non-success outcome, previously indistinguishable from
+  real errors on iOS except by matching a device-localized string — now
+  fails with `KMPAuthUserCancelledException` on every provider and
+  platform: Credential Manager and legacy Play services cancellations on
+  Android, `ASAuthorizationError.canceled` and the GIDSignIn cancel code
+  on iOS, the closed Google popup on web, the Facebook SDK's cancel
+  callback, and Firebase's cancelled OAuth web context. Clearly
+  attributed connectivity failures (Play services network/timeout status
+  codes, `NSURLErrorDomain`) fail with `KMPAuthNetworkException`.
+- **`KMPAuthNSErrorException` (iOS)**: sign-in `NSError`s are no longer
+  reduced to a localized description — the wrapper exposes `domain`,
+  `code` and the full `nsError`, surfaced directly for unclassified
+  failures and as the `cause` of the typed ones.
+- **User-fixable device conditions as typed failures** (#229):
+  `KMPAuthNoAccountAvailableException` (no usable Google account on the
+  device — documented `SIGN_IN_REQUIRED`/`SIGN_IN_FAILED` status codes)
+  and `KMPAuthProviderUnavailableException` (Play services missing,
+  disabled or out of date — `SERVICE_MISSING`/`SERVICE_VERSION_UPDATE_REQUIRED`/
+  `SERVICE_DISABLED`/`API_NOT_CONNECTED`, plus the unhandleable sign-in
+  intent). These signals are only visible inside the library — the
+  Credential Manager exceptions that carry them are consumed by the
+  legacy fallback — so apps could not classify them downstream.
+
+## [3.0.1] — 2026-07-30
+
+Closes the gaps that still forced apps to keep a hand-rolled auth layer
+over the GitLive SDK (reactive user state, bearer tokens for their own
+API, guest detection).
+
+### Added
+- **`KMPAuth.currentUserIdToken(forceRefresh = false): Result<String>`** —
+  the signed-in user's JWT for `Authorization: Bearer` headers against
+  your own server. Firebase: SDK `getIdToken` on Android/iOS/JS; the
+  Desktop/wasm REST engine serves its session token and implements
+  `forceRefresh` via the Secure Token refresh-token exchange. Supabase:
+  the GoTrue access token (`forceRefresh` refreshes the session first).
+- **`KMPAuth.currentUserFlow: Flow<KMPAuthUser?>`** — reactive auth state:
+  emits the current value on collection and on every sign-in/sign-out.
+  The Firebase backend additionally re-emits after a successful operation
+  upgrades the current user (linking a credential to a guest), which the
+  raw Firebase auth-state listener does not report — no more manual
+  refresh triggers around guest upgrade. Backend interface default is a
+  single snapshot, so custom backends stay source-compatible.
+- **`KMPAuthUser.isAnonymous`** (default false) on every backend — gate
+  guest-session UI without unwrapping `raw`.
+- **Cross-provider profile fallback**: `KMPAuthUser.email`/`displayName`/
+  `photoUrl` on the Firebase backends fall back to the first linked
+  provider that has the value (filtering the literal "null" strings some
+  SDKs report), so a guest upgraded with a Google account shows the
+  Google name and photo without hand-rolled `providerData` aggregation.
+
 ## [3.0.0] — 2026-07-30
 
 The stable 3.0 release. Everything below is on top of 3.0.0-beta01; the

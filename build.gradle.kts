@@ -75,14 +75,20 @@ dependencies {
 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
     the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
         resolution("webpack-dev-server", "5.2.6")
+        resolution("webpack", "5.104.1")
         resolution("ws", "8.21.0")
         resolution("undici", "6.27.0")
         resolution("fast-uri", "3.1.4")
         resolution("body-parser", "1.20.6")
+        resolution("serialize-javascript", "7.0.7")
+        resolution("uuid", "11.1.1")
+        resolution("diff", "8.0.3")
     }
 }
 plugins.withType<org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin> {
     the<org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootExtension>().apply {
+        resolution("webpack", "5.104.1")
         resolution("ws", "8.21.0")
+        resolution("serialize-javascript", "7.0.7")
     }
 }

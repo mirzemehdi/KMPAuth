@@ -5,6 +5,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import io.ktor.client.engine.mock.toByteArray
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -342,6 +343,36 @@ class SupabaseAuthBackendTest {
         val error = assertIs<UnsupportedOperationException>(result.exceptionOrNull())
         assertContains(error.message!!, "Edge")
         assertTrue(engine.requests.isEmpty())
+    }
+
+    @Test
+    fun currentUserIdTokenReturnsAccessToken() = runTest {
+        val engine = RecordingMockEngine { jsonResponse(TEST_SESSION_JSON) }
+        val backend = SupabaseAuthBackend(engine.client)
+        backend.signIn(AuthCredential.EmailPassword("user@example.com", "secret")).getOrThrow()
+
+        assertEquals("access-token", backend.currentUserIdToken().getOrThrow())
+    }
+
+    @Test
+    fun currentUserIdTokenWithoutSessionFails() = runTest {
+        val engine = RecordingMockEngine { jsonResponse(TEST_SESSION_JSON) }
+        val backend = SupabaseAuthBackend(engine.client)
+
+        val result = backend.currentUserIdToken()
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun currentUserFlowEmitsSignedInUser() = runTest {
+        val engine = RecordingMockEngine { jsonResponse(TEST_SESSION_JSON) }
+        val backend = SupabaseAuthBackend(engine.client)
+        backend.signIn(AuthCredential.EmailPassword("user@example.com", "secret")).getOrThrow()
+
+        val user = backend.currentUserFlow.first { it != null }
+
+        assertEquals("user-123", user?.uid)
     }
 
     @Test

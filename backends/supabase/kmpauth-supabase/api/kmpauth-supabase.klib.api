@@ -11,11 +11,14 @@ final class com.mmk.kmpauth.supabase/SupabaseAuthBackend : com.mmk.kmpauth.core.
 
     final val backendId // com.mmk.kmpauth.supabase/SupabaseAuthBackend.backendId|{}backendId[0]
         final fun <get-backendId>(): kotlin/String // com.mmk.kmpauth.supabase/SupabaseAuthBackend.backendId.<get-backendId>|<get-backendId>(){}[0]
+    final val currentUserFlow // com.mmk.kmpauth.supabase/SupabaseAuthBackend.currentUserFlow|{}currentUserFlow[0]
+        final fun <get-currentUserFlow>(): kotlinx.coroutines.flow/Flow<com.mmk.kmpauth.core.auth/KMPAuthUser?> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.currentUserFlow.<get-currentUserFlow>|<get-currentUserFlow>(){}[0]
     final val supabaseClient // com.mmk.kmpauth.supabase/SupabaseAuthBackend.supabaseClient|{}supabaseClient[0]
         final fun <get-supabaseClient>(): io.github.jan.supabase/SupabaseClient // com.mmk.kmpauth.supabase/SupabaseAuthBackend.supabaseClient.<get-supabaseClient>|<get-supabaseClient>(){}[0]
 
     final fun currentUser(): com.mmk.kmpauth.core.auth/KMPAuthUser? // com.mmk.kmpauth.supabase/SupabaseAuthBackend.currentUser|currentUser(){}[0]
     final fun isSignInWithEmailLink(kotlin/String): kotlin/Boolean // com.mmk.kmpauth.supabase/SupabaseAuthBackend.isSignInWithEmailLink|isSignInWithEmailLink(kotlin.String){}[0]
+    final suspend fun currentUserIdToken(kotlin/Boolean): kotlin/Result<kotlin/String> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.currentUserIdToken|currentUserIdToken(kotlin.Boolean){}[0]
     final suspend fun deleteAccount(): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.deleteAccount|deleteAccount(){}[0]
     final suspend fun reauthenticate(com.mmk.kmpauth.core.auth/AuthCredential): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.reauthenticate|reauthenticate(com.mmk.kmpauth.core.auth.AuthCredential){}[0]
     final suspend fun sendPasswordResetEmail(kotlin/String, com.mmk.kmpauth.core.auth/EmailActionCodeSettings?): kotlin/Result<kotlin/Unit> // com.mmk.kmpauth.supabase/SupabaseAuthBackend.sendPasswordResetEmail|sendPasswordResetEmail(kotlin.String;com.mmk.kmpauth.core.auth.EmailActionCodeSettings?){}[0]
@@ -51,6 +54,8 @@ final class com.mmk.kmpauth.supabase/SupabaseKMPAuthUser : com.mmk.kmpauth.core.
         final fun <get-displayName>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.displayName.<get-displayName>|<get-displayName>(){}[0]
     final val email // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.email|{}email[0]
         final fun <get-email>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.email.<get-email>|<get-email>(){}[0]
+    final val isAnonymous // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.isAnonymous|{}isAnonymous[0]
+        final fun <get-isAnonymous>(): kotlin/Boolean // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.isAnonymous.<get-isAnonymous>|<get-isAnonymous>(){}[0]
     final val photoUrl // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.photoUrl|{}photoUrl[0]
         final fun <get-photoUrl>(): kotlin/String? // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.photoUrl.<get-photoUrl>|<get-photoUrl>(){}[0]
     final val providerId // com.mmk.kmpauth.supabase/SupabaseKMPAuthUser.providerId|{}providerId[0]

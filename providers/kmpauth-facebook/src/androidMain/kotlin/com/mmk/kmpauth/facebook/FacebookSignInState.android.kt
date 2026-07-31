@@ -19,6 +19,7 @@ import com.mmk.kmpauth.core.KMPAuth
 import com.mmk.kmpauth.core.KMPAuthInternalApi
 import com.mmk.kmpauth.core.LaunchingSignInState
 import com.mmk.kmpauth.core.SignInState
+import com.mmk.kmpauth.core.auth.KMPAuthUserCancelledException
 import com.mmk.kmpauth.core.getActivity
 import com.mmk.kmpauth.core.logger.currentLogger
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -156,7 +157,9 @@ private fun facebookSignInCallback(
     }
 
     override fun onCancel() {
-        updatedOnResult(Result.failure(IllegalStateException("Facebook sign-in cancelled")))
+        updatedOnResult(
+            Result.failure(KMPAuthUserCancelledException("The user cancelled the sign-in flow."))
+        )
     }
 
     override fun onError(error: FacebookException) {

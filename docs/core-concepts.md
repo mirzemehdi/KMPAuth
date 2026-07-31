@@ -46,6 +46,8 @@ registered backend:
 KMPAuth.initialize { /* one-stop setup - see Getting started */ }
 
 KMPAuth.currentUser()                 // KMPAuthUser? - null when signed out
+KMPAuth.currentUserFlow               // Flow<KMPAuthUser?> - reactive auth state
+KMPAuth.currentUserIdToken()          // Result<String> - JWT for your own server
 KMPAuth.signOut()
 KMPAuth.signIn(credential)            // exchange a credential you obtained yourself
 KMPAuth.signUp(email, password)
@@ -58,6 +60,26 @@ KMPAuth.signInWithEmailLink(email, link)
 KMPAuth.reauthenticate(credential)
 KMPAuth.deleteAccount()               // irreversible; may need reauthentication first
 ```
+
+### Reactive auth state and API calls to your own server
+
+`KMPAuth.currentUserFlow` emits on every auth-state change — sign-in,
+sign-out, and (unlike Firebase's raw listener) also after linking upgrades
+the current user, so a guest-to-Google upgrade re-emits without manual
+triggers:
+
+```kotlin
+val user: StateFlow<KMPAuthUser?> = KMPAuth.currentUserFlow
+    .stateIn(scope, SharingStarted.Eagerly, KMPAuth.currentUser())
+```
+
+`KMPAuth.currentUserIdToken(forceRefresh = true)` returns the signed-in
+user's JWT for an `Authorization: Bearer` header — your server verifies it
+against Firebase's public keys (or the Supabase project's JWT secret).
+
+`KMPAuthUser` also exposes `isAnonymous` (guest sessions) and falls back
+across the linked providers for `email`/`displayName`/`photoUrl`, so a
+guest upgraded with a Google account shows the Google name and photo.
 
 ### Reauthentication
 
@@ -107,6 +129,40 @@ KMPAuth.deleteAccount().onFailure { error ->
 The Supabase backend reports deletion as unsupported — GoTrue only deletes
 users through the admin API, so expose a Supabase Edge Function calling
 `auth.admin.deleteUser` and invoke that from the app.
+
+## Typed failures
+
+Well-known failure conditions arrive as KMPAuth's own exception types with
+guaranteed non-empty messages, so one `is`-check works on every backend and
+platform:
+
+- `KMPAuthUserCancelledException` — the user dismissed the sign-in UI
+  (picker, sheet, popup, back press). Apps usually stay silent.
+- `KMPAuthNetworkException` — clearly attributed connectivity failure;
+  retryable.
+- `KMPAuthNoAccountAvailableException` — no usable provider account on the
+  device; tell the user to add one in the device settings.
+- `KMPAuthProviderUnavailableException` — Google Play services missing,
+  disabled or out of date; tell the user to update/enable it.
+- `KMPAuthUserCollisionException` — the identity already has an account
+  (see [Anonymous](anonymous.md) for the guest-upgrade pattern).
+- `KMPAuthRecentLoginRequiredException` — reauthenticate and retry.
+
+```kotlin
+result.onFailure { error ->
+    when (error) {
+        is KMPAuthUserCancelledException -> Unit          // stay silent
+        is KMPAuthNetworkException -> showOfflineMessage()
+        else -> showError(error.message)
+    }
+}
+```
+
+Anything unclassified keeps its original exception. On iOS, platform
+`NSError`s are wrapped in `KMPAuthNSErrorException` (exposing `domain`,
+`code` and the full `nsError`) instead of being reduced to a localized
+description — surfaced directly when unclassified, and as the `cause` of
+the typed exceptions otherwise.
 
 ## Auth backends
 

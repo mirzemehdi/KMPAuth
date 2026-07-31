@@ -133,3 +133,13 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 }
+
+// Local smoke tests (publishToMavenLocal) have no GPG key; skip signing
+// when none is configured. CI provides the in-memory key, so releases
+// stay signed.
+tasks.withType<Sign>().configureEach {
+    onlyIf {
+        project.findProperty("signingInMemoryKey") != null ||
+            project.findProperty("signing.keyId") != null
+    }
+}

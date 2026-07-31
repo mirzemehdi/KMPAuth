@@ -7,6 +7,7 @@ import com.mmk.kmpauth.core.auth.AuthProviderIds
 import com.mmk.kmpauth.core.auth.EmailActionCodeSettings
 import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import com.mmk.kmpauth.core.auth.KMPAuthUser
+import com.mmk.kmpauth.core.auth.KMPAuthUserCancelledException
 import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import com.mmk.kmpauth.core.auth.PhoneVerificationUi
 import com.mmk.kmpauth.core.logger.currentLogger
@@ -18,11 +19,16 @@ import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FacebookAuthProvider
 import dev.gitlive.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
+import dev.gitlive.firebase.auth.FirebaseAuthWebException
 import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.PhoneAuthProvider
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 
 /**
  * [AuthProviderBackend] engine over the native Firebase SDK (GitLive
@@ -33,11 +39,17 @@ import kotlinx.coroutines.CancellationException
 @OptIn(KMPAuthInternalApi::class)
 internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
 
+    // Firebase's auth-state listener does not fire when linking upgrades
+    // the current user (same uid); ticking this after successful operations
+    // makes currentUserFlow re-emit anyway.
+    private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     override suspend fun signIn(
         credential: AuthCredential,
         linkWithCurrentUser: Boolean,
     ): Result<KMPAuthUser> = signInInternal(credential, linkWithCurrentUser)
         .mappingFirebaseErrors()
+        .alsoRefreshUserFlow()
 
     private suspend fun signInInternal(
         credential: AuthCredential,
@@ -115,7 +127,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         Firebase.auth.createUserWithEmailAndPassword(email, password)
             .user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }.mappingFirebaseErrors()
+    }.mappingFirebaseErrors().alsoRefreshUserFlow()
 
     override suspend fun signInAnonymously(): Result<KMPAuthUser> = runCatchingCancellable {
         Firebase.auth.signInAnonymously().user?.let(::FirebaseKMPAuthUser)
@@ -144,7 +156,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         }
         result.user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }.mappingFirebaseErrors()
+    }.mappingFirebaseErrors().alsoRefreshUserFlow()
 
     override suspend fun sendPasswordResetEmail(
         email: String,
@@ -177,7 +189,7 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
         }
         result.user?.let(::FirebaseKMPAuthUser)
             ?: throw IllegalStateException("Firebase Null user")
-    }.mappingFirebaseErrors()
+    }.mappingFirebaseErrors().alsoRefreshUserFlow()
 
     override suspend fun signOut() {
         Firebase.auth.signOut()
@@ -185,6 +197,23 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
 
     override fun currentUser(): KMPAuthUser? =
         Firebase.auth.currentUser?.let { FirebaseKMPAuthUser(it) }
+
+    override val currentUserFlow: Flow<KMPAuthUser?>
+        get() = merge(
+            Firebase.auth.authStateChanged,
+            refreshTrigger.map { Firebase.auth.currentUser },
+        ).map { user -> user?.let(::FirebaseKMPAuthUser) }
+
+    override suspend fun currentUserIdToken(forceRefresh: Boolean): Result<String> =
+        runCatchingCancellable {
+            val currentUser = Firebase.auth.currentUser
+                ?: throw IllegalStateException("No signed-in user to get an ID token for")
+            currentUser.getIdToken(forceRefresh)
+                ?: throw IllegalStateException("Firebase returned no ID token")
+        }
+
+    private fun <T> Result<T>.alsoRefreshUserFlow(): Result<T> =
+        also { if (it.isSuccess) refreshTrigger.tryEmit(Unit) }
 
     /**
      * Surfaces well-known Firebase failures as KMPAuth's backend-agnostic
@@ -211,6 +240,18 @@ internal class GitLiveFirebaseAuthEngine : AuthProviderBackend {
                         cause = error,
                     )
                 )
+
+                // The SDK reports a user-dismissed OAuth web flow as a web
+                // exception whose code/message names a cancelled web context.
+                is FirebaseAuthWebException ->
+                    if (error.message?.contains("cancel", ignoreCase = true) == true) {
+                        Result.failure(
+                            KMPAuthUserCancelledException(
+                                message = "The user cancelled the sign-in flow.",
+                                cause = error,
+                            )
+                        )
+                    } else this
 
                 else -> this
             }
