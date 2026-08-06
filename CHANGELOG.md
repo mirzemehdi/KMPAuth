@@ -5,6 +5,16 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.4] — 2026-08-06
+
+### Security
+- Updated the pinned Kotlin/JS dev-toolchain npm packages to their patched
+  releases: `undici` 6.28.0 (cookie attribute injection, response
+  desynchronization, CRLF injection) and `fast-uri` 3.1.5 (host confusion
+  via backslash authority introducer, now also pinned for the wasm
+  toolchain). Build tooling only — the published artifacts never contained
+  these packages and are unchanged from 3.0.3.
+
 ## [3.0.3] — 2026-07-30
 
 ### Fixed
