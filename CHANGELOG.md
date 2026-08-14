@@ -5,6 +5,23 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.5] — 2026-08-14
+
+### Changed
+- **GitLive firebase-kotlin-sdk 2.4.0 → 3.0.0-alpha01** (#231), removing
+  the dependency clash with libraries already on GitLive 3 (e.g.
+  KMPNotifier). Firebase Android BoM 34.15.0 → 34.17.0; the firebase-ios-sdk
+  SPM range floor rises to **12.17.0** (what GitLive 3 is built against),
+  upper bound unchanged. GitLive 3 moved its iOS FirebaseAuth interop from
+  CocoaPods to SwiftPM — internal only, no KMPAuth API change.
+
+### Fixed
+- **Android: offline Google sign-in fails with `KMPAuthNetworkException`**
+  (#232). The provider's status code alone (28404) is ambiguous, so the
+  mapping checks real device connectivity at failure time and only maps
+  when the device is verifiably offline; otherwise the original exception
+  passes through. `kmpauth-google` now declares `ACCESS_NETWORK_STATE`.
+
 ## [3.0.4] — 2026-08-06
 
 ### Security

@@ -47,14 +47,6 @@
 			isa = PBXBuildFile;
 			productRef = A62229A62B479D28001B39BD;
 		};
-		A62229A92B479D28001B39BD = {
-			isa = PBXBuildFile;
-			productRef = A62229A82B479D28001B39BD;
-		};
-		A62229AD2B479D28001B39BD = {
-			isa = PBXBuildFile;
-			productRef = A62229AC2B479D28001B39BD;
-		};
 		A62229AF2B479D28001B39BD = {
 			isa = PBXBuildFile;
 		};
@@ -141,11 +133,9 @@
 			files = (
 				2E159BAF2DEF344200A00636,
 				A61AEE982B3D018A00E17BA4,
-				A62229AD2B479D28001B39BD,
 				A61AEE9A2B3D018A00E17BA4,
 				A62229A72B479D28001B39BD,
 				A62229AF2B479D28001B39BD,
-				A62229A92B479D28001B39BD,
 				2E159BAD2DEF344200A00636,
 				A615958B2B479F2A008C86AE,
 				D96EC7EFF6DE5C4E33C555D6,
@@ -223,8 +213,6 @@
 				A61AEE972B3D018A00E17BA4,
 				A61AEE992B3D018A00E17BA4,
 				A62229A62B479D28001B39BD,
-				A62229A82B479D28001B39BD,
-				A62229AC2B479D28001B39BD,
 				A615958A2B479F2A008C86AE,
 				2E159BAC2DEF344200A00636,
 				2E159BAE2DEF344200A00636,
@@ -556,8 +544,9 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.8.0;
+				kind = versionRange;
+				minimumVersion = 12.17.0;
+				maximumVersion = 12.999.999;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -596,16 +585,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A62229A52B479D28001B39BD;
 			productName = FirebaseAnalytics;
-		};
-		A62229A82B479D28001B39BD = {
-			isa = XCSwiftPackageProductDependency;
-			package = A62229A52B479D28001B39BD;
-			productName = FirebaseAnalyticsOnDeviceConversion;
-		};
-		A62229AC2B479D28001B39BD = {
-			isa = XCSwiftPackageProductDependency;
-			package = A62229A52B479D28001B39BD;
-			productName = FirebaseAnalyticsWithoutAdIdSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

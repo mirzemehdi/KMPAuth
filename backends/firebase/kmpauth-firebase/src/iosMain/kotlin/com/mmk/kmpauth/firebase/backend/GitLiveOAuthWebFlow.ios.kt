@@ -1,7 +1,7 @@
 package com.mmk.kmpauth.firebase.backend
 
-import cocoapods.FirebaseAuth.FIRAuthCredential
-import cocoapods.FirebaseAuth.FIRAuthDataResult
+import swiftPMImport.dev.gitlive.firebase.auth.FIRAuthCredential
+import swiftPMImport.dev.gitlive.firebase.auth.FIRAuthDataResult
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseUser
