@@ -1,31 +1,27 @@
 // swift-tools-version: 5.9
 import PackageDescription
 let package = Package(
-  name: "_backends_firebase_kmpauth-firebase",
+  name: "dev_gitlive_firebase_app_3_0_0_alpha01",
   platforms: [
     .iOS("16.0")
   ],
   products: [
     .library(
-      name: "_backends_firebase_kmpauth-firebase",
+      name: "dev_gitlive_firebase_app_3_0_0_alpha01",
       type: .none,
-      targets: ["_backends_firebase_kmpauth-firebase"]
+      targets: ["dev_gitlive_firebase_app_3_0_0_alpha01"]
     )
   ],
   dependencies: [
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk.git",
-      "12.17.0"..."12.999.999"
+      from: "12.17.0"
     )
   ],
   targets: [
     .target(
-      name: "_backends_firebase_kmpauth-firebase",
+      name: "dev_gitlive_firebase_app_3_0_0_alpha01",
       dependencies: [
-        .product(
-          name: "FirebaseAuth",
-          package: "firebase-ios-sdk"
-        ),
         .product(
           name: "FirebaseCore",
           package: "firebase-ios-sdk"

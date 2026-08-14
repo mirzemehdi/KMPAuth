@@ -15,7 +15,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk.git",
-      "11.8.0"..."12.999.999"
+      "12.17.0"..."12.999.999"
     ),
     .package(
       url: "https://github.com/google/GoogleSignIn-iOS.git",
