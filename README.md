@@ -237,6 +237,9 @@ still work, deprecated). All notable changes live in
 
 ---
 
-KMPAuth powers [FindTravelNow](https://github.com/mirzemehdi/FindTravelNow-KMM/),
-a production KMP app, so development is actively supported. Related blog
-post: [Integrating Google Sign-In into Kotlin Multiplatform](https://proandroiddev.com/integrating-google-sign-in-into-kotlin-multiplatform-8381c189a891).
+## Where else this is used
+
+I'm also building **[KAppMaker AI](https://kappmaker.com)** — an always-on
+cloud machine that runs Claude Code unattended and builds Compose
+Multiplatform apps overnight, driven from Telegram.
+[See a full run replayed →](https://kappmaker.com/demo)
