@@ -29,6 +29,7 @@ internal class GoogleAuthSignInHandler(
             providerId = AuthProviderIds.GOOGLE,
             idToken = idToken,
             accessToken = googleUser.accessToken,
+            rawNonce = googleUser.nonce,
         )
         return backend.signIn(credential, linkWithCurrentUser = linkAccount).fold(
             onSuccess = { user -> Result.success(user) },

@@ -14,6 +14,9 @@ package com.mmk.kmpauth.google
  * Credential Manager is unavailable, never returns one.
  * @param serverAuthCode One-time code your backend can exchange for a refresh
  * token. Only populated by the legacy Android flow and by iOS.
+ * @param nonce The raw nonce sent with the authorization request, echoed in the
+ * ID token's `nonce` claim. Populated by flows that use one (Desktop);
+ * backends that verify the claim (e.g. Supabase) need it alongside the token.
  */
 public data class GoogleUser(
     val idToken: String,
@@ -21,5 +24,6 @@ public data class GoogleUser(
     val email: String? = null,
     val displayName: String = "",
     val profilePicUrl: String? = null,
-    val serverAuthCode: String? = null
+    val serverAuthCode: String? = null,
+    val nonce: String? = null,
 )

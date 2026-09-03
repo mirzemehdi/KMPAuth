@@ -98,7 +98,8 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 accessToken = accessToken,
                 email = email,
                 displayName = name ?: "",
-                profilePicUrl = picture
+                profilePicUrl = picture,
+                nonce = nonce,
             )
         )
     }

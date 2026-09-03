@@ -41,7 +41,7 @@ final class com.mmk.kmpauth.google/GoogleAuthCredentials { // com.mmk.kmpauth.go
 }
 
 final class com.mmk.kmpauth.google/GoogleUser { // com.mmk.kmpauth.google/GoogleUser|null[0]
-    constructor <init>(kotlin/String, kotlin/String? = ..., kotlin/String? = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.google/GoogleUser.<init>|<init>(kotlin.String;kotlin.String?;kotlin.String?;kotlin.String;kotlin.String?;kotlin.String?){}[0]
+    constructor <init>(kotlin/String, kotlin/String? = ..., kotlin/String? = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.google/GoogleUser.<init>|<init>(kotlin.String;kotlin.String?;kotlin.String?;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
 
     final val accessToken // com.mmk.kmpauth.google/GoogleUser.accessToken|{}accessToken[0]
         final fun <get-accessToken>(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.accessToken.<get-accessToken>|<get-accessToken>(){}[0]
@@ -51,6 +51,8 @@ final class com.mmk.kmpauth.google/GoogleUser { // com.mmk.kmpauth.google/Google
         final fun <get-email>(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.email.<get-email>|<get-email>(){}[0]
     final val idToken // com.mmk.kmpauth.google/GoogleUser.idToken|{}idToken[0]
         final fun <get-idToken>(): kotlin/String // com.mmk.kmpauth.google/GoogleUser.idToken.<get-idToken>|<get-idToken>(){}[0]
+    final val nonce // com.mmk.kmpauth.google/GoogleUser.nonce|{}nonce[0]
+        final fun <get-nonce>(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.nonce.<get-nonce>|<get-nonce>(){}[0]
     final val profilePicUrl // com.mmk.kmpauth.google/GoogleUser.profilePicUrl|{}profilePicUrl[0]
         final fun <get-profilePicUrl>(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.profilePicUrl.<get-profilePicUrl>|<get-profilePicUrl>(){}[0]
     final val serverAuthCode // com.mmk.kmpauth.google/GoogleUser.serverAuthCode|{}serverAuthCode[0]
@@ -62,7 +64,8 @@ final class com.mmk.kmpauth.google/GoogleUser { // com.mmk.kmpauth.google/Google
     final fun component4(): kotlin/String // com.mmk.kmpauth.google/GoogleUser.component4|component4(){}[0]
     final fun component5(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.component5|component5(){}[0]
     final fun component6(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.component6|component6(){}[0]
-    final fun copy(kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ...): com.mmk.kmpauth.google/GoogleUser // com.mmk.kmpauth.google/GoogleUser.copy|copy(kotlin.String;kotlin.String?;kotlin.String?;kotlin.String;kotlin.String?;kotlin.String?){}[0]
+    final fun component7(): kotlin/String? // com.mmk.kmpauth.google/GoogleUser.component7|component7(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): com.mmk.kmpauth.google/GoogleUser // com.mmk.kmpauth.google/GoogleUser.copy|copy(kotlin.String;kotlin.String?;kotlin.String?;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.google/GoogleUser.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.mmk.kmpauth.google/GoogleUser.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.mmk.kmpauth.google/GoogleUser.toString|toString(){}[0]
