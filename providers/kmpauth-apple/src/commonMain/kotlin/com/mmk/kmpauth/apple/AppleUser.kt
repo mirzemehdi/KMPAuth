@@ -18,6 +18,11 @@ package com.mmk.kmpauth.apple
  * sign-ins return null.
  * @param fullName User's display name, when requested and shared. Subject to
  * the same first-authorization-only rule as [email].
+ * @param authorizationCode Apple's short-lived authorization code, needed for
+ * token revocation on account deletion (App Store Review Guideline 5.1.1(v)) -
+ * e.g. Firebase's `Auth.revokeToken(withAuthorizationCode:)` or Apple's
+ * `/auth/revoke` endpoint from your server. Only produced by the native iOS
+ * flow; null elsewhere.
  */
 public data class AppleUser(
     val idToken: String,
@@ -25,4 +30,5 @@ public data class AppleUser(
     val userId: String? = null,
     val email: String? = null,
     val fullName: String? = null,
+    val authorizationCode: String? = null,
 )

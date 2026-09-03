@@ -50,3 +50,12 @@ AppleSignInButton { appleSignIn.launch() }
 >
 > `email` and `fullName` are returned by Apple **only on the user's first
 > authorization** — persist them server-side; later sign-ins return null.
+
+## Token revocation on account deletion
+
+App Store Review Guideline 5.1.1(v) requires revoking the user's Apple
+token when their account is deleted. `AppleUser.authorizationCode` (native
+iOS flow only, short-lived) is what revocation consumes — run a fresh
+`rememberAppleSignInState` sign-in during your delete flow and pass the
+code to Firebase iOS's `Auth.revokeToken(withAuthorizationCode:)` or to
+Apple's `/auth/revoke` endpoint from your server.

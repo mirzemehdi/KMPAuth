@@ -22,8 +22,10 @@ sealed interface com.mmk.kmpauth.apple/AppleSignInRequestScope { // com.mmk.kmpa
 }
 
 final class com.mmk.kmpauth.apple/AppleUser { // com.mmk.kmpauth.apple/AppleUser|null[0]
-    constructor <init>(kotlin/String, kotlin/String, kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.apple/AppleUser.<init>|<init>(kotlin.String;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...) // com.mmk.kmpauth.apple/AppleUser.<init>|<init>(kotlin.String;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
 
+    final val authorizationCode // com.mmk.kmpauth.apple/AppleUser.authorizationCode|{}authorizationCode[0]
+        final fun <get-authorizationCode>(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.authorizationCode.<get-authorizationCode>|<get-authorizationCode>(){}[0]
     final val email // com.mmk.kmpauth.apple/AppleUser.email|{}email[0]
         final fun <get-email>(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.email.<get-email>|<get-email>(){}[0]
     final val fullName // com.mmk.kmpauth.apple/AppleUser.fullName|{}fullName[0]
@@ -40,7 +42,8 @@ final class com.mmk.kmpauth.apple/AppleUser { // com.mmk.kmpauth.apple/AppleUser
     final fun component3(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.component3|component3(){}[0]
     final fun component4(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.component4|component4(){}[0]
     final fun component5(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.component5|component5(){}[0]
-    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): com.mmk.kmpauth.apple/AppleUser // com.mmk.kmpauth.apple/AppleUser.copy|copy(kotlin.String;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    final fun component6(): kotlin/String? // com.mmk.kmpauth.apple/AppleUser.component6|component6(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): com.mmk.kmpauth.apple/AppleUser // com.mmk.kmpauth.apple/AppleUser.copy|copy(kotlin.String;kotlin.String;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.mmk.kmpauth.apple/AppleUser.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.mmk.kmpauth.apple/AppleUser.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.mmk.kmpauth.apple/AppleUser.toString|toString(){}[0]
