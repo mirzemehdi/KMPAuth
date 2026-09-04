@@ -16,6 +16,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   second hand-rolled `ASAuthorizationController` just for this field.
   Null outside the native iOS flow.
 
+### Fixed
+- **Desktop Google → Supabase nonce rejection** (#235). The Desktop flow
+  now sends the **SHA-256 hash** of the nonce to Google (so the ID token's
+  `nonce` claim holds the hash) and forwards the **raw** nonce on
+  `GoogleUser.nonce` → `AuthCredential.IdToken.rawNonce`. Supabase's
+  id_token grant hashes the forwarded value and compares it with the
+  claim, which now matches. Previously the raw nonce went to Google and
+  the claim was never forwarded, so the exchange failed with "Passed
+  nonce and nonce in id_token should either both exist or not" (and,
+  once forwarded raw, "Nonces mismatch"). Firebase's Google exchange
+  does not send a nonce and is unaffected. Thanks @cmelchior for the
+  diagnosis.
+
 ## [3.0.5] — 2026-08-14
 
 ### Changed

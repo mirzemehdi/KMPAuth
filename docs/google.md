@@ -178,3 +178,10 @@ val googleSignIn = rememberGoogleSignInState(
 ```
 
 Requesting `scopes` beyond `email`/`profile` implies it.
+
+On Desktop the loopback flow generates a nonce, sends its SHA-256 hash to
+Google (so the ID token's `nonce` claim holds the hash) and keeps the raw
+value on `GoogleUser.nonce`. `rememberGoogleAuthState` forwards it to the
+backend automatically; if you exchange `GoogleUser` yourself against a
+service that verifies the nonce (e.g. Supabase), forward `nonce` alongside
+`idToken`.
