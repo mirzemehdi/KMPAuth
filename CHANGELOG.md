@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`AppleUser.authorizationCode`** (#234): the native iOS Sign in with
+  Apple flow now surfaces Apple's short-lived authorization code, required
+  for token revocation on account deletion (App Store Review Guideline
+  5.1.1(v)) via Firebase's `revokeToken(withAuthorizationCode:)` or
+  Apple's `/auth/revoke`. Previously discarded, forcing apps to run a
+  second hand-rolled `ASAuthorizationController` just for this field.
+  Null outside the native iOS flow.
+
 ### Fixed
 - **Desktop Google → Supabase nonce rejection** (#235). The Desktop flow
   now sends the **SHA-256 hash** of the nonce to Google (so the ID token's

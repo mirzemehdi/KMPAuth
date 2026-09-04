@@ -169,12 +169,15 @@ private class AppleAuthorizationDelegate(
         }
 
         val fullNameComponents = appleIdCredential.fullName
+        val authorizationCode = appleIdCredential.authorizationCode
+            ?.let { NSString.create(it, NSUTF8StringEncoding)?.toString() }
         val user = AppleUser(
             idToken = idTokenString,
             nonce = rawNonce,
             userId = appleIdCredential.user,
             email = appleIdCredential.email,
             fullName = fullNameComponents?.formatted(),
+            authorizationCode = authorizationCode,
         )
         onResult(
             Result.success(
