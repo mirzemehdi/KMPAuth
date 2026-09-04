@@ -29,6 +29,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   does not send a nonce and is unaffected. Thanks @cmelchior for the
   diagnosis.
 
+### Security
+- Updated the pinned Kotlin/JS dev-toolchain npm packages to their patched
+  releases: `fast-uri` 3.1.6 (ReDoS and host/scheme confusion in URI
+  parsing, pinned for both the js and wasm toolchains) and `qs` 6.16.0
+  (prototype pollution via crafted query strings). Build tooling only —
+  the published artifacts never contained these packages and are unchanged
+  from 3.0.5.
+
 ## [3.0.5] — 2026-08-14
 
 ### Changed
