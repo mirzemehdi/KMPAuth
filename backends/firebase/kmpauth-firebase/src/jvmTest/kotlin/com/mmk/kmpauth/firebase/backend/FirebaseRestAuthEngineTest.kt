@@ -117,6 +117,22 @@ class FirebaseRestAuthEngineTest {
     }
 
     @Test
+    fun googleIdTokenIgnoresRawNonce() = runTest {
+        // The Desktop Google flow now carries a rawNonce (#235); Firebase's
+        // Google exchange must still not send it - Firebase does not verify
+        // a Google nonce, and forwarding it would break the exchange.
+        val transport = ScriptedTransport()
+        transport.responses += """{"localId":"uid-g","idToken":"tok","displayName":"G"}"""
+        val engine = engine(transport)
+
+        engine.signIn(
+            AuthCredential.IdToken(AuthProviderIds.GOOGLE, idToken = "g-token", rawNonce = "raw-n")
+        ).getOrThrow()
+
+        assertFalse(transport.calls.single().second.contains("nonce="))
+    }
+
+    @Test
     fun linkingSendsCurrentSessionIdToken() = runTest {
         val transport = ScriptedTransport()
         transport.responses += """{"localId":"anon-1","idToken":"anon-tok"}"""
