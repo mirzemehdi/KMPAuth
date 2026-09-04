@@ -78,10 +78,11 @@ plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
         resolution("webpack", "5.104.1")
         resolution("ws", "8.21.0")
         resolution("undici", "6.28.0")
-        resolution("fast-uri", "3.1.5")
+        resolution("fast-uri", "3.1.6")
         resolution("body-parser", "1.20.6")
         resolution("serialize-javascript", "7.0.7")
         resolution("uuid", "11.1.1")
+        resolution("qs", "6.16.0")
         resolution("diff", "8.0.3")
     }
 }
@@ -90,6 +91,6 @@ plugins.withType<org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin> {
         resolution("webpack", "5.104.1")
         resolution("ws", "8.21.0")
         resolution("serialize-javascript", "7.0.7")
-        resolution("fast-uri", "3.1.5")
+        resolution("fast-uri", "3.1.6")
     }
 }

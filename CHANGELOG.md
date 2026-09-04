@@ -5,6 +5,38 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.6] — 2026-09-04
+
+### Added
+- **`AppleUser.authorizationCode`** (#234): the native iOS Sign in with
+  Apple flow now surfaces Apple's short-lived authorization code, required
+  for token revocation on account deletion (App Store Review Guideline
+  5.1.1(v)) via Firebase's `revokeToken(withAuthorizationCode:)` or
+  Apple's `/auth/revoke`. Previously discarded, forcing apps to run a
+  second hand-rolled `ASAuthorizationController` just for this field.
+  Null outside the native iOS flow.
+
+### Fixed
+- **Desktop Google → Supabase nonce rejection** (#235). The Desktop flow
+  now sends the **SHA-256 hash** of the nonce to Google (so the ID token's
+  `nonce` claim holds the hash) and forwards the **raw** nonce on
+  `GoogleUser.nonce` → `AuthCredential.IdToken.rawNonce`. Supabase's
+  id_token grant hashes the forwarded value and compares it with the
+  claim, which now matches. Previously the raw nonce went to Google and
+  the claim was never forwarded, so the exchange failed with "Passed
+  nonce and nonce in id_token should either both exist or not" (and,
+  once forwarded raw, "Nonces mismatch"). Firebase's Google exchange
+  does not send a nonce and is unaffected. Thanks @cmelchior for the
+  diagnosis.
+
+### Security
+- Updated the pinned Kotlin/JS dev-toolchain npm packages to their patched
+  releases: `fast-uri` 3.1.6 (ReDoS and host/scheme confusion in URI
+  parsing, pinned for both the js and wasm toolchains) and `qs` 6.16.0
+  (prototype pollution via crafted query strings). Build tooling only —
+  the published artifacts never contained these packages and are unchanged
+  from 3.0.5.
+
 ## [3.0.5] — 2026-08-14
 
 ### Changed

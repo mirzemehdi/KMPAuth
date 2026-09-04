@@ -65,7 +65,7 @@ class GoogleAuthSignInHandlerTest {
         val handler = GoogleAuthSignInHandler(backend)
 
         handler.signIn(
-            googleUser = GoogleUser(idToken = "id-token", accessToken = "access-token"),
+            googleUser = GoogleUser(idToken = "id-token", accessToken = "access-token", nonce = "raw-nonce"),
             linkAccount = true,
         )
 
@@ -73,6 +73,9 @@ class GoogleAuthSignInHandlerTest {
         assertEquals("google.com", credential.providerId)
         assertEquals("id-token", credential.idToken)
         assertEquals("access-token", credential.accessToken)
+        // Backends that verify the token's nonce claim (Supabase) need the
+        // raw value alongside the token (#235).
+        assertEquals("raw-nonce", credential.rawNonce)
         assertEquals(true, backend.linkWithCurrentUser)
     }
 

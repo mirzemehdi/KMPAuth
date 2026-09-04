@@ -17,6 +17,7 @@ import java.net.URI
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.Base64
 
@@ -42,19 +43,26 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         val responseType = "id_token token"
         val scopeString = scopes.joinToString(" ")
         val state: String
-        var nonce: String?
+        // Google embeds the nonce raw in the ID token; Supabase's id_token
+        // grant hashes the nonce we forward before comparing it with that
+        // claim. So send the SHA-256 hash to Google (claim = hash) and keep
+        // the raw value for the backend (#235).
+        val rawNonce: String
+        val hashedNonce: String
         val googleAuthUrl = withContext(Dispatchers.IO) {
             val encodedResponseType =
                 URLEncoder.encode(responseType, StandardCharsets.UTF_8.toString())
             state = URLEncoder.encode(generateRandomString(), StandardCharsets.UTF_8.toString())
             val encodedScope = URLEncoder.encode(scopeString, StandardCharsets.UTF_8.toString())
-            nonce = URLEncoder.encode(generateRandomString(), StandardCharsets.UTF_8.toString())
+            rawNonce = generateRandomString()
+            hashedNonce = sha256Hex(rawNonce)
+            val encodedNonce = URLEncoder.encode(hashedNonce, StandardCharsets.UTF_8.toString())
             "$authUrl?" +
                     "client_id=${credentials.serverId}" +
                     "&redirect_uri=${redirectTarget.redirectUri}" +
                     "&response_type=$encodedResponseType" +
                     "&scope=$encodedScope" +
-                    "&nonce=$nonce" +
+                    "&nonce=$encodedNonce" +
                     "&state=$state"
         }
 
@@ -83,7 +91,7 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
         val name = jwt?.getClaim("name")?.asString() // User's name
         val picture = jwt?.getClaim("picture")?.asString()
         val receivedNonce = jwt?.getClaim("nonce")?.asString()
-        if (receivedNonce != nonce) {
+        if (receivedNonce != hashedNonce) {
             currentLogger.log("GoogleAuthUiProvider: Invalid nonce state: A login callback was received, but no login request was sent.")
             return Result.failure(
                 IllegalStateException(
@@ -98,7 +106,8 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
                 accessToken = accessToken,
                 email = email,
                 displayName = name ?: "",
-                profilePicUrl = picture
+                profilePicUrl = picture,
+                nonce = rawNonce,
             )
         )
     }
@@ -299,3 +308,9 @@ internal class GoogleAuthUiProviderImpl(private val credentials: GoogleAuthCrede
     }
 
 }
+
+/** Lowercase hex SHA-256, matching Supabase's id_token nonce comparison. */
+internal fun sha256Hex(input: String): String =
+    MessageDigest.getInstance("SHA-256")
+        .digest(input.toByteArray(StandardCharsets.UTF_8))
+        .joinToString("") { (it.toInt() and 0xff).toString(16).padStart(2, '0') }
