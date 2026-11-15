@@ -5,6 +5,25 @@ All notable changes to KMPAuth are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **iOS: Firebase iOS SDK 13** (#244). `kmpauth-firebase` moves to GitLive
+  firebase-kotlin-sdk **3.0.0-beta1**, which builds against firebase-ios-sdk
+  13.1.1. The SPM range becomes **13.1.1…13.999.999** (was
+  12.17.0…12.999.999); Firebase Android BoM 34.17.0 -> 34.18.0. Apps on
+  Firebase iOS 12 stay on KMPAuth 3.0.6. GitLive beta1 changed how an
+  `AuthCredential` wraps a `FIRAuthCredential`; the iOS OAuth web flow now
+  passes the `FIRAuthCredential` straight to `FIRAuth` (no KMPAuth API change).
+
+### Fixed
+- **iOS: `kmpauth-google` blocked Firebase iOS SDK 13** (#244). It now pulls
+  **GoogleSignIn-iOS 10.1.0** (was 9.1.0), the first release whose
+  `app-check` range (`11.0.0..<13.0.0`) and `gtm-session-fetcher` range
+  (`3.3.0..<6.0.0`) admit firebase-ios-sdk 13. This also unblocks apps that use
+  `kmpauth-google` without `kmpauth-firebase`. GoogleSignIn-iOS 10 requires
+  iOS 15+; KMPAuth already requires 16.0.
+
 ## [3.0.6] — 2026-09-04
 
 ### Added

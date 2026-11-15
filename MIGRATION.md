@@ -48,8 +48,8 @@ frameworks through the Kotlin `swiftPMDependencies {}` DSL (Kotlin 2.4+).
    entirely (`pod deintegrate`).
 2. Add the native SDKs your setup uses via **File → Add Package
    Dependencies…**:
-   - Google Sign-In: `https://github.com/google/GoogleSignIn-iOS` (product `GoogleSignIn`), 9.1.0+
-   - Firebase: `https://github.com/firebase/firebase-ios-sdk` (products `FirebaseAuth`, `FirebaseCore`), 11.8.0+
+   - Google Sign-In: `https://github.com/google/GoogleSignIn-iOS` (product `GoogleSignIn`), 10.1.0+
+   - Firebase: `https://github.com/firebase/firebase-ios-sdk` (products `FirebaseAuth`, `FirebaseCore`), 13.1.1+
    - Facebook: `https://github.com/facebook/facebook-ios-sdk` (products `FacebookCore`, `FacebookLogin`), 18.0.0+
 3. Set your app's iOS deployment target to **16.0+** and use **Xcode 16.4+**.
 4. Keep integrating your shared framework the same way as before
