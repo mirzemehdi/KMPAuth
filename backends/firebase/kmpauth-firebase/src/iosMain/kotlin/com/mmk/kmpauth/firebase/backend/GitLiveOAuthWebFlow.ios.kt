@@ -1,9 +1,7 @@
 package com.mmk.kmpauth.firebase.backend
 
-import swiftPMImport.dev.gitlive.firebase.auth.FIRAuthCredential
 import swiftPMImport.dev.gitlive.firebase.auth.FIRAuthDataResult
 import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.OAuthProvider
 import dev.gitlive.firebase.auth.auth
@@ -23,7 +21,7 @@ internal actual suspend fun gitLiveOAuthWebFlowSignIn(
         null,
         completion = { firAuthCredential, nsError ->
             if (firAuthCredential != null) {
-                val authCredential = firAuthCredential.asAuthCredential().ios
+                val authCredential = firAuthCredential
                 val auth = Firebase.auth.ios
                 val currentUser = auth.currentUser()
 
@@ -50,5 +48,3 @@ internal actual suspend fun gitLiveOAuthWebFlowSignIn(
     )
 }
 
-@OptIn(ExperimentalForeignApi::class)
-private fun FIRAuthCredential.asAuthCredential(): AuthCredential = object : AuthCredential(this) {}

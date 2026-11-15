@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/abseil-cpp-binary.git",
       "state" : {
-        "revision" : "bbe8b69694d7873315fd3a4ad41efe043e1c07c5",
-        "version" : "1.2024072200.0"
+        "revision" : "26509120768c4add61cc1a63059f15f4fb49edb4",
+        "version" : "1.2025051202.0"
       }
     },
     {
@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/app-check.git",
       "state" : {
-        "revision" : "3e33dd27dd4c69bd81c7c81fe61d8ccf58846902",
-        "version" : "11.3.1"
+        "revision" : "b7c71458b70284cc0f5a87103f66f0b1d98b1873",
+        "version" : "12.1.0"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/openid/AppAuth-iOS.git",
       "state" : {
-        "revision" : "a7caeda164dc5108bf4649472b28a5af65dc6f33",
-        "version" : "2.1.0"
+        "revision" : "a972daac82d449d58ab119e91c68153e29ddac33",
+        "version" : "3.0.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/facebook/facebook-ios-sdk.git",
       "state" : {
-        "revision" : "3818dd2ccb6547c6d320ff68a1bd599789c3a44f",
-        "version" : "18.1.0"
+        "revision" : "80d0ee82f6370d1bace1431a80cb80575f98ee90",
+        "version" : "18.1.1"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "33a468adfdb75b53f05a37e7c886ca7c962b5c17",
-        "version" : "12.17.0"
+        "revision" : "efad2b784dfae43404dc1fcfdf272981b235e71f",
+        "version" : "13.2.0"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/googleads/google-ads-on-device-conversion-ios-sdk",
       "state" : {
-        "revision" : "dc39082d8881109d35b94b1c122164c0e8d08a55",
-        "version" : "3.6.1"
+        "revision" : "665eb0eab22172138bf5b3ce6d75e62b82c2ab59",
+        "version" : "3.8.0"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "fceaffa07d22dcd5624d3639fd970351a4a5ad8c",
-        "version" : "12.17.0"
+        "revision" : "abc3a85c786aa7077d93ab7f6709dfc9e1b6d557",
+        "version" : "13.2.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS.git",
       "state" : {
-        "revision" : "08d8dcecafb575f98879ffdbb8302c1b9ad65d19",
-        "version" : "9.2.0"
+        "revision" : "bfaebbc04a4d13ed7a89b0fc1fb8ad66b362cc1c",
+        "version" : "10.1.0"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "9f183ae842be978784f2963a343682e0c46d8fb3",
-        "version" : "8.1.2"
+        "revision" : "5459ee5603def3db0fe14ca522185f42c48d978e",
+        "version" : "8.1.5"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/grpc-binary.git",
       "state" : {
-        "revision" : "75b31c842f664a0f46a2e590a570e370249fd8f6",
-        "version" : "1.69.1"
+        "revision" : "9d5e9f05670c9eab8d8c22731ddd5d4d9cf867a8",
+        "version" : "1.83.1"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "a2ab612cb980066ee56d90d60d8462992c07f24b",
-        "version" : "3.5.0"
+        "revision" : "724a52eea6329b7e12d3ad8300d76ca9f3895fcc",
+        "version" : "5.3.1"
       }
     },
     {
@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GTMAppAuth.git",
       "state" : {
-        "revision" : "56e0ccf09a6dd29dc7e68bdf729598240ca8aa16",
-        "version" : "5.0.0"
+        "revision" : "57094cd46bc8700d3a887e2a429f42b6e8ea3f0b",
+        "version" : "6.0.0"
       }
     },
     {

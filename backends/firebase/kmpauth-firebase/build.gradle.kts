@@ -24,10 +24,10 @@ kotlin {
         // Firebase frameworks at link time. A range instead of from(): SPM's
         // `from` caps at <12.0.0, conflicting with consumer apps already on
         // firebase-ios-sdk 12.x. range() renders as a CLOSED SPM range, so
-        // the upper bound 12.999.999 admits every 12.x and keeps 13.0.0 out.
+        // the upper bound 13.999.999 admits every 13.x and keeps 14.0.0 out.
         swiftPackage(
             url("https://github.com/firebase/firebase-ios-sdk.git"),
-            range(libs.versions.firebaseIosSdk.get(), "12.999.999"),
+            range(libs.versions.firebaseIosSdk.get(), "13.999.999"),
             listOf(product("FirebaseAuth"), product("FirebaseCore"))
         )
     }

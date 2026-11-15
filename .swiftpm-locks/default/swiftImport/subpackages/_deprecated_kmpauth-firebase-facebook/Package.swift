@@ -15,7 +15,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk.git",
-      "12.17.0"..."12.999.999"
+      "13.1.1"..."13.999.999"
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk.git",

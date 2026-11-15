@@ -24,8 +24,8 @@ let package = Package(
     .package(path: "subpackages/_providers_kmpauth_facebook"),
     .package(path: "subpackages/_providers_kmpauth_google"),
     .package(path: "subpackages/_sampleApp_shared"),
-    .package(path: "subpackages/dev_gitlive_firebase_app_3_0_0_alpha01"),
-    .package(path: "subpackages/dev_gitlive_firebase_auth_3_0_0_alpha01")
+    .package(path: "subpackages/dev_gitlive_firebase_app_3_0_0_beta1"),
+    .package(path: "subpackages/dev_gitlive_firebase_auth_3_0_0_beta1")
   ],
   targets: [
     .target(
@@ -42,8 +42,8 @@ let package = Package(
         .product(name: "_providers_kmpauth_facebook", package: "_providers_kmpauth_facebook"),
         .product(name: "_providers_kmpauth_google", package: "_providers_kmpauth_google"),
         .product(name: "_sampleApp_shared", package: "_sampleApp_shared"),
-        .product(name: "dev_gitlive_firebase_app_3_0_0_alpha01", package: "dev_gitlive_firebase_app_3_0_0_alpha01"),
-        .product(name: "dev_gitlive_firebase_auth_3_0_0_alpha01", package: "dev_gitlive_firebase_auth_3_0_0_alpha01")
+        .product(name: "dev_gitlive_firebase_app_3_0_0_beta1", package: "dev_gitlive_firebase_app_3_0_0_beta1"),
+        .product(name: "dev_gitlive_firebase_auth_3_0_0_beta1", package: "dev_gitlive_firebase_auth_3_0_0_beta1")
       ]
     )
   ]

@@ -28,7 +28,7 @@ kotlin {
         // consumer apps already on firebase-ios-sdk 12.x.
         swiftPackage(
             url("https://github.com/firebase/firebase-ios-sdk.git"),
-            range(libs.versions.firebaseIosSdk.get(), "12.999.999"),
+            range(libs.versions.firebaseIosSdk.get(), "13.999.999"),
             listOf(product("FirebaseAuth"), product("FirebaseCore"))
         )
         swiftPackage(
